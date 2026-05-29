@@ -31,7 +31,7 @@ const COLUMNS = [
 ];
 
 const GRAPH_W = 820;
-const GRAPH_H = 420;
+const GRAPH_H = 440;
 
 interface NodeInfo {
   id: string; label: string; sublabel?: string; column: number; y: number;
@@ -267,7 +267,7 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
 
   return (
     <div style={{
-      position: "relative", width: "100%", height: "100%", minHeight: 460,
+      position: "relative", width: "100%", height: "100%", minHeight: 440,
       background: "#0d1530", borderRadius: 6,
       border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden",
     }}>

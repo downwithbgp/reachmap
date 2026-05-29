@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, Suspense } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
-import { SidePanel } from "./components/SidePanel";
 import { ReachMapStage } from "./components/ReachMapStage";
 import { PathGraph } from "./components/PathGraph";
 
@@ -533,17 +532,40 @@ export function App() {
                 }}
               />
             </div>
-            <div style={{ flex: "0 0 320px", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ flex: "0 0 320px", display: "flex", flexDirection: "column", gap: 8, overflow: "hidden" }}>
               <CubaWeatherCard
                 countryName={countryConfig?.name ?? "Cuba"}
                 totalCollectors={totalCollectors}
               />
+              {/* Collector status summary */}
+              <div style={{
+                background: "#111830", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6, padding: "10px 14px",
+                fontSize: 10, color: "#8899bb",
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#aabbdd", marginBottom: 6 }}>Collector registry</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                  <div><span style={{ color: "#c8d8f0" }}>{collectorRegistry.size}</span> registered</div>
+                  <div><span style={{ color: "#c8d8f0" }}>{[...collectorRegistry.values()].filter(c => c.enabled).length}</span> enabled</div>
+                  <div><span style={{ color: "#2ecc71" }}>{totalCollectors}</span> parsed for this snapshot</div>
+                  <div><span style={{ color: "#2ecc71" }}>{totalCollectors}</span> observed Cuban prefixes</div>
+                  <div style={{ color: "#556678" }}>{[...collectorRegistry.values()].filter(c => c.enabled).length - totalCollectors} enabled · not cached</div>
+                  <div style={{ color: "#4a5a6a" }}>{[...collectorRegistry.values()].filter(c => !c.enabled).length} disabled / future support</div>
+                </div>
+                <div style={{ fontSize: 8, color: "#556678", marginTop: 6, borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: 6 }}>
+                  AS-path graph uses parsed RIBs only. Gray map dots are registered but not cached.
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Bottom row: observation map (inset) + fingerprint (compact) + side panel */}
-          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", borderTop: "1px solid rgba(255,255,255,0.04)", padding: "6px 12px 8px", maxHeight: 220, overflow: "hidden" }}>
-            <div style={{ flex: "0 0 260px", height: 200 }}>
+          {/* Coverage vs graph caption */}
+          <div style={{ padding: "2px 14px", fontSize: 8, color: "#556678", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+            Graph = parsed RIB evidence. Coverage map = all registered collectors and cache status.
+          </div>
+
+          {/* Bottom row: coverage map (larger) + provenance + fingerprint */}
+          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", padding: "4px 12px 8px", maxHeight: 240, overflow: "hidden" }}>
+            <div style={{ flex: "1 1 45%", height: 220, minWidth: 280 }}>
               {(() => {
                 const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
                 const webglOk = hasWebGL();
@@ -584,7 +606,7 @@ export function App() {
                 return (<div style={{ padding: 16, textAlign: "center", color: "#667788", fontSize: 11 }}>WebGL unavailable. <a href="?stage=svg" style={{ color: "#5588aa" }}>Use SVG fallback</a>.</div>);
               })()}
             </div>
-            <div style={{ flex: "0 0 200px", opacity: 0.85 }}>
+            <div style={{ flex: "0 0 180px", opacity: 0.85 }}>
               <HilbertCanvas
                 prefixes={prefixes}
                 colorMode={effectiveColorMode}
@@ -596,24 +618,42 @@ export function App() {
                 onClickPrefix={handleClickPrefix}
               />
             </div>
-            <div style={{ flex: 1, minWidth: 0, maxHeight: 200, overflow: "hidden" }}>
-              <SidePanel
-                selectionMode={selectionMode}
-                colorMode={effectiveColorMode}
-                selectedVp={selectedVp}
-                selectedAsView={selectedAsView}
-                selectedPrefix={selectedPrefix}
-                hoveredPrefix={hoveredPrefix}
-                allViewpoints={viewpoints}
-                asViews={asViews}
-                pathFamilies={pathFamilies}
-                visibilityScores={visibilityScores}
-                totalCollectors={totalCollectors}
-                dataMode={dataMode}
-                asnMap={asnMap}
-                onSelectAsn={handleSelectAsn}
-                onClearSelection={handleClearSelection}
-              />
+            <div style={{ flex: 1, minWidth: 0, maxHeight: 220, overflow: "hidden" }}>
+              {/* Data provenance card */}
+              <div style={{
+                background: "#111830", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6,
+                padding: "10px 14px", fontSize: 9, color: "#7788aa", lineHeight: 1.6,
+              }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#aabbdd", marginBottom: 4 }}>Data provenance</div>
+                <div>BGP data: cached RouteViews / RIPE RIS RIB snapshots</div>
+                <div>Snapshot: {activeTimelinePoint?.timestamp ?? "2026-03-16 20:00 UTC"}</div>
+                <div>Country prefix set: CU, 68 routed prefixes</div>
+                <div style={{ color: "#556678", marginTop: 2 }}>
+                  Remote fetch during page load: no<br />
+                  Remote fetch during normal build: no<br />
+                  Refresh: <code style={{ fontSize: 8 }}>scripts/refresh_data.sh</code>
+                </div>
+              </div>
+              {/* Selected prefix inspector (compact) */}
+              {(selectedPrefix || selectedVp) && (
+                <div style={{
+                  background: "#111830", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6,
+                  padding: "8px 14px", fontSize: 10, color: "#c8d8f0", marginTop: 6,
+                }}>
+                  <div style={{ fontSize: 9, textTransform: "uppercase", color: "#8899bb", fontWeight: 600, marginBottom: 3 }}>
+                    {selectedPrefix ? "Selected prefix" : "Selected observation point"}
+                  </div>
+                  {selectedPrefix && (
+                    <div style={{ fontFamily: "monospace", color: "#e8e8f8" }}>{selectedPrefix.prefix}</div>
+                  )}
+                  {selectedVp && (
+                    <div style={{ color: "#aabbdd" }}>{selectedVp.displayName} · {selectedVp.collector}</div>
+                  )}
+                  <div style={{ fontSize: 8, color: "#667788", marginTop: 2 }}>
+                    Click edge or node in graph to inspect BGP observations.
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

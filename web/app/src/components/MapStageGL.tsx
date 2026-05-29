@@ -55,6 +55,8 @@ export function MapStageGL({ collectors, totalParsed, totalObserved, countryName
   const mapRef = useRef<maplibregl.Map | null>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const [hoveredDot, setHoveredDot] = useState<CollectorDisplay | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{x:number,y:number}>({x:0,y:0});
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -94,6 +96,14 @@ export function MapStageGL({ collectors, totalParsed, totalObserved, countryName
           onSelectCollector(info.object.id === selectedCollectorId ? null : info.object.id);
         }
       },
+      onHover: (info: any) => {
+        if (info.object) {
+          setHoveredDot(info.object as CollectorDisplay);
+          setTooltipPos({ x: info.x, y: info.y });
+        } else {
+          setHoveredDot(null);
+        }
+      },
     });
 
     const target = new ScatterplotLayer({
@@ -129,6 +139,35 @@ export function MapStageGL({ collectors, totalParsed, totalObserved, countryName
         <span><span style={{ color: "#50a0dc" }}>●</span> parsed</span>
         <span><span style={{ color: "#647082" }}>●</span> registered</span>
       </div>
+
+      {/* Collector hover tooltip */}
+      {hoveredDot && (
+        <div style={{
+          position: "absolute", left: tooltipPos.x + 14, top: tooltipPos.y - 10,
+          padding: "6px 10px", background: "rgba(10,20,48,0.95)", borderRadius: 4,
+          border: "1px solid rgba(255,255,255,0.12)", fontSize: 9, color: "#c8d8f0",
+          pointerEvents: "none", zIndex: 20, whiteSpace: "nowrap",
+          backdropFilter: "blur(4px)",
+        }}>
+          <div style={{ fontWeight: 600 }}>{hoveredDot.label}</div>
+          {hoveredDot.city && <div style={{ color: "#8899bb" }}>{hoveredDot.city}</div>}
+          <div style={{ color: "#667788", fontSize: 8 }}>
+            {hoveredDot.source === "routeviews" ? "RouteViews" : hoveredDot.source === "ris" ? "RIPE RIS" : hoveredDot.source}
+            {" · "}
+            {hoveredDot.status === "parsed_observed" ? "parsed + observed" :
+             hoveredDot.status === "parsed_no_match" ? "parsed, no match" :
+             hoveredDot.status === "not_requested" ? "registered, not cached" :
+             hoveredDot.status === "disabled" ? "disabled" :
+             hoveredDot.status}
+          </div>
+          {hoveredDot.status === "not_requested" && (
+            <div style={{ color: "#4a5a6a", fontSize: 7 }}>Not in AS-path graph. Run data refresh to fetch.</div>
+          )}
+          {hoveredDot.status === "parsed_observed" && (
+            <div style={{ color: "#2ecc71", fontSize: 7 }}>Included in AS-path graph.</div>
+          )}
+        </div>
+      )}
 
       {/* Coverage note */}
       <div style={{ position: "absolute", bottom: 16, left: 6, fontSize: 7, color: "#4a5a6a" }}>
