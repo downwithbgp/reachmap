@@ -6,7 +6,7 @@
  * Not physical cables. Logical BGP AS-path structure.
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import type { PathFamilyRecord, PrefixVisibilityScore, AsnMetadata } from "../types";
 
 interface Props {
@@ -65,7 +65,41 @@ function projectCubaCallout(lon: number, lat: number): [number, number] {
   return [CALLOUT_OFFSET[0] + dx * pixPerDeg, CALLOUT_OFFSET[1] + dy * pixPerDeg];
 }
 
+function geoToSvgPath(coords: number[][]): string {
+  return coords.map(([lon, lat], i) => {
+    const [x, y] = project(lon, lat);
+    return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(" ") + " Z";
+}
+
 export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCollectors, countryName, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
+  const [basemap, setBasemap] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/data/basemaps/ne-atlantic-land.json")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (!data?.features) return;
+        const paths: string[] = [];
+        for (const f of data.features) {
+          if (f.geometry.type === "Polygon") {
+            for (const ring of f.geometry.coordinates) {
+              const p = geoToSvgPath(ring);
+              if (p.length > 10) paths.push(p);
+            }
+          } else if (f.geometry.type === "MultiPolygon") {
+            for (const poly of f.geometry.coordinates) {
+              for (const ring of poly) {
+                const p = geoToSvgPath(ring);
+                if (p.length > 10) paths.push(p);
+              }
+            }
+          }
+        }
+        setBasemap(paths);
+      })
+      .catch(() => {});
+  }, []);
 
   // Top transit ASNs
   const transitNodes = useMemo(() => {
@@ -119,12 +153,11 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
         {/* Ocean background */}
         <rect x={0} y={0} width={SVG_W} height={SVG_H} fill="#0a0a1e" />
 
-        {/* Simplified landmass outlines */}
-        <g opacity={0.25}>
-          {/* North America (simplified) */}
-          <path d="M 50 80 Q 120 60 200 90 Q 280 100 320 150 Q 340 200 300 250 Q 260 280 220 300 Q 180 310 140 280 Q 80 240 50 180 Z" fill="#1a1a35" stroke="#2a2a55" strokeWidth={0.5} />
-          {/* Europe (simplified) */}
-          <path d="M 750 50 Q 800 70 850 90 Q 880 130 860 170 Q 830 200 780 190 Q 740 160 720 120 Q 710 80 750 50 Z" fill="#1a1a35" stroke="#2a2a55" strokeWidth={0.5} />
+        {/* Natural Earth basemap — Atlantic region */}
+        <g>
+          {basemap.map((d, i) => (
+            <path key={i} d={d} fill="#141428" stroke="#252545" strokeWidth={0.5} />
+          ))}
         </g>
 
         {/* Cuba geographic position (small) */}
