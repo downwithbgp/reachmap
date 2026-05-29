@@ -63,6 +63,61 @@ const MAP_STYLE: maplibregl.StyleSpecification = {
   ],
 };
 
+// Cuba outline for the weather callout
+const CUBA_OUTLINE: [number, number][] = [
+  [-84.95,21.85],[-84.35,21.83],[-83.90,22.08],[-83.47,22.55],[-83.01,22.65],
+  [-82.28,22.92],[-81.72,23.12],[-81.18,23.12],[-80.80,23.10],[-80.33,22.98],
+  [-79.98,22.80],[-79.62,22.76],[-79.18,22.39],[-78.73,22.39],[-78.18,22.44],
+  [-77.90,22.08],[-77.55,21.77],[-77.10,21.60],[-76.61,21.48],[-76.02,21.61],
+  [-75.55,21.43],[-75.23,21.17],[-74.90,20.70],[-74.70,20.13],[-75.05,19.83],
+  [-75.68,19.97],[-76.20,19.99],[-77.07,19.87],[-77.85,19.66],[-78.55,19.85],
+  [-79.10,19.95],[-80.10,19.88],[-80.55,19.86],[-81.42,20.30],[-81.98,20.88],
+  [-82.61,21.37],[-83.20,21.70],[-83.65,21.73],[-84.25,21.58],[-84.95,21.85],
+];
+
+function CubaWeatherCanvas() {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const W = canvas.width, H = canvas.height;
+
+    // Project with aspect ratio preservation
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const [lon, lat] of CUBA_OUTLINE) {
+      if (lon < minX) minX = lon; if (lon > maxX) maxX = lon;
+      if (lat < minY) minY = lat; if (lat > maxY) maxY = lat;
+    }
+    const pad = 12;
+    const geoW = maxX - minX, geoH = maxY - minY;
+    const scale = Math.min((W - pad * 2) / geoW, (H - pad * 2) / geoH);
+    const offX = pad + ((W - pad * 2) - geoW * scale) / 2;
+    const offY = pad + ((H - pad * 2) - geoH * scale) / 2;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw country shape
+    ctx.beginPath();
+    CUBA_OUTLINE.forEach(([lon, lat], i) => {
+      const x = offX + (lon - minX) * scale;
+      const y = offY + (maxY - lat) * scale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+
+    // Green fill (BGP-visible)
+    ctx.fillStyle = "rgba(40, 185, 94, 0.5)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(80, 180, 220, 0.7)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }, []);
+
+  return <canvas ref={ref} width={320} height={140} style={{ display: "block", width: "100%", height: "auto" }} />;
+}
+
 export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollectors, countryName, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -181,9 +236,9 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
 
       {/* Transit ASN logical overlay (HTML, not geographic) */}
       <div style={{
-        position: "absolute", top: 12, right: 12, padding: "8px 12px",
+        position: "absolute", bottom: 50, right: 12, padding: "8px 12px",
         background: "rgba(10,10,30,0.85)", border: "1px solid #2a2a48", borderRadius: 6,
-        backdropFilter: "blur(4px)",
+        backdropFilter: "blur(4px)", maxWidth: 180,
       }}>
         <div style={{ fontSize: 9, color: "#666", textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>
           Logical transit ASNs
@@ -196,20 +251,24 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
         <div style={{ fontSize: 8, color: "#445", marginTop: 4 }}>Not physical locations</div>
       </div>
 
-      {/* Country weather callout (HTML overlay) */}
+      {/* Country IP-space weather — large callout with actual country shape */}
       <div style={{
-        position: "absolute", bottom: 12, right: 12, padding: "8px 12px",
-        background: "rgba(10,10,30,0.85)", border: "1px solid rgba(40,185,94,0.3)", borderRadius: 6,
-        backdropFilter: "blur(4px)",
+        position: "absolute", top: 12, right: 12, width: "30%", minWidth: 260, maxWidth: 380,
+        background: "rgba(8,8,20,0.88)", border: "1px solid rgba(40,185,94,0.25)", borderRadius: 8,
+        backdropFilter: "blur(6px)", overflow: "hidden",
       }}>
-        <div style={{ fontSize: 9, color: "#28b85e", textTransform: "uppercase", fontWeight: 600, marginBottom: 2 }}>
-          {countryName} · IP-space weather
+        <div style={{ padding: "6px 12px", borderBottom: "1px solid rgba(40,185,94,0.15)" }}>
+          <div style={{ fontSize: 10, color: "#28b85e", textTransform: "uppercase", fontWeight: 600 }}>
+            {countryName} · IP-space weather
+          </div>
+          <div style={{ fontSize: 11, color: "#ccc", marginTop: 2 }}>
+            BGP-visible · {totalCollectors}/{totalCollectors} collector RIBs
+          </div>
         </div>
-        <div style={{ fontSize: 11, color: "#28b85e", fontWeight: 700 }}>
-          BGP-visible · {totalCollectors}/{totalCollectors} collector RIBs
-        </div>
-        <div style={{ fontSize: 8, color: "#445", marginTop: 2 }}>
-          All observed prefixes visible in sampled RIBs
+        <CubaWeatherCanvas />
+        <div style={{ padding: "4px 12px 6px", display: "flex", justifyContent: "space-between", fontSize: 8, color: "#445" }}>
+          <span>IP-space packed into country outline</span>
+          <span>Not physical locations</span>
         </div>
       </div>
 
