@@ -177,6 +177,10 @@ customer-equipment, application, or data-plane layers.
 - Peer IP geolocation may reflect ISP registration, not router location
 - Manual collector location overrides require maintenance
 
+## License
+
+ReachMap is released under the MIT License. See [LICENSE](./LICENSE).
+
 ## Project structure
 
 ```
