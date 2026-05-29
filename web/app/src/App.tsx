@@ -1,8 +1,17 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useCallback, useEffect, Suspense } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { SidePanel } from "./components/SidePanel";
 import { ReachMapStage } from "./components/ReachMapStage";
-import { MapStageGL } from "./components/MapStageGL";
+
+// Lazy-load GL stage — only fetched when WebGL is available and ?stage=gl requested
+const MapStageGL = React.lazy(() => import("./components/MapStageGL").then(m => ({ default: m.MapStageGL })));
+
+function hasWebGL(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(canvas.getContext("webgl2") || canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+  } catch { return false; }
+}
 import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes, loadTimelinePathFamilies } from "./dataLoader";
 import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
 import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
@@ -392,39 +401,35 @@ export function App() {
         <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 6, padding: "6px 8px" }}>
           {/* Main stage: integrated map + logical paths + country weather */}
           <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-            {new URLSearchParams(window.location.search).get("stage") === "gl" ? (
-              <MapStageGL
-                pathFamilies={pathFamilies}
-                asnMap={asnMap}
-                visibilityScores={visibilityScores}
-                totalCollectors={totalCollectors}
-                countryName={countryConfig?.name ?? "Cuba"}
-                selectedPrefix={selectedPrefix?.prefix ?? null}
-                selectedCollectorId={selectedVp?.collector ?? null}
-                onSelectCollector={(cid) => {
+            {(() => {
+              const requestedGL = new URLSearchParams(window.location.search).get("stage") === "gl";
+              const glAvailable = requestedGL && hasWebGL();
+              const stageProps = {
+                pathFamilies, asnMap, visibilityScores, totalCollectors,
+                countryName: countryConfig?.name ?? "Cuba",
+                selectedPrefix: selectedPrefix?.prefix ?? null,
+                selectedCollectorId: selectedVp?.collector ?? null,
+                onSelectCollector: (cid: string | null) => {
                   if (!cid) { handleClearSelection(); return; }
                   const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
                   if (vp) handleSelectViewpoint(vp);
                   else handleClearSelection();
-                }}
-              />
-            ) : (
-              <ReachMapStage
-                pathFamilies={pathFamilies}
-                asnMap={asnMap}
-                visibilityScores={visibilityScores}
-                totalCollectors={totalCollectors}
-                countryName={countryConfig?.name ?? "Cuba"}
-                selectedPrefix={selectedPrefix?.prefix ?? null}
-                selectedCollectorId={selectedVp?.collector ?? null}
-                onSelectCollector={(cid) => {
-                  if (!cid) { handleClearSelection(); return; }
-                  const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
-                  if (vp) handleSelectViewpoint(vp);
-                  else handleClearSelection();
-                }}
-              />
-            )}
+                },
+              };
+              if (glAvailable) return (
+                <Suspense fallback={<div style={{ padding: 20, color: "#666" }}>Loading GL map...</div>}>
+                  <MapStageGL {...stageProps} />
+                </Suspense>
+              );
+              return (<>
+                {requestedGL && !hasWebGL() && (
+                  <div style={{ padding: "4px 12px", fontSize: 10, color: "#c88040", background: "rgba(232,160,64,0.06)", borderBottom: "1px solid rgba(232,160,64,0.1)" }}>
+                    WebGL is unavailable or disabled in this browser. Showing the static SVG stage.
+                  </div>
+                )}
+                <ReachMapStage {...stageProps} />
+              </>);
+            })()}
           </div>
 
           {/* Bottom row: Hilbert technical inset + side panel */}
