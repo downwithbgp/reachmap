@@ -1,0 +1,28 @@
+# Build output
+web/app/dist/
+target/
+
+# Dependencies
+**/node_modules/
+
+# Large binary data (RIBs, GeoIP)
+data/snapshots/
+data/geo/
+*.bz2
+*.gz
+*.mrt
+*.mmdb
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Path family artifact",
+  "description": "Normalized AS paths grouped by identical path, collapsed for AS prepending.",
+  "type": "object",
+  "required": ["id", "normalized_path", "upstream_asn", "origin_asn", "prefixes", "collectors", "observation_count"],
+  "properties": {
+    "id": { "type": "string" },
+    "normalized_path": { "type": "array", "items": { "type": "integer" } },
+    "upstream_asn": { "type": "integer" },
+    "origin_asn": { "type": "integer" },
+    "prefixes": { "type": "array", "items": { "type": "string" } },
+    "collectors": { "type": "array", "items": { "type": "string" } },
+    "observation_count": { "type": "integer" }
+  }
+}

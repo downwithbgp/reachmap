@@ -1,0 +1,62 @@
+{
+  "collector:route-views2": {
+    "kind": "collector_location",
+    "latitude": 44.05,
+    "longitude": -123.09,
+    "city": "Eugene",
+    "region": "Oregon",
+    "countryCode": "US",
+    "continent": "North America",
+    "confidence": 0.95,
+    "precision": "exact",
+    "note": "RouteViews documentation — University of Oregon, route-views2 collector"
+  },
+  "collector:route-views4": {
+    "kind": "collector_location",
+    "latitude": 37.34,
+    "longitude": -121.89,
+    "city": "San Jose",
+    "region": "California",
+    "countryCode": "US",
+    "continent": "North America",
+    "confidence": 0.95,
+    "precision": "exact",
+    "note": "RouteViews documentation — Equinix SV1, route-views4 collector"
+  },
+  "collector:route-views6": {
+    "kind": "collector_location",
+    "latitude": 33.64,
+    "longitude": -84.44,
+    "city": "Atlanta",
+    "region": "Georgia",
+    "countryCode": "US",
+    "continent": "North America",
+    "confidence": 0.95,
+    "precision": "exact",
+    "note": "RouteViews documentation — Equinix, route-views6 collector"
+  },
+  "collector:route-views.eqix": {
+    "kind": "collector_location",
+    "latitude": 39.04,
+    "longitude": -77.49,
+    "city": "Ashburn",
+    "region": "Virginia",
+    "countryCode": "US",
+    "continent": "North America",
+    "confidence": 0.95,
+    "precision": "exact",
+    "note": "RouteViews documentation — Equinix Ashburn"
+  },
+  "collector:rrc00": {
+    "kind": "collector_location",
+    "latitude": 52.37,
+    "longitude": 4.90,
+    "city": "Amsterdam",
+    "region": "Noord-Holland",
+    "countryCode": "NL",
+    "continent": "Europe",
+    "confidence": 0.95,
+    "precision": "exact",
+    "note": "RIPE RIS rrc00 — Amsterdam, Netherlands"
+  }
+}

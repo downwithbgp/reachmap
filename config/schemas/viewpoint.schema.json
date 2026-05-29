@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Viewpoint artifact",
+  "description": "A single collector peer observation point and its visibility of national prefixes.",
+  "type": "object",
+  "required": ["id", "collector", "peer_asn", "geo_kind", "confidence", "display_name", "region_group", "visible_prefixes", "missing_prefixes", "path_family_ids", "snapshot"],
+  "properties": {
+    "id": { "type": "string" },
+    "collector": { "type": "string" },
+    "peer_asn": { "type": "integer" },
+    "peer_as_name": { "type": "string" },
+    "peer_ip": { "type": "string" },
+    "geo_kind": { "type": "string", "enum": ["collector_location", "peer_ip_geo", "asn_headquarters", "ixp_facility", "manual", "unknown"] },
+    "latitude": { "type": "number" },
+    "longitude": { "type": "number" },
+    "city": { "type": "string" },
+    "region": { "type": "string" },
+    "country_code": { "type": "string" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "display_name": { "type": "string" },
+    "region_group": { "type": "string", "enum": ["North America", "Caribbean", "Central America", "South America", "Europe", "Africa", "Other"] },
+    "visible_prefixes": { "type": "array", "items": { "type": "string" } },
+    "missing_prefixes": { "type": "array", "items": { "type": "string" } },
+    "path_family_ids": { "type": "array", "items": { "type": "string" } },
+    "snapshot": { "$ref": "#/$defs/SnapshotMetadata" }
+  },
+  "$defs": {
+    "SnapshotMetadata": {
+      "type": "object",
+      "required": ["source", "collector", "rib_timestamp", "downloaded_at", "mrt_filename"],
+      "properties": {
+        "source": { "type": "string", "enum": ["routeviews", "ris"] },
+        "collector": { "type": "string" },
+        "rib_timestamp": { "type": "string", "format": "date-time" },
+        "downloaded_at": { "type": "string", "format": "date-time" },
+        "mrt_filename": { "type": "string" }
+      }
+    }
+  }
+}
