@@ -1,0 +1,16 @@
+{
+  "countryCode": "CU",
+  "name": "Cuba",
+  "demonym": "Cuban",
+  "addressFamilyDefault": "ipv4",
+  "map": {
+    "center": { "longitude": -79.5, "latitude": 21.5 },
+    "view": {
+      "longitude": -75,
+      "latitude": 28,
+      "zoom": 3.0,
+      "pitch": 10,
+      "bearing": 0
+    }
+  }
+}

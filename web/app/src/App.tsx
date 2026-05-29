@@ -2,20 +2,19 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { PathGraph } from "./components/PathGraph";
 import { SidePanel } from "./components/SidePanel";
-import {
-  viewpoints as mockViewpoints, asViews as mockAsViews,
-  cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams,
-  getViewpoint, getAsView,
-} from "./data";
-import { DEFAULT_MAP_CONFIG } from "./geo";
-import { loadAllRealData, loadConsensusData, loadAsnMetadata, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes } from "./dataLoader";
-import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata } from "./types";
+import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes } from "./dataLoader";
+import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
+import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
 
 type DataMode = "mock" | "real" | "timeline";
 
 export function App() {
   const [dataMode, setDataMode] = useState<DataMode>("timeline");
   const [loading, setLoading] = useState(true);
+  const [manifest, setManifest] = useState<AppManifest | null>(null);
+  const [countryConfig, setCountryConfig] = useState<CountryMapConfig | null>(null);
+  const [cases, setCases] = useState<CaseEntry[] | null>(null);
+  const [selectedCaseId, setSelectedCaseId] = useState<string>("mar2026");
   const [colorMode, setColorMode] = useState<ColorMode>("consensus");
   const [realData, setRealData] = useState<{
     prefixes: PrefixRecord[];
@@ -76,8 +75,60 @@ export function App() {
     return new Set(viewpoints.map(v => v.id));
   }, [selectedVp, selectedAsView, viewpoints]);
 
-  // Auto-load March 2026 timeline + ASN metadata on mount
-  useEffect(() => { loadAsnMetadata().then(setAsnMap); loadTimeline(); }, []);
+  // Auto-load: manifest → country config → cases → case timeline
+  useEffect(() => {
+    async function bootstrap() {
+      try {
+        const m = await loadManifest();
+        if (!m) { setLoading(false); return; }
+        setManifest(m);
+
+        const entry = m.countries.find(c => c.countryCode === m.defaultCountry) ?? m.countries[0];
+        if (!entry) { setLoading(false); return; }
+
+        const cfg = await loadCountryConfig(entry.mapConfigPath);
+        if (cfg) setCountryConfig(cfg);
+
+        const cs = await loadCasesFromManifest(entry.casesPath);
+        if (cs) setCases(cs);
+
+        const asns = await loadAsnMetadata(entry.asnCatalogPath);
+        setAsnMap(asns);
+
+        // Load default case timeline
+        const defaultCaseId = m.defaultCase;
+        setSelectedCaseId(defaultCaseId);
+        const caseEntry = cs?.find(c => (c.caseStudyId ?? c.label?.includes("March")) === defaultCaseId);
+        const caseTimelinePath = caseEntry?.timelinePath ?? caseEntry?.indexPath ?? `timeline/${defaultCaseId}/index.json`;
+
+        const idx = await loadTimelineIndex(defaultCaseId, entry.dataRoot);
+        if (idx && idx.points.length > 0) {
+          setTimelineIndex(idx);
+          setDataMode("timeline");
+          const eventPt = caseEntry?.defaultSnapshotId
+            ? idx.points.find(p => p.snapshotId === caseEntry.defaultSnapshotId)
+            : (idx.points.find(p => p.role === "event") ?? idx.points[0]);
+          if (eventPt) {
+            const [cons, pfx] = await Promise.all([
+              loadTimelineConsensus(eventPt.snapshotId, entry.dataRoot),
+              loadTimelinePrefixes(eventPt.snapshotId, entry.dataRoot),
+            ]);
+            setTimelineConsensus(cons);
+            setTimelinePrefixes(pfx);
+            setTimelineSnapshotId(eventPt.snapshotId);
+          }
+        } else {
+          // Fallback to real data
+          await loadReal();
+        }
+      } catch (e) {
+        console.error("Bootstrap failed:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    bootstrap();
+  }, []);
 
   // Load real data
   const loadReal = useCallback(async () => {
@@ -104,36 +155,21 @@ export function App() {
   }, []);
 
   // Timeline handlers
-  const loadTimeline = useCallback(async () => {
+  const loadTimeline = useCallback(async (caseId = "mar2026") => {
     setLoading(true);
     try {
-      // Load March 2026 timeline (primary case)
-      const idx = await loadTimelineIndex("mar2026");
+      const dataRoot = manifest?.countries[0]?.dataRoot ?? "/data/CU";
+      const idx = await loadTimelineIndex(caseId, dataRoot);
       if (!idx || idx.points.length === 0) { alert("No timeline data found."); setLoading(false); return; }
       setTimelineIndex(idx);
       setDataMode("timeline");
-      // Load the event snapshot by default
       const eventPoint = idx.points.find(p => p.role === "event") ?? idx.points[0];
       await selectTimelineSnapshot(eventPoint.snapshotId, idx);
     } catch (e) {
       console.error("Failed to load timeline:", e);
       alert("Failed to load timeline data.");
     } finally { setLoading(false); }
-  }, []);
-
-  const loadJuly2021 = useCallback(async () => {
-    setLoading(true);
-    try {
-      const idx = await loadTimelineIndex("jul2021");
-      if (!idx || idx.points.length === 0) { alert("No July 2021 data."); setLoading(false); return; }
-      setTimelineIndex(idx);
-      setDataMode("timeline");
-      const eventPoint = idx.points.find(p => p.role === "event") ?? idx.points[0];
-      await selectTimelineSnapshot(eventPoint.snapshotId, idx);
-    } catch (e) {
-      console.error("Failed to load July 2021:", e);
-    } finally { setLoading(false); }
-  }, []);
+  }, [manifest]);
 
   const selectTimelineSnapshot = useCallback(async (snapId: string, idx?: TimelineIndex) => {
     setTimelineSnapshotId(snapId);
@@ -261,23 +297,30 @@ export function App() {
           <span style={{ fontSize: 10, color: "#2ecc71", fontWeight: 500 }}>
             {loading ? "Loading data..." : dataMode === "timeline" ? "Timeline view" : "Live data"}
           </span>
-          {/* Case selector */}
-          {dataMode !== "mock" && (
+          {/* Case selector — driven from loaded cases */}
+          {cases && cases.length > 0 && (
             <select
-              value={dataMode === "real" ? "may2026" : "mar2026"}
+              value={selectedCaseId}
               onChange={(e) => {
-                if (e.target.value === "mar2026") loadTimeline();
-                else if (e.target.value === "jul2021") loadJuly2021();
-                else if (e.target.value === "may2026") loadReal();
+                const caseId = e.target.value;
+                setSelectedCaseId(caseId);
+                const entry = cases.find(c => c.caseStudyId === caseId);
+                if (entry?.caseType === "healthy_baseline") {
+                  loadReal();
+                } else {
+                  loadTimeline(caseId);
+                }
               }}
               style={{
                 padding: "3px 8px", fontSize: 10, background: "#0d0d20", color: "#999",
                 border: "1px solid #333", borderRadius: 3, cursor: "pointer",
               }}
             >
-              <option value="mar2026">March 2026 · Grid collapse</option>
-              <option value="may2026">May 2026 · Baseline</option>
-              <option value="jul2021">July 2021 · Archival</option>
+              {cases.map(c => (
+                <option key={c.caseStudyId} value={c.caseStudyId}>
+                  {c.label ?? c.caseStudyTitle ?? c.caseStudyId}
+                </option>
+              ))}
             </select>
           )}
           <span style={{ fontSize: 9, color: "#555", fontStyle: "italic" }}>

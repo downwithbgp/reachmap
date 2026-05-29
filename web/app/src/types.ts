@@ -72,6 +72,62 @@ export interface AsnMetadata {
   role?: "origin" | "transit" | "peer" | "collector_peer" | "unknown";
 }
 
+/** Top-level app manifest */
+export interface AppManifest {
+  version: string;
+  generatedAt: string;
+  defaultCountry: string;
+  defaultCase: string;
+  countries: CountryEntry[];
+}
+
+export interface CountryEntry {
+  countryCode: string;
+  name: string;
+  demonym?: string;
+  dataRoot: string;
+  mapConfigPath: string;
+  casesPath: string;
+  asnCatalogPath: string;
+}
+
+/** Country map configuration */
+export interface CountryMapConfig {
+  countryCode: string;
+  name: string;
+  demonym?: string;
+  addressFamilyDefault?: string;
+  map: {
+    center: { longitude: number; latitude: number };
+    view: { longitude: number; latitude: number; zoom: number; pitch: number; bearing: number };
+  };
+}
+
+/** Case study entry from cases.json */
+export interface CaseEntry {
+  caseStudyId: string;
+  countryCode?: string;
+  caseStudyTitle: string;
+  label?: string;
+  caseType: string;
+  primary: boolean;
+  snapshotCount: number;
+  indexPath?: string;
+  timelinePath?: string;
+  defaultSnapshotId?: string;
+  narrative?: string;
+  externalSignal?: ExternalSignalEntry;
+  sources?: { name: string; url?: string; description?: string }[];
+}
+
+export interface ExternalSignalEntry {
+  source: string;
+  label: string;
+  value: string;
+  display: "stable" | "degraded" | "partial";
+  note?: string;
+}
+
 /** Color mode for the Hilbert fingerprint */
 export type ColorMode = "consensus" | "origin" | "selected";
 

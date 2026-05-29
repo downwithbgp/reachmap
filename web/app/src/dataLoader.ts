@@ -3,7 +3,7 @@
  * to the integrated app's expected types.
  */
 
-import type { PrefixRecord, Viewpoint, AsView, PathFamilyRecord, GeoKind, ConsensusVisibility, TimelineIndex, AsnMetadata } from "./types";
+import type { PrefixRecord, Viewpoint, AsView, PathFamilyRecord, GeoKind, ConsensusVisibility, TimelineIndex, AsnMetadata, AppManifest, CountryMapConfig, CaseEntry } from "./types";
 
 // ── Real data JSON shapes (from Rust pipeline) ──────────────
 
@@ -83,10 +83,11 @@ interface RealPathFamily {
 
 // ── Loader functions ────────────────────────────────────────
 
-const BASE = "/data/CU";
+const DEFAULT_BASE = "/data/CU";
+const DEFAULT_TL_BASE = "/data/CU/timeline";
 
-export async function loadRealPrefixes(): Promise<PrefixRecord[]> {
-  const res = await fetch(`${BASE}/prefixes.json`);
+export async function loadRealPrefixes(base = DEFAULT_BASE): Promise<PrefixRecord[]> {
+  const res = await fetch(`${base}/prefixes.json`);
   const data: RealPrefixesFile = await res.json();
   return data.prefixes.map(p => ({
     prefix: p.prefix,
@@ -101,13 +102,13 @@ export async function loadRealPrefixes(): Promise<PrefixRecord[]> {
   }));
 }
 
-export async function loadRealViewpoints(): Promise<Viewpoint[]> {
-  const idxRes = await fetch(`${BASE}/vantages/index.json`);
+export async function loadRealViewpoints(base = DEFAULT_BASE): Promise<Viewpoint[]> {
+  const idxRes = await fetch(`${base}/vantages/index.json`);
   const idx = await idxRes.json();
 
   const vps: Viewpoint[] = [];
   for (const id of idx.viewpointIds) {
-    const res = await fetch(`${BASE}/vantages/${id}.json`);
+    const res = await fetch(`${base}/vantages/${id}.json`);
     const rv: RealViewpoint = await res.json();
     vps.push({
       id: rv.id,
@@ -140,13 +141,13 @@ export async function loadRealViewpoints(): Promise<Viewpoint[]> {
   return vps;
 }
 
-export async function loadRealAsViews(): Promise<AsView[]> {
-  const idxRes = await fetch(`${BASE}/asns/index.json`);
+export async function loadRealAsViews(base = DEFAULT_BASE): Promise<AsView[]> {
+  const idxRes = await fetch(`${base}/asns/index.json`);
   const idx = await idxRes.json();
 
   const asvs: AsView[] = [];
   for (const asn of idx.asns) {
-    const res = await fetch(`${BASE}/asns/AS${asn}.json`);
+    const res = await fetch(`${base}/asns/AS${asn}.json`);
     const ra: RealAsView = await res.json();
     asvs.push({
       peerAsn: ra.peerAsn,
@@ -160,8 +161,8 @@ export async function loadRealAsViews(): Promise<AsView[]> {
   return asvs;
 }
 
-export async function loadRealPathFamilies(): Promise<PathFamilyRecord[]> {
-  const res = await fetch(`${BASE}/path-families.json`);
+export async function loadRealPathFamilies(base = DEFAULT_BASE): Promise<PathFamilyRecord[]> {
+  const res = await fetch(`${base}/path-families.json`);
   const data: RealPathFamily[] = await res.json();
   return data.map(pf => ({
     id: pf.id,
@@ -174,14 +175,14 @@ export async function loadRealPathFamilies(): Promise<PathFamilyRecord[]> {
 }
 
 /** Load consensus visibility data */
-export async function loadConsensusData(): Promise<ConsensusVisibility | null> {
+export async function loadConsensusData(base = DEFAULT_BASE): Promise<ConsensusVisibility | null> {
   try {
-    const res = await fetch(`${BASE}/visibility/consensus-all.json`);
+    const res = await fetch(`${base}/visibility/consensus-all.json`);
     if (!res.ok) return null;
     return res.json();
   } catch { return null; }
 }
-export async function loadAllRealData(): Promise<{
+export async function loadAllRealData(base = DEFAULT_BASE): Promise<{
   prefixes: PrefixRecord[];
   viewpoints: Viewpoint[];
   asViews: AsView[];
@@ -238,16 +239,44 @@ function ipv4ToU32(ip: string): number {
   return ((+parts[0] << 24) | (+parts[1] << 16) | (+parts[2] << 8) | +parts[3]) >>> 0;
 }
 
+// ── Manifest-driven bootstrap ─────────────────────────────────
+
+const MANIFEST_URL = "/data/manifest.json";
+
+export async function loadManifest(): Promise<AppManifest | null> {
+  try {
+    const res = await fetch(MANIFEST_URL);
+    if (!res.ok) return null;
+    return res.json();
+  } catch { return null; }
+}
+
+export async function loadCountryConfig(path: string): Promise<CountryMapConfig | null> {
+  try {
+    const res = await fetch(path);
+    if (!res.ok) return null;
+    return res.json();
+  } catch { return null; }
+}
+
+export async function loadCasesFromManifest(path: string): Promise<CaseEntry[] | null> {
+  try {
+    const res = await fetch(path);
+    if (!res.ok) return null;
+    return res.json();
+  } catch { return null; }
+}
+
 // ── ASN metadata ─────────────────────────────────────────────
 
-export async function loadAsnMetadata(): Promise<Map<number, AsnMetadata>> {
+export async function loadAsnMetadata(catalogPath?: string): Promise<Map<number, AsnMetadata>> {
   try {
-    const res = await fetch(`${BASE}/asn-catalog.json`);
+    const url = catalogPath ?? `${DEFAULT_BASE}/asn-catalog.json`;
+    const res = await fetch(url);
     if (!res.ok) return new Map();
     const data = await res.json();
     const map = new Map<number, AsnMetadata>();
     for (const entry of data.asns ?? []) {
-      // Derive primary role from appearances for backward compat
       const app = entry.appearances ?? {};
       const role = app.origin ? "origin" : app.transit ? "transit" : app.collectorPeer ? "peer" : undefined;
       map.set(entry.asn, {
@@ -262,28 +291,28 @@ export async function loadAsnMetadata(): Promise<Map<number, AsnMetadata>> {
 
 // ── Timeline loading ─────────────────────────────────────────
 
-const TL_BASE = "/data/CU/timeline";
 
-export async function loadTimelineIndex(caseId = "mar2026"): Promise<TimelineIndex | null> {
+
+export async function loadTimelineIndex(caseId = "mar2026", dataRoot = DEFAULT_BASE): Promise<TimelineIndex | null> {
   try {
-    let res = await fetch(`${TL_BASE}/${caseId}/index.json`);
-    if (!res.ok) res = await fetch(`${TL_BASE}/index.json`);
+    let res = await fetch(`${dataRoot}/timeline/${caseId}/index.json`);
+    if (!res.ok) res = await fetch(`${dataRoot}/timeline/index.json`);
     if (!res.ok) return null;
     return res.json();
   } catch { return null; }
 }
 
-export async function loadTimelineConsensus(snapshotId: string): Promise<ConsensusVisibility | null> {
+export async function loadTimelineConsensus(snapshotId: string, dataRoot = DEFAULT_BASE): Promise<ConsensusVisibility | null> {
   try {
-    const res = await fetch(`${TL_BASE}/${snapshotId}/visibility/consensus-all.json`);
+    const res = await fetch(`${dataRoot}/timeline/${snapshotId}/visibility/consensus-all.json`);
     if (!res.ok) return null;
     return res.json();
   } catch { return null; }
 }
 
-export async function loadTimelinePrefixes(snapshotId: string): Promise<PrefixRecord[] | null> {
+export async function loadTimelinePrefixes(snapshotId: string, dataRoot = DEFAULT_BASE): Promise<PrefixRecord[] | null> {
   try {
-    const res = await fetch(`${TL_BASE}/${snapshotId}/prefixes.json`);
+    const res = await fetch(`${dataRoot}/timeline/${snapshotId}/prefixes.json`);
     if (!res.ok) return null;
     const data = await res.json();
     return data.prefixes;
