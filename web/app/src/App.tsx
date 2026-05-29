@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { PathGraph } from "./components/PathGraph";
 import { SidePanel } from "./components/SidePanel";
+import { CollectorMap } from "./components/CollectorMap";
+import { CountryWeather } from "./components/CountryWeather";
 import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes, loadTimelinePathFamilies } from "./dataLoader";
 import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
 import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
@@ -386,57 +388,79 @@ export function App() {
         </div>
       )}
 
-      {/* Main content */}
-      {!bootstrapError && <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <div style={{ flex: "0 0 auto", padding: "8px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <HilbertCanvas
-            prefixes={prefixes}
-            colorMode={effectiveColorMode}
-            visibleSet={visibleSet}
-            visibilityScores={visibilityScores}
-            selectedPrefix={selectedPrefix}
-            totalCollectors={totalCollectors}
-            onHoverPrefix={setHoveredPrefix}
-            onClickPrefix={handleClickPrefix}
-          />
-        </div>
+      {/* Main content — v0.1 country-shaped weather layout */}
+      {!bootstrapError && (
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 6, padding: "6px 8px" }}>
+          {/* Top row: collector map + transit flows + country weather */}
+          <div style={{ display: "flex", flex: 1, gap: 8, minHeight: 0 }}>
+            {/* Left: Collector geography */}
+            <div style={{ flex: "0 0 300px" }}>
+              <CollectorMap mapConfig={{ name: countryConfig?.name ?? "Cuba" }} />
+            </div>
 
-        <div style={{ flex: 1, minWidth: 0, padding: 8 }}>
-          <PathGraph
-            pathFamilies={pathFamilies}
-            asnMap={asnMap}
-            selectedPrefix={selectedPrefix?.prefix ?? null}
-            selectedCollectorId={selectedVp?.collector ?? null}
-            onSelectCollector={(cid) => {
-              if (!cid) { handleClearSelection(); return; }
-              const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
-              if (vp) handleSelectViewpoint(vp);
-              else handleClearSelection();
-            }}
-          />
-        </div>
+            {/* Center: Transit AS-path flows */}
+            <div style={{ flex: "0 0 320px", display: "flex", flexDirection: "column" }}>
+              <PathGraph
+                pathFamilies={pathFamilies}
+                asnMap={asnMap}
+                selectedPrefix={selectedPrefix?.prefix ?? null}
+                selectedCollectorId={selectedVp?.collector ?? null}
+                onSelectCollector={(cid) => {
+                  if (!cid) { handleClearSelection(); return; }
+                  const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
+                  if (vp) handleSelectViewpoint(vp);
+                  else handleClearSelection();
+                }}
+              />
+            </div>
 
-        <div style={{ flex: "0 0 auto", padding: "8px 8px 8px 0" }}>
-          <SidePanel
-            selectionMode={selectionMode}
-            colorMode={effectiveColorMode}
-            selectedVp={selectedVp}
-            selectedAsView={selectedAsView}
-            selectedPrefix={selectedPrefix}
-            hoveredPrefix={hoveredPrefix}
-            allViewpoints={viewpoints}
-            asViews={asViews}
-            pathFamilies={pathFamilies}
-            visibilityScores={visibilityScores}
-            totalCollectors={totalCollectors}
-            dataMode={dataMode}
-            asnMap={asnMap}
-            onSelectAsn={handleSelectAsn}
-            onClearSelection={handleClearSelection}
-          />
+            {/* Right: Country-shaped IP-space weather */}
+            <div style={{ flex: 1, minWidth: 350 }}>
+              <CountryWeather
+                prefixes={prefixes}
+                visibilityScores={visibilityScores}
+                totalCollectors={totalCollectors}
+                mapConfig={{ name: countryConfig?.name ?? "Cuba" }}
+              />
+            </div>
+          </div>
+
+          {/* Bottom row: Hilbert technical inset + side panel */}
+          <div style={{ display: "flex", flexShrink: 0, gap: 8, alignItems: "flex-start" }}>
+            <div style={{ flex: "0 0 auto" }}>
+              <HilbertCanvas
+                prefixes={prefixes}
+                colorMode={effectiveColorMode}
+                visibleSet={visibleSet}
+                visibilityScores={visibilityScores}
+                selectedPrefix={selectedPrefix}
+                totalCollectors={totalCollectors}
+                onHoverPrefix={setHoveredPrefix}
+                onClickPrefix={handleClickPrefix}
+              />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <SidePanel
+                selectionMode={selectionMode}
+                colorMode={effectiveColorMode}
+                selectedVp={selectedVp}
+                selectedAsView={selectedAsView}
+                selectedPrefix={selectedPrefix}
+                hoveredPrefix={hoveredPrefix}
+                allViewpoints={viewpoints}
+                asViews={asViews}
+                pathFamilies={pathFamilies}
+                visibilityScores={visibilityScores}
+                totalCollectors={totalCollectors}
+                dataMode={dataMode}
+                asnMap={asnMap}
+                onSelectAsn={handleSelectAsn}
+                onClearSelection={handleClearSelection}
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      }
+      )}
     </div>
   );
 }
