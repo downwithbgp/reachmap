@@ -14,7 +14,7 @@ export function App() {
   const [manifest, setManifest] = useState<AppManifest | null>(null);
   const [countryConfig, setCountryConfig] = useState<CountryMapConfig | null>(null);
   const [cases, setCases] = useState<CaseEntry[] | null>(null);
-  const [selectedCaseId, setSelectedCaseId] = useState<string>("mar2026") // overridden by manifest on mount;
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [colorMode, setColorMode] = useState<ColorMode>("consensus");
   const [realData, setRealData] = useState<{
     prefixes: PrefixRecord[];
@@ -103,15 +103,18 @@ export function App() {
 
         // Load default case timeline
         const defaultCaseId = m.defaultCase;
+        const caseEntry = cs?.find(c => c.caseStudyId === defaultCaseId);
+        if (!caseEntry) {
+          setBootstrapError(`Default case "${defaultCaseId}" from manifest was not found.`);
+          setLoading(false); return;
+        }
         setSelectedCaseId(defaultCaseId);
-        const caseEntry = cs?.find(c => (c.caseStudyId ?? c.label?.includes("March")) === defaultCaseId);
-        const caseTimelinePath = caseEntry?.timelinePath ?? caseEntry?.indexPath ?? `timeline/${defaultCaseId}/index.json`;
 
         const idx = await loadTimelineIndex(defaultCaseId, dataRoot);
         if (idx && idx.points.length > 0) {
           setTimelineIndex(idx);
           setDataMode("timeline");
-          const eventPt = caseEntry?.defaultSnapshotId
+          const eventPt = caseEntry.defaultSnapshotId
             ? idx.points.find(p => p.snapshotId === caseEntry.defaultSnapshotId)
             : (idx.points.find(p => p.role === "event") ?? idx.points[0]);
           if (eventPt) {
@@ -304,7 +307,7 @@ export function App() {
           {/* Case selector — driven from loaded cases */}
           {cases && cases.length > 0 && (
             <select
-              value={selectedCaseId}
+              value={selectedCaseId ?? ""}
               onChange={(e) => {
                 const caseId = e.target.value;
                 setSelectedCaseId(caseId);
