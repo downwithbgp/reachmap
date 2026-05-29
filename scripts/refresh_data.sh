@@ -127,34 +127,40 @@ if [ "$COLLECTOR_COUNT" -eq 0 ]; then
 fi
 
 # ── 2. Resolve RIB URLs per collector ──
-RIBS_TO_FETCH=()
+RIB_LIST_FILE=$(mktemp)
 echo ""
 echo "Resolving RIB URLs..."
-while IFS= read -r line; do
-  CID=$(echo "$line" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['id'])")
-  URL_TEMPLATE=$(echo "$line" | python3 -c "import json,sys; print(json.loads(sys.stdin.read()).get('url_template',''))")
-  if [ -z "$URL_TEMPLATE" ]; then
-    echo "  $CID: no URL template — skipping"
-    continue
-  fi
-  # Substitute template variables
-  RIB_URL="${URL_TEMPLATE//\{YYYY\}/$TS_YEAR}"
-  RIB_URL="${RIB_URL//\{MM\}/$TS_MONTH}"
-  RIB_URL="${RIB_URL//\{DD\}/$TS_DAY}"
-  RIB_URL="${RIB_URL//\{HH\}/$TS_HOUR}"
+echo "$COLLECTORS_JSON" | python3 -c "
+import json, sys
+for c in json.load(sys.stdin):
+    cid = c['id']
+    tmpl = c.get('url_template', '')
+    if not tmpl:
+        print(f'{cid}: no URL template — skipping', file=sys.stderr)
+        continue
+    url = tmpl.replace('{YYYY}', '$TS_YEAR').replace('{MM}', '$TS_MONTH').replace('{DD}', '$TS_DAY').replace('{HH}', '$TS_HOUR')
+    filename = url.rsplit('/', 1)[-1]
+    cache_path = '$SNAPSHOT_DIR/' + filename
+    parsed_path = '$SNAPSHOT_DIR/' + cid + '.parsed.json'
+    print(json.dumps({'id': cid, 'url': url, 'cache_path': cache_path, 'parsed_path': parsed_path}))
+" > "$RIB_LIST_FILE" 2>/tmp/rib_resolve_err.txt
 
-  # Determine local filename from URL basename
-  RIB_FILENAME=$(basename "$RIB_URL")
-  CACHE_PATH="$SNAPSHOT_DIR/$RIB_FILENAME"
-  PARSED_PATH="$SNAPSHOT_DIR/${CID}.parsed.json"
-
+# Read resolved RIBs
+RIBS_TO_FETCH=()
+while IFS= read -r rib_json; do
+  [ -z "$rib_json" ] && continue
+  CID=$(echo "$rib_json" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['id'])")
+  RIB_URL=$(echo "$rib_json" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['url'])")
+  CACHE_PATH=$(echo "$rib_json" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['cache_path'])")
+  # Check cache
   if [ -f "$CACHE_PATH" ] && [ "$FORCE" != true ]; then
-    echo "  $CID: cached ($RIB_FILENAME) — skipping download"
+    echo "  $CID: cached — skipping download"
   else
     echo "  $CID: $RIB_URL → $CACHE_PATH"
   fi
-  RIBS_TO_FETCH+=("$(python3 -c "import json; print(json.dumps({'id':'$CID','url':'$RIB_URL','cache_path':'$CACHE_PATH','parsed_path':'$PARSED_PATH'}))")")
-done < <(echo "$COLLECTORS_JSON" | python3 -c "import json,sys; [print(json.dumps(c)) for c in json.load(sys.stdin)]")
+  RIBS_TO_FETCH+=("$rib_json")
+done < "$RIB_LIST_FILE"
+rm -f "$RIB_LIST_FILE" /tmp/rib_resolve_err.txt
 
 FETCH_COUNT=${#RIBS_TO_FETCH[@]}
 echo ""
