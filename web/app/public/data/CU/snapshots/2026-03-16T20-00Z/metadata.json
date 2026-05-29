@@ -1,0 +1,57 @@
+{
+  "collectors": [
+    {
+      "collectorId": "route-views2",
+      "matchedCountryElements": 1105,
+      "mrtFilename": "rib.20260316.2000.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 17816418
+    },
+    {
+      "collectorId": "route-views3",
+      "matchedCountryElements": 1430,
+      "mrtFilename": "route-views3.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 26075930
+    },
+    {
+      "collectorId": "route-views4",
+      "matchedCountryElements": 1235,
+      "mrtFilename": "route-views4.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 22852799
+    },
+    {
+      "collectorId": "route-views.eqix",
+      "matchedCountryElements": 1365,
+      "mrtFilename": "route-views.eqix.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 27035244
+    },
+    {
+      "collectorId": "route-views.linx",
+      "matchedCountryElements": 2209,
+      "mrtFilename": "route-views.linx.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 41024014
+    }
+  ],
+  "countryCode": "CU",
+  "matchedCubaElements": 7344,
+  "notes": [
+    "BGP visibility from collector RIBs — not proven data-plane reachability.",
+    "A collector 'observes' a prefix if at least one peer sees an overlapping BGP prefix.",
+    "Consensus ratio = observedCollectors / totalCollectors."
+  ],
+  "pathFamilyCount": 0,
+  "peerAsnCount": 88,
+  "snapshotId": "2026-03-16T20-00Z",
+  "targetTimestamp": "2026-05-28T00:00:00Z",
+  "totalCollectors": 5,
+  "totalElements": 134804405
+}

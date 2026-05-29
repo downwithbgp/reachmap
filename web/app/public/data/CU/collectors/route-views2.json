@@ -10,23 +10,23 @@
   "regionGroup": "Other",
   "confidence": 0.95,
   "peerObservationIds": [
-    "po-route-views2-3741",
-    "po-route-views2-20130",
-    "po-route-views2-2914",
-    "po-route-views2-6939",
     "po-route-views2-3549",
-    "po-route-views2-293",
-    "po-route-views2-22652",
-    "po-route-views2-37100",
-    "po-route-views2-2497",
+    "po-route-views2-3741",
     "po-route-views2-3257",
-    "po-route-views2-57866",
-    "po-route-views2-2152",
+    "po-route-views2-2497",
     "po-route-views2-3303",
-    "po-route-views2-49788",
+    "po-route-views2-2914",
+    "po-route-views2-57866",
     "po-route-views2-3130",
+    "po-route-views2-22652",
+    "po-route-views2-2152",
+    "po-route-views2-293",
+    "po-route-views2-7018",
+    "po-route-views2-49788",
+    "po-route-views2-37100",
     "po-route-views2-1403",
-    "po-route-views2-7018"
+    "po-route-views2-20130",
+    "po-route-views2-6939"
   ],
   "visiblePrefixes": [
     "152.206.0.0/17",
@@ -75,9 +75,6 @@
     "152.207.244.0/22",
     "152.207.48.0/22",
     "152.207.56.0/22",
-    "152.207.94.0/23",
-    "152.207.94.0/24",
-    "152.207.95.0/24",
     "169.158.0.0/16",
     "181.225.224.0/19",
     "190.107.0.0/20",
@@ -122,6 +119,6 @@
     "collector": "route-views2",
     "ribTimestamp": "2026-05-28T00:00:00Z",
     "downloadedAt": "2026-05-28T19:48:00Z",
-    "mrtFilename": "rib.20260528.0000.bz2"
+    "mrtFilename": "rib.20260316.2000.bz2"
   }
 }

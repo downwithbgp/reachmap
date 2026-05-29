@@ -4,13 +4,13 @@
     "route-views.eqix",
     "route-views.linx",
     "route-views2",
-    "route-views4",
-    "rrc00"
+    "route-views3",
+    "route-views4"
   ],
   "totalCollectors": 5,
   "visibilityByPrefix": {
-    "181.225.224.0/18": {
-      "prefix": "181.225.224.0/18",
+    "169.158.0.0/15": {
+      "prefix": "169.158.0.0/15",
       "observedCollectors": 5,
       "totalCollectors": 5,
       "visibilityRatio": 1.0,
@@ -18,78 +18,8 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "190.15.144.0/19": {
-      "prefix": "190.15.144.0/19",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "190.6.64.0/19": {
-      "prefix": "190.6.64.0/19",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "200.55.128.0/18": {
-      "prefix": "200.55.128.0/18",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "152.206.0.0/14": {
-      "prefix": "152.206.0.0/14",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "201.220.192.0/19": {
-      "prefix": "201.220.192.0/19",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     },
@@ -102,22 +32,8 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "190.107.0.0/19": {
-      "prefix": "190.107.0.0/19",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     },
@@ -130,13 +46,13 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     },
-    "169.158.0.0/15": {
-      "prefix": "169.158.0.0/15",
+    "181.225.224.0/18": {
+      "prefix": "181.225.224.0/18",
       "observedCollectors": 5,
       "totalCollectors": 5,
       "visibilityRatio": 1.0,
@@ -144,64 +60,8 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "190.92.112.0/19": {
-      "prefix": "190.92.112.0/19",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "200.5.12.0/21": {
-      "prefix": "200.5.12.0/21",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "200.14.48.0/20": {
-      "prefix": "200.14.48.0/20",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
-      ],
-      "missingCollectorIds": []
-    },
-    "200.55.176.0/19": {
-      "prefix": "200.55.176.0/19",
-      "observedCollectors": 5,
-      "totalCollectors": 5,
-      "visibilityRatio": 1.0,
-      "observedCollectorIds": [
-        "route-views.eqix",
-        "route-views.linx",
-        "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     },
@@ -214,13 +74,13 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     },
-    "200.13.144.0/20": {
-      "prefix": "200.13.144.0/20",
+    "200.5.12.0/21": {
+      "prefix": "200.5.12.0/21",
       "observedCollectors": 5,
       "totalCollectors": 5,
       "visibilityRatio": 1.0,
@@ -228,8 +88,134 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.92.112.0/19": {
+      "prefix": "190.92.112.0/19",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.15.144.0/19": {
+      "prefix": "190.15.144.0/19",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "152.206.0.0/14": {
+      "prefix": "152.206.0.0/14",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.55.176.0/19": {
+      "prefix": "200.55.176.0/19",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "201.220.192.0/19": {
+      "prefix": "201.220.192.0/19",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.6.64.0/19": {
+      "prefix": "190.6.64.0/19",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.14.48.0/20": {
+      "prefix": "200.14.48.0/20",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.55.128.0/18": {
+      "prefix": "200.55.128.0/18",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.107.0.0/19": {
+      "prefix": "190.107.0.0/19",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     },
@@ -242,8 +228,22 @@
         "route-views.eqix",
         "route-views.linx",
         "route-views2",
-        "route-views4",
-        "rrc00"
+        "route-views3",
+        "route-views4"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.13.144.0/20": {
+      "prefix": "200.13.144.0/20",
+      "observedCollectors": 5,
+      "totalCollectors": 5,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
       ],
       "missingCollectorIds": []
     }

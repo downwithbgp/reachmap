@@ -1,0 +1,23 @@
+{
+  "collectorId": "route-views6",
+  "collectorName": "RouteViews route-views6",
+  "collectorSource": "routeviews",
+  "latitude": 33.64,
+  "longitude": -84.44,
+  "city": "Atlanta",
+  "countryCode": null,
+  "continent": "North America",
+  "regionGroup": "Other",
+  "confidence": 0.95,
+  "peerObservationIds": [],
+  "visiblePrefixes": [],
+  "missingPrefixes": [],
+  "pathFamilyIds": [],
+  "snapshot": {
+    "source": "routeviews",
+    "collector": "route-views6",
+    "ribTimestamp": "2026-05-28T00:00:00Z",
+    "downloadedAt": "2026-05-28T19:48:00Z",
+    "mrtFilename": "route-views6.rib.bz2"
+  }
+}
