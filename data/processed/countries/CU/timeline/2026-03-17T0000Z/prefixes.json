@@ -1,0 +1,332 @@
+{
+  "countryCode": "CU",
+  "countryName": "Cuba",
+  "generatedTs": "2026-05-28T00:00:00Z",
+  "observedInBgp": 17,
+  "prefixes": [
+    {
+      "addressCount": 131072,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "152.206.0.0/14",
+      "prefixEnd": 2563768319,
+      "prefixLength": 14,
+      "prefixStart": 2563637248,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 65536,
+      "confidence": "medium",
+      "observedInBgp": true,
+      "originAsns": [
+        10569
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "169.158.0.0/15",
+      "prefixEnd": 2845769727,
+      "prefixLength": 15,
+      "prefixStart": 2845704192,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 8192,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "181.225.224.0/18",
+      "prefixEnd": 3051487231,
+      "prefixLength": 18,
+      "prefixStart": 3051479040,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "190.6.64.0/19",
+      "prefixEnd": 3188084735,
+      "prefixLength": 19,
+      "prefixStart": 3188080640,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "190.6.80.0/19",
+      "prefixEnd": 3188088831,
+      "prefixLength": 19,
+      "prefixStart": 3188084736,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "190.15.144.0/19",
+      "prefixEnd": 3188695039,
+      "prefixLength": 19,
+      "prefixStart": 3188690944,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "190.92.112.0/19",
+      "prefixEnd": 3193733119,
+      "prefixLength": 19,
+      "prefixStart": 3193729024,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "190.107.0.0/19",
+      "prefixEnd": 3194687487,
+      "prefixLength": 19,
+      "prefixStart": 3194683392,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 256,
+      "confidence": "medium",
+      "observedInBgp": false,
+      "originAsns": [],
+      "originNames": [],
+      "prefix": "196.1.112.0/23",
+      "prefixEnd": 3288428799,
+      "prefixLength": 23,
+      "prefixStart": 3288428544,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 256,
+      "confidence": "medium",
+      "observedInBgp": false,
+      "originAsns": [],
+      "originNames": [],
+      "prefix": "196.1.135.0/23",
+      "prefixEnd": 3288434687,
+      "prefixLength": 23,
+      "prefixStart": 3288434432,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 256,
+      "confidence": "medium",
+      "observedInBgp": false,
+      "originAsns": [],
+      "originNames": [],
+      "prefix": "196.3.152.0/23",
+      "prefixEnd": 3288570111,
+      "prefixLength": 23,
+      "prefixStart": 3288569856,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 256,
+      "confidence": "medium",
+      "observedInBgp": true,
+      "originAsns": [
+        11960
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.0.16.0/23",
+      "prefixEnd": 3355447551,
+      "prefixLength": 23,
+      "prefixStart": 3355447296,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 1024,
+      "confidence": "medium",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.0.24.0/21",
+      "prefixEnd": 3355450367,
+      "prefixLength": 21,
+      "prefixStart": 3355449344,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 1024,
+      "confidence": "medium",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.5.12.0/21",
+      "prefixEnd": 3355774975,
+      "prefixLength": 21,
+      "prefixStart": 3355773952,
+      "rirStatus": "assigned"
+    },
+    {
+      "addressCount": 2048,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.13.144.0/20",
+      "prefixEnd": 3356334079,
+      "prefixLength": 20,
+      "prefixStart": 3356332032,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 2048,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.14.48.0/20",
+      "prefixEnd": 3356375039,
+      "prefixLength": 20,
+      "prefixStart": 3356372992,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 8192,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.55.128.0/18",
+      "prefixEnd": 3359088639,
+      "prefixLength": 18,
+      "prefixStart": 3359080448,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.55.160.0/19",
+      "prefixEnd": 3359092735,
+      "prefixLength": 19,
+      "prefixStart": 3359088640,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "200.55.176.0/19",
+      "prefixEnd": 3359096831,
+      "prefixLength": 19,
+      "prefixStart": 3359092736,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": true,
+      "originAsns": [
+        27725
+      ],
+      "originNames": [
+        "unknown"
+      ],
+      "prefix": "201.220.192.0/19",
+      "prefixEnd": 3386691583,
+      "prefixLength": 19,
+      "prefixStart": 3386687488,
+      "rirStatus": "allocated"
+    },
+    {
+      "addressCount": 4096,
+      "confidence": "high",
+      "observedInBgp": false,
+      "originAsns": [],
+      "originNames": [],
+      "prefix": "201.220.208.0/19",
+      "prefixEnd": 3386695679,
+      "prefixLength": 19,
+      "prefixStart": 3386691584,
+      "rirStatus": "allocated"
+    }
+  ],
+  "source": "lacnic-delegated-extended",
+  "sourceSerial": "20260527",
+  "totalAddresses": 257024,
+  "totalPrefixes": 21
+}

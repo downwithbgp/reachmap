@@ -14,7 +14,7 @@ export function App() {
   const [manifest, setManifest] = useState<AppManifest | null>(null);
   const [countryConfig, setCountryConfig] = useState<CountryMapConfig | null>(null);
   const [cases, setCases] = useState<CaseEntry[] | null>(null);
-  const [selectedCaseId, setSelectedCaseId] = useState<string>("mar2026");
+  const [selectedCaseId, setSelectedCaseId] = useState<string>("mar2026") // overridden by manifest on mount;
   const [colorMode, setColorMode] = useState<ColorMode>("consensus");
   const [realData, setRealData] = useState<{
     prefixes: PrefixRecord[];
@@ -37,11 +37,12 @@ export function App() {
   const [hoveredVp, setHoveredVp] = useState<Viewpoint | null>(null);
 
   // Active data
+  const isDev = (typeof import.meta !== "undefined" && (import.meta as any).env?.DEV);
   const prefixes = dataMode === "timeline" && timelinePrefixes ? timelinePrefixes
-    : dataMode === "real" && realData ? realData.prefixes : mockPrefixes;
-  const viewpoints = dataMode === "real" && realData ? realData.viewpoints : mockViewpoints;
-  const asViews = dataMode === "real" && realData ? realData.asViews : mockAsViews;
-  const pathFamilies = dataMode === "real" && realData ? realData.pathFamilies : mockPathFams;
+    : dataMode === "real" && realData ? realData.prefixes : (isDev ? mockPrefixes : []);
+  const viewpoints = dataMode === "real" && realData ? realData.viewpoints : (isDev ? mockViewpoints : []);
+  const asViews = dataMode === "real" && realData ? realData.asViews : (isDev ? mockAsViews : []);
+  const pathFamilies = dataMode === "real" && realData ? realData.pathFamilies : (isDev ? mockPathFams : []);
   const consensus = dataMode === "timeline" ? timelineConsensus
     : dataMode === "real" && realData ? realData.consensus : null;
 
@@ -75,16 +76,21 @@ export function App() {
     return new Set(viewpoints.map(v => v.id));
   }, [selectedVp, selectedAsView, viewpoints]);
 
+  const [bootstrapError, setBootstrapError] = useState<string | null>(null);
+
   // Auto-load: manifest → country config → cases → case timeline
   useEffect(() => {
     async function bootstrap() {
       try {
         const m = await loadManifest();
-        if (!m) { setLoading(false); return; }
+        if (!m || m.countries.length === 0) {
+          setBootstrapError("Unable to load ReachMap data manifest.");
+          setLoading(false); return;
+        }
         setManifest(m);
 
-        const entry = m.countries.find(c => c.countryCode === m.defaultCountry) ?? m.countries[0];
-        if (!entry) { setLoading(false); return; }
+        const entry = m.countries[0];
+        const dataRoot = entry.dataRoot;
 
         const cfg = await loadCountryConfig(entry.mapConfigPath);
         if (cfg) setCountryConfig(cfg);
@@ -101,7 +107,7 @@ export function App() {
         const caseEntry = cs?.find(c => (c.caseStudyId ?? c.label?.includes("March")) === defaultCaseId);
         const caseTimelinePath = caseEntry?.timelinePath ?? caseEntry?.indexPath ?? `timeline/${defaultCaseId}/index.json`;
 
-        const idx = await loadTimelineIndex(defaultCaseId, entry.dataRoot);
+        const idx = await loadTimelineIndex(defaultCaseId, dataRoot);
         if (idx && idx.points.length > 0) {
           setTimelineIndex(idx);
           setDataMode("timeline");
@@ -110,16 +116,13 @@ export function App() {
             : (idx.points.find(p => p.role === "event") ?? idx.points[0]);
           if (eventPt) {
             const [cons, pfx] = await Promise.all([
-              loadTimelineConsensus(eventPt.snapshotId, entry.dataRoot),
-              loadTimelinePrefixes(eventPt.snapshotId, entry.dataRoot),
+              loadTimelineConsensus(eventPt.snapshotId, dataRoot),
+              loadTimelinePrefixes(eventPt.snapshotId, dataRoot),
             ]);
             setTimelineConsensus(cons);
             setTimelinePrefixes(pfx);
             setTimelineSnapshotId(eventPt.snapshotId);
           }
-        } else {
-          // Fallback to real data
-          await loadReal();
         }
       } catch (e) {
         console.error("Bootstrap failed:", e);
@@ -131,11 +134,11 @@ export function App() {
   }, []);
 
   // Load real data
-  const loadReal = useCallback(async () => {
+  const loadReal = useCallback(async (dataRoot: string) => {
     setLoading(true);
     try {
-      const data = await loadAllRealData();
-      const cons = await loadConsensusData();
+      const data = await loadAllRealData(dataRoot);
+      const cons = await loadConsensusData(dataRoot);
       setRealData({ ...data, consensus: cons });
       setDataMode("real");
       setSelectedVp(null);
@@ -155,28 +158,29 @@ export function App() {
   }, []);
 
   // Timeline handlers
-  const loadTimeline = useCallback(async (caseId = "mar2026") => {
+  const loadTimeline = useCallback(async (caseId: string) => {
+    if (!manifest) return;
+    const dataRoot = manifest.countries[0].dataRoot;
     setLoading(true);
     try {
-      const dataRoot = manifest?.countries[0]?.dataRoot ?? "/data/CU";
       const idx = await loadTimelineIndex(caseId, dataRoot);
       if (!idx || idx.points.length === 0) { alert("No timeline data found."); setLoading(false); return; }
       setTimelineIndex(idx);
       setDataMode("timeline");
       const eventPoint = idx.points.find(p => p.role === "event") ?? idx.points[0];
-      await selectTimelineSnapshot(eventPoint.snapshotId, idx);
+      await selectTimelineSnapshot(eventPoint.snapshotId, dataRoot);
     } catch (e) {
       console.error("Failed to load timeline:", e);
       alert("Failed to load timeline data.");
     } finally { setLoading(false); }
   }, [manifest]);
 
-  const selectTimelineSnapshot = useCallback(async (snapId: string, idx?: TimelineIndex) => {
+  const selectTimelineSnapshot = useCallback(async (snapId: string, dataRoot: string) => {
     setTimelineSnapshotId(snapId);
     setSelectedVp(null); setSelectedAsView(null); setSelectedPrefix(null);
     const [cons, pfx] = await Promise.all([
-      loadTimelineConsensus(snapId),
-      loadTimelinePrefixes(snapId),
+      loadTimelineConsensus(snapId, dataRoot),
+      loadTimelinePrefixes(snapId, dataRoot),
     ]);
     setTimelineConsensus(cons);
     setTimelinePrefixes(pfx);
@@ -260,7 +264,7 @@ export function App() {
             {timelineIndex.points.map((pt, i) => (
               <button
                 key={pt.snapshotId}
-                onClick={() => selectTimelineSnapshot(pt.snapshotId)}
+                onClick={() => { if (manifest) selectTimelineSnapshot(pt.snapshotId, manifest.countries[0].dataRoot); }}
                 style={{
                   padding: "3px 8px", fontSize: 10, cursor: "pointer",
                   background: pt.snapshotId === timelineSnapshotId ? "rgba(100,180,200,0.2)" : "transparent",
@@ -306,7 +310,7 @@ export function App() {
                 setSelectedCaseId(caseId);
                 const entry = cases.find(c => c.caseStudyId === caseId);
                 if (entry?.caseType === "healthy_baseline") {
-                  loadReal();
+                  if (manifest) loadReal(manifest.countries[0].dataRoot);
                 } else {
                   loadTimeline(caseId);
                 }
@@ -329,8 +333,17 @@ export function App() {
         </div>
       </header>
 
+      {/* Bootstrap error state */}
+      {bootstrapError && (
+        <div style={{ padding: "40px", textAlign: "center", color: "#999", flex: 1 }}>
+          <h2 style={{ color: "#e74c3c", fontWeight: 600 }}>{bootstrapError}</h2>
+          <p style={{ fontSize: 13, marginTop: 8 }}>The ReachMap data manifest (<code>/data/manifest.json</code>) could not be loaded.</p>
+          <p style={{ fontSize: 11, color: "#666" }}>Check that the site was built with data artifacts and deployed correctly.</p>
+        </div>
+      )}
+
       {/* Hero summary — prominent BGP vs traffic contrast */}
-      {dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
+      {!bootstrapError && dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
         <div style={{
           padding: "12px 20px", background: "rgba(0,0,0,0.4)", borderBottom: "1px solid #2a2a48",
           display: "flex", gap: 32, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
@@ -365,7 +378,7 @@ export function App() {
       )}
 
       {/* Main content */}
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      {!bootstrapError && <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         <div style={{ flex: "0 0 auto", padding: "8px", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <HilbertCanvas
             prefixes={prefixes}
@@ -414,6 +427,7 @@ export function App() {
           />
         </div>
       </div>
+      }
     </div>
   );
 }

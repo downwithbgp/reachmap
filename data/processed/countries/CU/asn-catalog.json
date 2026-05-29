@@ -1,0 +1,2701 @@
+{
+  "countryCode": "CU",
+  "generatedAt": "2026-05-29T15:38:43.473666+00:00",
+  "sources": [
+    {
+      "type": "manual_override",
+      "path": "config/asn-name-overrides.json",
+      "count": 18
+    }
+  ],
+  "totalAsns": 158,
+  "namedAsns": 18,
+  "asns": [
+    {
+      "asn": 174,
+      "displayName": "Cogent",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 115,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 293,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 12,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 577,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 852,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 9,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 917,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 971,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 999,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 1031,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 1136,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 1221,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 1273,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 1299,
+      "displayName": "Arelion",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 173,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 1351,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 1403,
+      "displayName": "G\u00c9ANT",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 1836,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 2152,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 2497,
+      "displayName": "IIJ",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 9,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 4
+      }
+    },
+    {
+      "asn": 2516,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 2518,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 9,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 2914,
+      "displayName": "NTT",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 64,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 5
+      }
+    },
+    {
+      "asn": 3130,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 3170,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 3216,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 3257,
+      "displayName": "GTT",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 34,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 3303,
+      "displayName": "Swisscom",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 3320,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 3333,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 3356,
+      "displayName": "Lumen",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 60,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 3491,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 25,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 3549,
+      "displayName": "Level3",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 3741,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 4608,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 4637,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 4755,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 5413,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 5511,
+      "displayName": "Orange",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 215,
+        "prefixCount": 55,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6057,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6360,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6424,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 9,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6453,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 34,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6461,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 6667,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6696,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 6762,
+      "displayName": "Telecom Italia",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 295,
+        "prefixCount": 45,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 6830,
+      "displayName": "LibertyGlobal",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 81,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 6910,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 2,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 6939,
+      "displayName": "Hurricane Electric",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 53,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 4
+      }
+    },
+    {
+      "asn": 7018,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 7575,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 2,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 7922,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 8220,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 8280,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 8455,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 8529,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 8708,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 9002,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 28,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 9304,
+      "displayName": "HGC",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 2,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 9498,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 10569,
+      "displayName": "CENIAInternet",
+      "source": "manual_override",
+      "appearances": {
+        "origin": true,
+        "transit": false,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 119,
+        "prefixCount": 119,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 11039,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 11960,
+      "displayName": "ETECSA IXP",
+      "source": "manual_override",
+      "appearances": {
+        "origin": true,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 744,
+        "prefixCount": 119,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 12389,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 2,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 12586,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 12956,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 13030,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 13237,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 13830,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 14041,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 14537,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 14907,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 15562,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 15935,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 16552,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 14,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 17350,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 13,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 17639,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 18403,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 19151,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 19754,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 20130,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 20205,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 20514,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 22652,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 23520,
+      "displayName": "Columbus",
+      "source": "manual_override",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 267,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 24482,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 25091,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 27725,
+      "displayName": "ETECSA",
+      "source": "manual_override",
+      "appearances": {
+        "origin": true,
+        "transit": false,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 506,
+        "prefixCount": 7746,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 29504,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 29695,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 30781,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 30844,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 30950,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 32590,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 12,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 32653,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 34019,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 34288,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 34549,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 18,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 34800,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 34927,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 14,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 36236,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 11,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 37100,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 9,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 37271,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 37497,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 37721,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 38001,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 38195,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 38726,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 38880,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 39122,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 41095,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 41811,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 10,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 44393,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 45049,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 45437,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 45896,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 47957,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 3,
+        "prefixCount": 30,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 48185,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 48362,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 49134,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 49432,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 49544,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    },
+    {
+      "asn": 49673,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 49788,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 49915,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 50300,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 50304,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 12,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 50628,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 50673,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 12,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 51907,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 52025,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 9,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 52075,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 53356,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 55720,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 12,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 56655,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 2,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 56665,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 57050,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 57381,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 57695,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 57821,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 57866,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 58057,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 20,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 58511,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 59919,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 60068,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 61218,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 63956,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 13,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 64289,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 2,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 132825,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 65,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 133950,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 199524,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 7,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 202365,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 204092,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 206499,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 213241,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 5,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 216285,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 6,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 327727,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 328840,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 4,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 2
+      }
+    },
+    {
+      "asn": 394256,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": true,
+        "peer": false,
+        "collectorPeer": false
+      },
+      "stats": {
+        "pathFamilyCount": 1,
+        "prefixCount": 0,
+        "collectorCount": 0,
+        "observationCount": 0
+      }
+    },
+    {
+      "asn": 398465,
+      "displayName": null,
+      "source": "unknown",
+      "appearances": {
+        "origin": false,
+        "transit": false,
+        "peer": true,
+        "collectorPeer": true
+      },
+      "stats": {
+        "pathFamilyCount": 8,
+        "prefixCount": 68,
+        "collectorCount": 0,
+        "observationCount": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "collectors": [
+    {
+      "collectorId": "route-views2",
+      "matchedCountryElements": 1105,
+      "mrtFilename": "rib.20260316.0000.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 17818669
+    },
+    {
+      "collectorId": "route-views4",
+      "matchedCountryElements": 1170,
+      "mrtFilename": "rib.20260316.0000.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 21814804
+    },
+    {
+      "collectorId": "route-views.eqix",
+      "matchedCountryElements": 1365,
+      "mrtFilename": "rib.20260316.0000.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 27046281
+    },
+    {
+      "collectorId": "route-views.linx",
+      "matchedCountryElements": 2209,
+      "mrtFilename": "rib.20260316.0000.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 41033422
+    }
+  ],
+  "countryCode": "CU",
+  "matchedCubaElements": 5849,
+  "notes": [
+    "BGP visibility from collector RIBs — not proven data-plane reachability.",
+    "A collector 'observes' a prefix if at least one peer sees an overlapping BGP prefix.",
+    "Consensus ratio = observedCollectors / totalCollectors."
+  ],
+  "pathFamilyCount": 0,
+  "peerAsnCount": 72,
+  "snapshotId": "2026-03-16T0000Z",
+  "targetTimestamp": "2026-05-28T00:00:00Z",
+  "totalCollectors": 4,
+  "totalElements": 107713176
+}

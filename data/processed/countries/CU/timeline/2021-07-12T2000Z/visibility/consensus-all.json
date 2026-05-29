@@ -1,0 +1,179 @@
+{
+  "scope": "all_collectors",
+  "collectorIds": [
+    "route-views2"
+  ],
+  "totalCollectors": 1,
+  "visibilityByPrefix": {
+    "200.0.16.0/23": {
+      "prefix": "200.0.16.0/23",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.13.144.0/20": {
+      "prefix": "200.13.144.0/20",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.0.24.0/21": {
+      "prefix": "200.0.24.0/21",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.92.112.0/19": {
+      "prefix": "190.92.112.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "201.220.192.0/19": {
+      "prefix": "201.220.192.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.107.0.0/19": {
+      "prefix": "190.107.0.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "169.158.0.0/15": {
+      "prefix": "169.158.0.0/15",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.15.144.0/19": {
+      "prefix": "190.15.144.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.6.64.0/19": {
+      "prefix": "190.6.64.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.5.12.0/21": {
+      "prefix": "200.5.12.0/21",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.55.160.0/19": {
+      "prefix": "200.55.160.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.55.176.0/19": {
+      "prefix": "200.55.176.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "152.206.0.0/14": {
+      "prefix": "152.206.0.0/14",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.14.48.0/20": {
+      "prefix": "200.14.48.0/20",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "181.225.224.0/18": {
+      "prefix": "181.225.224.0/18",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "200.55.128.0/18": {
+      "prefix": "200.55.128.0/18",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    },
+    "190.6.80.0/19": {
+      "prefix": "190.6.80.0/19",
+      "observedCollectors": 1,
+      "totalCollectors": 1,
+      "visibilityRatio": 1.0,
+      "observedCollectorIds": [
+        "route-views2"
+      ],
+      "missingCollectorIds": []
+    }
+  }
+}

@@ -1,0 +1,106 @@
+[
+  {
+    "caseStudyId": "mar2026",
+    "caseStudyTitle": "Grid collapse — March 2026",
+    "label": "March 2026 · Grid collapse",
+    "description": "Cuba's National Electric System collapsed on March 16, 2026. Did Cuban prefixes disappear from BGP?",
+    "caseType": "bgp_stayed_green_user_disrupted",
+    "defaultSnapshotId": "2026-03-16T2000Z",
+    "primary": true,
+    "snapshotCount": 3,
+    "indexPath": "timeline/mar2026/index.json",
+    "timelinePath": "timeline/mar2026/index.json",
+    "narrative": "When Cuba's national power grid collapsed in March 2026, Internet traffic dropped sharply — Cloudflare Radar reported a ~65% decline. ReachMap checked whether Cuban address space disappeared from sampled BGP collector RIBs.\n\nIt did not. All 17 BGP-observed Cuban LACNIC prefixes remained visible from all 4 sampled collector RIBs before, during, and after the event window.\n\nThis suggests the disruption was below the global routing-control plane: power, access networks, mobile service, customer equipment, or data-plane availability. ReachMap shows BGP collector RIB visibility. It does not prove end-user reachability.\n\nBGP-visible ≠ user-reachable.",
+    "keyFinding": "BGP collector RIB visibility remained stable at 4/4 across all snapshots. The routing control plane did not see the disruption.",
+    "externalSignal": {
+      "source": "Cloudflare Radar",
+      "label": "Traffic volume",
+      "value": "~35% of baseline (65% decline)",
+      "interpretation": "User-facing Internet traffic collapsed while BGP routes remained announced. This is the classic 'disruption below BGP' signal.",
+      "display": "degraded"
+    },
+    "layerMismatch": "BGP green, user traffic disrupted. The failure was at the power, access, and data-plane layers — below the global routing control plane.",
+    "interpretationNotes": [
+      "Cuba's globally announced prefix set is small, centralized, and control-plane stable.",
+      "Outages and access disruptions may occur below the global BGP layer.",
+      "This is not a failure of the tool — it is the product's core honesty: BGP visibility is one layer of the Internet, not the whole Internet."
+    ]
+  },
+  {
+    "caseStudyId": "may2026",
+    "caseStudyTitle": "Healthy baseline — May 2026",
+    "label": "May 2026 · Healthy baseline",
+    "description": "Current snapshot across 5 collectors. Cuba's normal BGP visibility state.",
+    "caseType": "healthy_baseline",
+    "defaultSnapshotId": null,
+    "primary": false,
+    "snapshotCount": 1,
+    "indexPath": null,
+    "narrative": "The May 28, 2026 snapshot represents Cuba's healthy baseline BGP collector RIB visibility. All 17 BGP-observed LACNIC prefixes are visible from all 5 sampled collector RIBs across the US West, US East, and Europe. This is the reference state.",
+    "keyFinding": "Uniform 5/5 consensus across all sampled collector RIBs.",
+    "externalSignal": null
+  },
+  {
+    "caseStudyId": "jul2021",
+    "caseStudyTitle": "Protest disruption — July 2021",
+    "label": "July 2021 · Archival",
+    "description": "Archival case from 2021 Havana protests. BGP remained stable during reported access-layer disruption.",
+    "caseType": "bgp_stayed_green_user_disrupted",
+    "primary": false,
+    "snapshotCount": 3,
+    "indexPath": "timeline/index.json",
+    "narrative": "On July 11, 2021, during Havana protests, Internet Society Pulse recorded an Internet interruption from 20:00–21:00 UTC. NetBlocks documented subsequent targeted blocking of social media platforms.\n\nReachMap checked whether Cuban BGP prefixes were withdrawn during this window. They were not. BGP collector RIB visibility remained at 4/4–5/5 across all sampled snapshots. This archival case supports the March 2026 finding: Cuba's BGP-announced prefixes are remarkably stable.",
+    "keyFinding": "Archival confirmation: BGP stayed green during a 2021 access-layer disruption.",
+    "externalSignal": {
+      "source": "NetBlocks / Internet Society Pulse",
+      "label": "Censorship / access blocking",
+      "value": "Social media platforms blocked (DPI)",
+      "display": "degraded"
+    },
+    "interpretationNotes": [
+      "Archival case supporting the March 2026 finding.",
+      "The July 2021 interruption involved targeted social-media blocking (DPI), not BGP route withdrawal."
+    ]
+  },
+  {
+    "caseStudyId": "tonga2022",
+    "caseStudyTitle": "Volcanic cable cut — Tonga January 2022",
+    "label": "Tonga Jan 2022 · Partial BGP",
+    "description": "Volcanic eruption severed Tonga's submarine cable. BGP-observed prefixes dropped from 9 to 4.",
+    "caseType": "partial_bgp_weather",
+    "primary": false,
+    "snapshotCount": 3,
+    "indexPath": null,
+    "narrative": "The Hunga Tonga volcanic eruption on January 15, 2022 severed Tonga's single submarine cable. BGP-observed Tongan prefixes dropped from 9 to 4 over ~24 hours as BGP sessions timed out. The remaining 4 prefixes stayed announced via satellite backup and international transit.\n\nThis is a real BGP-level change, but a small one. Tonga's prefix set is tiny (11 RIR records), making the visual change subtle.",
+    "keyFinding": "Partial BGP withdrawal: 9 → 4 observed prefixes. Satellite/transit-backed prefixes remained visible.",
+    "externalSignal": null,
+    "interpretationNotes": [
+      "Physical infrastructure failure did cause some BGP routes to disappear.",
+      "But the effect was partial and gradual — not a dramatic all-red event.",
+      "Small country, small prefix set, limited visual impact."
+    ]
+  },
+  {
+    "caseStudyId": "kazakhstan2022",
+    "caseStudyTitle": "Political shutdown — Kazakhstan January 2022",
+    "label": "Kazakhstan Jan 2022 · Partial BGP",
+    "description": "Nationwide Internet shutdown during January 2022 protests. BGP changes were real but subtle.",
+    "caseType": "partial_bgp_weather",
+    "primary": false,
+    "snapshotCount": 5,
+    "indexPath": null,
+    "narrative": "Kazakhstan's January 2022 protest shutdown involved BGP withdrawal messages documented by Cloudflare. But when ReachMap parsed the RIBs, the actual BGP change was subtle: 9 prefixes dropped from BGP out of 520 (1.7%), and path families dropped ~350 (3.8%). All remaining prefixes stayed fully visible.\n\nThe overwhelming majority of Kazakh routes remained announced throughout the shutdown. Like Cuba, Kazakhstan's disruption was primarily below BGP — filtering and null-routing rather than route withdrawal.",
+    "keyFinding": "Subtle BGP changes: 520→511 prefixes (-1.7%), path families -3.8%. Modern shutdowns are not primarily BGP events.",
+    "externalSignal": {
+      "source": "Cloudflare / Kentik / RIPE NCC",
+      "label": "BGP withdrawal messages detected",
+      "value": "Small fraction of prefixes affected (~1.7%)",
+      "display": "partial"
+    },
+    "interpretationNotes": [
+      "BGP withdrawal messages were real but affected a tiny fraction of prefixes.",
+      "The shutdown was primarily implemented via filtering/null-routing, not route withdrawal.",
+      "This is further evidence that modern shutdowns happen below BGP."
+    ]
+  }
+]
