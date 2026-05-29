@@ -3,7 +3,7 @@
  * to the integrated app's expected types.
  */
 
-import type { PrefixRecord, Viewpoint, AsView, PathFamilyRecord, GeoKind, ConsensusVisibility, TimelineIndex } from "./types";
+import type { PrefixRecord, Viewpoint, AsView, PathFamilyRecord, GeoKind, ConsensusVisibility, TimelineIndex, AsnMetadata } from "./types";
 
 // ── Real data JSON shapes (from Rust pipeline) ──────────────
 
@@ -236,6 +236,21 @@ function ipv4ToU32(ip: string): number {
   const parts = ip.split(".");
   if (parts.length !== 4) return NaN;
   return ((+parts[0] << 24) | (+parts[1] << 16) | (+parts[2] << 8) | +parts[3]) >>> 0;
+}
+
+// ── ASN metadata ─────────────────────────────────────────────
+
+export async function loadAsnMetadata(): Promise<Map<number, AsnMetadata>> {
+  try {
+    const res = await fetch(`${BASE}/asn-metadata.json`);
+    if (!res.ok) return new Map();
+    const data = await res.json();
+    const map = new Map<number, AsnMetadata>();
+    for (const entry of data.asns ?? []) {
+      map.set(entry.asn, entry);
+    }
+    return map;
+  } catch { return new Map(); }
 }
 
 // ── Timeline loading ─────────────────────────────────────────

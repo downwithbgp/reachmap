@@ -65,6 +65,13 @@ export interface PrefixRecord {
   confidence: string;
 }
 
+/** ASN metadata from loaded artifact */
+export interface AsnMetadata {
+  asn: number;
+  displayName: string;
+  role?: "origin" | "transit" | "peer" | "collector_peer" | "unknown";
+}
+
 /** Color mode for the Hilbert fingerprint */
 export type ColorMode = "consensus" | "origin" | "selected";
 

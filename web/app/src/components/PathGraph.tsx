@@ -5,16 +5,7 @@
  */
 
 import React, { useMemo } from "react";
-import type { PathFamilyRecord } from "../types";
-
-// Known ASN names for legibility
-const ASN_NAMES: Record<number, string> = {
-  3356: "Lumen", 1299: "Arelion", 174: "Cogent", 6939: "HE",
-  6762: "Telecom Italia", 3549: "Level3", 3257: "GTT", 2914: "NTT",
-  5511: "Orange", 3303: "Swisscom", 1403: "GÉANT", 2497: "IIJ",
-  6830: "LibertyGlobal", 9304: "HGC", 23520: "Columbus",
-  11960: "ETECSA IXP", 27725: "ETECSA", 10569: "CENIAInternet",
-};
+import type { PathFamilyRecord, AsnMetadata } from "../types";
 
 // Documented collector set
 const COLLECTORS = [
@@ -25,14 +16,12 @@ const COLLECTORS = [
   { id: "rrc00", label: "Amsterdam, NL", sublabel: "rrc00" },
 ];
 
-const ORIGIN_COLORS: Record<number, string> = {
-  27725: "#5b9bd5",
-  11960: "#45b7aa",
-  10569: "#d4a040",
-};
+// Origin color palette (assigned by index, not hardcoded to specific ASNs)
+const ORIGIN_PALETTE = ["#5b9bd5", "#45b7aa", "#d4a040", "#8877aa", "#cc6666"];
 
 interface Props {
   pathFamilies: PathFamilyRecord[];
+  asnMap: Map<number, AsnMetadata>;
   selectedPrefix: string | null;
   selectedCollectorId: string | null;
   onSelectCollector: (id: string | null) => void;
@@ -59,7 +48,8 @@ function prefixOverlaps(a: string, b: string): boolean {
   return ra[0] <= rb[1] && ra[1] >= rb[0];
 }
 
-export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
+export function PathGraph({ pathFamilies, asnMap, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
+  function asnLabel(asn: number): string { return asnMap.get(asn)?.displayName ?? `AS${asn}`; }
   const { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount, matchCount } = useMemo(() => {
     let pfs = pathFamilies;
     if (selectedPrefix) {
@@ -87,7 +77,7 @@ export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, o
       .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size)
       .slice(0, 7);
     const transitNodes = topTransit.map(([asn, data], i) => ({
-      id: `t-${asn}`, asn, label: ASN_NAMES[asn] ?? `AS${asn}`, sublabel: ASN_NAMES[asn] ? `AS${asn}` : undefined,
+      id: `t-${asn}`, asn, label: asnLabel(asn), sublabel: asnMap.has(asn) ? `AS${asn}` : undefined,
       column: 1, y: i, count: data.count, prefixCount: data.prefixes.size,
     }));
 
@@ -97,7 +87,7 @@ export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, o
     const originNodes = [...originMap.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([asn, count], i) => ({
-        id: `o-${asn}`, asn, label: ASN_NAMES[asn] ?? `AS${asn}`, sublabel: `AS${asn}`,
+        id: `o-${asn}`, asn, label: asnLabel(asn), sublabel: `AS${asn}`,
         column: 2, y: i, count,
       }));
 
@@ -168,7 +158,8 @@ export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, o
           const [tx, ty] = nodeXY(tNode.column, tNode.y, tNodes);
           const midX = (sx + tx) / 2;
           const sw = Math.max(0.3, (e.count / maxEdgeCount) * 4);
-          const color = tNode.column === 2 ? (ORIGIN_COLORS[(tNode as any).asn] ?? "#777") : "#556";
+          const originIdx = originNodes.findIndex(o => o.id === e.tgt);
+          const color = tNode.column === 2 ? (ORIGIN_PALETTE[originIdx] ?? "#777") : "#556";
           return (
             <path key={i} d={`M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`}
               fill="none" stroke={color} strokeWidth={sw} strokeOpacity={e.opacity} />
@@ -204,7 +195,8 @@ export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, o
         {originNodes.map(n => {
           const [x, y] = nodeXY(2, n.y, originNodes);
           const r = Math.max(8, Math.min(20, 8 + n.count / 5));
-          const color = ORIGIN_COLORS[n.asn] ?? "#8877aa";
+          const oIdx = originNodes.findIndex(o => o.asn === n.asn);
+          const color = ORIGIN_PALETTE[oIdx] ?? "#8877aa";
           return (
             <g key={n.id}>
               <circle cx={x} cy={y} r={r} fill={color} stroke={color} strokeWidth={2} fillOpacity={0.8} />

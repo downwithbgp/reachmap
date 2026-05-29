@@ -8,8 +8,8 @@ import {
   getViewpoint, getAsView,
 } from "./data";
 import { DEFAULT_MAP_CONFIG } from "./geo";
-import { loadAllRealData, loadConsensusData, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes } from "./dataLoader";
-import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint } from "./types";
+import { loadAllRealData, loadConsensusData, loadAsnMetadata, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes } from "./dataLoader";
+import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata } from "./types";
 
 type DataMode = "mock" | "real" | "timeline";
 
@@ -25,6 +25,7 @@ export function App() {
     consensus: ConsensusVisibility | null;
   } | null>(null);
 
+  const [asnMap, setAsnMap] = useState<Map<number, AsnMetadata>>(new Map());
   const [timelineIndex, setTimelineIndex] = useState<TimelineIndex | null>(null);
   const [timelineSnapshotId, setTimelineSnapshotId] = useState<string | null>(null);
   const [timelineConsensus, setTimelineConsensus] = useState<ConsensusVisibility | null>(null);
@@ -75,8 +76,8 @@ export function App() {
     return new Set(viewpoints.map(v => v.id));
   }, [selectedVp, selectedAsView, viewpoints]);
 
-  // Auto-load March 2026 timeline on mount (primary demo case)
-  useEffect(() => { loadTimeline(); }, []);
+  // Auto-load March 2026 timeline + ASN metadata on mount
+  useEffect(() => { loadAsnMetadata().then(setAsnMap); loadTimeline(); }, []);
 
   // Load real data
   const loadReal = useCallback(async () => {
@@ -338,6 +339,7 @@ export function App() {
         <div style={{ flex: 1, minWidth: 0, padding: 8 }}>
           <PathGraph
             pathFamilies={pathFamilies}
+            asnMap={asnMap}
             selectedPrefix={selectedPrefix?.prefix ?? null}
             selectedCollectorId={selectedVp?.collector ?? null}
             onSelectCollector={(cid) => {
@@ -363,6 +365,7 @@ export function App() {
             visibilityScores={visibilityScores}
             totalCollectors={totalCollectors}
             dataMode={dataMode}
+            asnMap={asnMap}
             onSelectAsn={handleSelectAsn}
             onClearSelection={handleClearSelection}
           />

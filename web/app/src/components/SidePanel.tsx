@@ -1,10 +1,9 @@
 import React from "react";
-import type { Viewpoint, AsView, PathFamilyRecord, PrefixRecord, SelectionMode, ColorMode, PrefixVisibilityScore } from "../types";
+import type { Viewpoint, AsView, PathFamilyRecord, PrefixRecord, SelectionMode, ColorMode, PrefixVisibilityScore, AsnMetadata } from "../types";
 
-const ASN_LABELS: Record<number, string> = {
-  27725: "ETECSA", 11960: "ETECSA IXP", 10569: "CENIAInternet",
-};
-function asnLabel(asn: number): string { return ASN_LABELS[asn] ?? `AS${asn}`; }
+function asnLabel(asn: number, asnMap: Map<number, AsnMetadata>): string {
+  return asnMap.get(asn)?.displayName ?? `AS${asn}`;
+}
 
 interface Props {
   selectionMode: SelectionMode;
@@ -19,6 +18,7 @@ interface Props {
   visibilityScores: Map<string, PrefixVisibilityScore> | null;
   totalCollectors: number;
   dataMode: string;
+  asnMap: Map<number, AsnMetadata>;
   onSelectAsn: (asn: number | null) => void;
   onClearSelection: () => void;
 }
@@ -30,7 +30,7 @@ function findPathFamily(id: string, fams: PathFamilyRecord[]): PathFamilyRecord 
 export function SidePanel({
   selectionMode, colorMode, selectedVp, selectedAsView,
   selectedPrefix, hoveredPrefix, allViewpoints, asViews, pathFamilies,
-  visibilityScores, totalCollectors, dataMode, onSelectAsn, onClearSelection,
+  visibilityScores, totalCollectors, dataMode, asnMap, onSelectAsn, onClearSelection,
 }: Props) {
   const visibleCount = selectedVp
     ? selectedVp.visiblePrefixes.length
@@ -166,7 +166,7 @@ export function SidePanel({
           </div>
           {selectedPrefix && (
             <>
-              <StatRow label="Origin" value={`${selectedPrefix.originAsns.map(a => asnLabel(a)).join(", ")} (AS${selectedPrefix.originAsns.join(", AS")})`} />
+              <StatRow label="Origin" value={`${selectedPrefix.originAsns.map(a => asnLabel(a, asnMap)).join(", ")} (AS${selectedPrefix.originAsns.join(", AS")})`} />
               <StatRow label="Allocation" value={`${selectedPrefix.addressCount.toLocaleString()} IPs /${selectedPrefix.prefixLength}`} />
               <StatRow label="BGP observed" value={selectedPrefix.observedInBgp ? "Yes" : "No"} accent={selectedPrefix.observedInBgp ? "green" : "red"} />
               {visibilityScores && (
@@ -228,9 +228,9 @@ export function SidePanel({
       {/* Legend */}
       <Section title="Legend">
         <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
-          <LegendItem color="hsl(215,72%,58%)" label="ETECSA (AS27725)" />
-          <LegendItem color="hsl(175,72%,58%)" label="ETECSA IXP (AS11960)" />
-          <LegendItem color="hsl(40,72%,58%)" label="CENIAInternet (AS10569)" />
+          {[...asnMap.values()].filter(a => a.role === "origin").map((a, i) => (
+            <LegendItem key={a.asn} color={["hsl(215,72%,58%)","hsl(175,72%,58%)","hsl(40,72%,58%)","hsl(270,72%,58%)"][i] ?? "hsl(270,72%,58%)"} label={`${a.displayName} (AS${a.asn})`} />
+          ))}
           <LegendItem color="hsl(270,72%,58%)" label="Other origin ASN" />
           <LegendItem color="hsl(215,12%,20%)" label="Not visible from vantage" border />
           <LegendItem color="#12121e" label="Allocated, not in BGP" border />
