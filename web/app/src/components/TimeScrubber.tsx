@@ -112,7 +112,7 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
                 key={p.snapshotId}
                 onClick={() => isAvailable && onSelectSnapshot(p.snapshotId)}
                 title={isAvailable
-                  ? `${p.timestamp}\nBGP: ${p.collectorCount > 0 ? p.observedPrefixCount + '/' + p.totalPrefixCount + ' prefixes, ' + p.collectorCount + ' RIBs' : 'No BGP data'}` + (p.trafficBaselinePercent != null ? `\nTraffic: ${p.trafficBaselinePercent}% of baseline` : "") + (p.actualRibTimestamp ? `\nRIB: ${p.actualRibTimestamp}` : "")
+                  ? `${p.timestamp}${p.comparability === 'partial' ? ' (partial)' : ''}\nBGP: ${p.collectorCount > 0 ? p.observedPrefixCount + '/' + p.totalPrefixCount + ' prefixes' : 'No BGP data'}\nCollectors: ${p.parsedCollectors ?? p.collectorCount}/${p.targetCollectors ?? p.collectorCount} target${p.missingCollectors?.length ? '\nMissing: ' + p.missingCollectors.join(', ') : ''}` + (p.trafficBaselinePercent != null ? `\nTraffic: ${p.trafficBaselinePercent}% of baseline` : "") + (p.actualRibTimestamp ? `\nRIB: ${p.actualRibTimestamp}` : "")
                   : `${p.timestamp}\nUnavailable — no BGP RIB data` + (p.trafficBaselinePercent != null ? `\nTraffic: ${p.trafficBaselinePercent}% of baseline` : "")
                 }
                 style={{

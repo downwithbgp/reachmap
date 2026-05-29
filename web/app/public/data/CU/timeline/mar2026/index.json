@@ -3,7 +3,7 @@
   "countryCode": "CU",
   "eventWindow": "March 16-17, 2026 Cuba national power-grid collapse",
   "generatedTs": "2026-05-29T22:00:00Z",
-  "dataNote": "3 real BGP snapshots (00:00, 08:00, 20:00 UTC) from route-views2. Traffic values are approximate demo series. 4 timestamps unavailable — RIBs not yet downloaded.",
+  "dataNote": "3 real BGP snapshots (00:00, 08:00, 20:00 UTC) from route-views2. Traffic values are approximate demo series. 4 timestamps unavailable \u2014 RIBs not yet downloaded.",
   "points": [
     {
       "snapshotId": "2026-03-16T0000Z",
@@ -13,15 +13,24 @@
       "ribTimestampsMatch": true,
       "available": true,
       "role": "before",
-      "collectorCount": 1,
-      "collectorIds": ["route-views2"],
+      "collectorCount": 5,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
       "totalPrefixCount": 21,
       "observedPrefixCount": 17,
       "allCollectorVisibleCount": 17,
       "partialVisibleCount": 0,
       "notObservedCount": 4,
-      "pathFamilyCount": 109,
-      "trafficBaselinePercent": 96
+      "pathFamilyCount": 604,
+      "trafficBaselinePercent": 96,
+      "targetCollectors": 5,
+      "parsedCollectors": 5,
+      "comparability": "complete"
     },
     {
       "snapshotId": "2026-03-16T0400Z",
@@ -31,7 +40,13 @@
       "role": "before",
       "collectorCount": 0,
       "collectorIds": [],
-      "trafficBaselinePercent": 82
+      "trafficBaselinePercent": 82,
+      "comparability": "unavailable",
+      "targetCollectors": 5,
+      "parsedCollectors": 0,
+      "pathFamilyCount": 0,
+      "totalPrefixCount": 21,
+      "observedPrefixCount": 0
     },
     {
       "snapshotId": "2026-03-16T0800Z",
@@ -42,14 +57,25 @@
       "available": true,
       "role": "before",
       "collectorCount": 1,
-      "collectorIds": ["route-views2"],
+      "collectorIds": [
+        "route-views2"
+      ],
       "totalPrefixCount": 21,
       "observedPrefixCount": 17,
       "allCollectorVisibleCount": 17,
       "partialVisibleCount": 0,
       "notObservedCount": 4,
       "pathFamilyCount": 109,
-      "trafficBaselinePercent": 61
+      "trafficBaselinePercent": 61,
+      "targetCollectors": 5,
+      "parsedCollectors": 1,
+      "missingCollectors": [
+        "route-views3",
+        "route-views4",
+        "route-views.eqix",
+        "route-views.linx"
+      ],
+      "comparability": "partial"
     },
     {
       "snapshotId": "2026-03-16T1200Z",
@@ -59,7 +85,13 @@
       "role": "pre_event",
       "collectorCount": 0,
       "collectorIds": [],
-      "trafficBaselinePercent": 44
+      "trafficBaselinePercent": 44,
+      "comparability": "unavailable",
+      "targetCollectors": 5,
+      "parsedCollectors": 0,
+      "pathFamilyCount": 0,
+      "totalPrefixCount": 21,
+      "observedPrefixCount": 0
     },
     {
       "snapshotId": "2026-03-16T1600Z",
@@ -69,7 +101,13 @@
       "role": "event",
       "collectorCount": 0,
       "collectorIds": [],
-      "trafficBaselinePercent": 38
+      "trafficBaselinePercent": 38,
+      "comparability": "unavailable",
+      "targetCollectors": 5,
+      "parsedCollectors": 0,
+      "pathFamilyCount": 0,
+      "totalPrefixCount": 21,
+      "observedPrefixCount": 0
     },
     {
       "snapshotId": "2026-03-16T2000Z",
@@ -80,14 +118,23 @@
       "available": true,
       "role": "event",
       "collectorCount": 5,
-      "collectorIds": ["route-views.eqix","route-views.linx","route-views2","route-views3","route-views4"],
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views3",
+        "route-views4"
+      ],
       "totalPrefixCount": 21,
       "observedPrefixCount": 17,
       "allCollectorVisibleCount": 17,
       "partialVisibleCount": 0,
       "notObservedCount": 4,
       "pathFamilyCount": 614,
-      "trafficBaselinePercent": 35
+      "trafficBaselinePercent": 35,
+      "targetCollectors": 5,
+      "parsedCollectors": 5,
+      "comparability": "complete"
     },
     {
       "snapshotId": "2026-03-17T0000Z",
@@ -97,7 +144,13 @@
       "role": "after",
       "collectorCount": 0,
       "collectorIds": [],
-      "trafficBaselinePercent": 39
+      "trafficBaselinePercent": 39,
+      "comparability": "unavailable",
+      "targetCollectors": 5,
+      "parsedCollectors": 0,
+      "pathFamilyCount": 0,
+      "totalPrefixCount": 21,
+      "observedPrefixCount": 0
     }
   ]
 }

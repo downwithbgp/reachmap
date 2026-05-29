@@ -7,19 +7,51 @@
       "ribTimestamp": "2026-05-28T00:00:00Z",
       "source": "routeviews",
       "totalElementsParsed": 17818669
+    },
+    {
+      "collectorId": "route-views3",
+      "matchedCountryElements": 1430,
+      "mrtFilename": "route-views3.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 26079301
+    },
+    {
+      "collectorId": "route-views4",
+      "matchedCountryElements": 1170,
+      "mrtFilename": "route-views4.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 21814804
+    },
+    {
+      "collectorId": "route-views.eqix",
+      "matchedCountryElements": 1365,
+      "mrtFilename": "route-views.eqix.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 27046281
+    },
+    {
+      "collectorId": "route-views.linx",
+      "matchedCountryElements": 2209,
+      "mrtFilename": "route-views.linx.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 41033422
     }
   ],
   "countryCode": "CU",
-  "matchedCubaElements": 1105,
+  "matchedCubaElements": 7279,
   "notes": [
     "BGP visibility from collector RIBs — not proven data-plane reachability.",
     "A collector 'observes' a prefix if at least one peer sees an overlapping BGP prefix.",
     "Consensus ratio = observedCollectors / totalCollectors."
   ],
   "pathFamilyCount": 0,
-  "peerAsnCount": 17,
+  "peerAsnCount": 87,
   "snapshotId": "2026-03-16T0000Z",
   "targetTimestamp": "2026-05-28T00:00:00Z",
-  "totalCollectors": 1,
-  "totalElements": 17818669
+  "totalCollectors": 5,
+  "totalElements": 133792477
 }

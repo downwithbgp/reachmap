@@ -461,6 +461,9 @@ export function App() {
               <div style={{ fontSize: 9, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 1, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
               <div style={{ fontSize: 22, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>{activeTimelinePoint.collectorCount}/{activeTimelinePoint.collectorCount}</div>
               <div style={{ fontSize: 8, color: "#6a8a70" }}>parsed RIBs observed</div>
+              {activeTimelinePoint.targetCollectors != null && (
+                <div style={{ fontSize: 7, color: "#4a6a5a", marginTop: 1 }}>{activeTimelinePoint.parsedCollectors ?? activeTimelinePoint.collectorCount}/{activeTimelinePoint.targetCollectors} target collectors</div>
+              )}
               {collectorRegistry.size > 0 && (
                 <div style={{ fontSize: 7, color: "#4a5a6a", marginTop: 1 }}>
                   {[...collectorRegistry.values()].filter(c => c.enabled).length} enabled in registry

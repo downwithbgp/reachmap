@@ -157,6 +157,10 @@ export interface TimelinePoint {
   actualRibTimestamp?: string;
   ribTimestampsMatch?: boolean;
   available?: boolean;
+  targetCollectors?: number;
+  parsedCollectors?: number;
+  missingCollectors?: string[];
+  comparability?: "complete" | "partial" | "unavailable";
   role: "before" | "pre_event" | "event" | "after" | "recovered";
   collectorCount: number;
   collectorIds: string[];
