@@ -1,0 +1,25 @@
+{
+  "collectors": [
+    {
+      "collectorId": "route-views2",
+      "matchedCountryElements": 1105,
+      "mrtFilename": "route-views2.rib.bz2",
+      "ribTimestamp": "2026-05-28T00:00:00Z",
+      "source": "routeviews",
+      "totalElementsParsed": 17813274
+    }
+  ],
+  "countryCode": "CU",
+  "matchedCubaElements": 1105,
+  "notes": [
+    "BGP visibility from collector RIBs — not proven data-plane reachability.",
+    "A collector 'observes' a prefix if at least one peer sees an overlapping BGP prefix.",
+    "Consensus ratio = observedCollectors / totalCollectors."
+  ],
+  "pathFamilyCount": 0,
+  "peerAsnCount": 17,
+  "snapshotId": "2026-03-16T08-00Z",
+  "targetTimestamp": "2026-05-28T00:00:00Z",
+  "totalCollectors": 1,
+  "totalElements": 17813274
+}

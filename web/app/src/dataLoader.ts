@@ -293,11 +293,22 @@ export async function loadAsnMetadata(catalogPath: string): Promise<Map<number, 
 
 export async function loadTimelineIndex(caseId: string, dataRoot: string): Promise<TimelineIndex | null> {
   try {
-    let res = await fetch(`${dataRoot}/timeline/${caseId}/index.json`);
-    if (!res.ok) res = await fetch(`${dataRoot}/timeline/index.json`);
-    if (!res.ok) return null;
-    return res.json();
-  } catch { return null; }
+    const res = await fetch(`${dataRoot}/timeline/${caseId}/index.json`);
+    if (!res.ok) {
+      console.error(`loadTimelineIndex: failed to load ${dataRoot}/timeline/${caseId}/index.json (HTTP ${res.status})`);
+      return null;
+    }
+    const data = await res.json();
+    // Schema check: new manifests have comparability/available fields
+    if (data.points?.length > 0 && data.points[0].comparability === undefined && data.points[0].available === undefined) {
+      console.error('loadTimelineIndex: loaded legacy manifest without comparability/available fields. Regenerate with refresh_timeline.sh');
+      return null;
+    }
+    return data;
+  } catch (e) {
+    console.error('loadTimelineIndex: fetch error', e);
+    return null;
+  }
 }
 
 export async function loadTimelineConsensus(snapshotId: string, dataRoot: string): Promise<ConsensusVisibility | null> {

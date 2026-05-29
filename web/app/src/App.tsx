@@ -519,6 +519,8 @@ export function App() {
           <span>traffic={activeTimelinePoint.trafficBaselinePercent}%</span>
           <span>points={timelineIndex?.points?.length ?? 0}</span>
           <span>complete={timelineIndex?.points?.filter(p => p.comparability === "complete").length ?? "?"}</span>
+          <span>partial={timelineIndex?.points?.filter(p => p.comparability === "partial").length ?? "?"}</span>
+          <span>url=/data/CU/timeline/mar2026/index.json</span>
         </div>
       )}
 
