@@ -316,3 +316,11 @@ export async function loadTimelinePrefixes(snapshotId: string, dataRoot: string)
     return data.prefixes;
   } catch { return null; }
 }
+
+export async function loadTimelinePathFamilies(snapshotId: string, dataRoot: string): Promise<PathFamilyRecord[] | null> {
+  try {
+    const res = await fetch(`${dataRoot}/path-families.json`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch { return null; }
+}

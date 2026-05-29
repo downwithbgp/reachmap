@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { PathGraph } from "./components/PathGraph";
 import { SidePanel } from "./components/SidePanel";
-import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes } from "./dataLoader";
+import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes, loadTimelinePathFamilies } from "./dataLoader";
 import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
 import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
 
@@ -42,7 +42,8 @@ export function App() {
     : dataMode === "real" && realData ? realData.prefixes : (isDev ? mockPrefixes : []);
   const viewpoints = dataMode === "real" && realData ? realData.viewpoints : (isDev ? mockViewpoints : []);
   const asViews = dataMode === "real" && realData ? realData.asViews : (isDev ? mockAsViews : []);
-  const pathFamilies = dataMode === "real" && realData ? realData.pathFamilies : (isDev ? mockPathFams : []);
+  const pathFamilies = dataMode === "timeline" && realData?.pathFamilies ? realData.pathFamilies
+    : dataMode === "real" && realData ? realData.pathFamilies : (isDev ? mockPathFams : []);
   const consensus = dataMode === "timeline" ? timelineConsensus
     : dataMode === "real" && realData ? realData.consensus : null;
 
@@ -118,13 +119,16 @@ export function App() {
             ? idx.points.find(p => p.snapshotId === caseEntry.defaultSnapshotId)
             : (idx.points.find(p => p.role === "event") ?? idx.points[0]);
           if (eventPt) {
-            const [cons, pfx] = await Promise.all([
+            const [cons, pfx, pfs] = await Promise.all([
               loadTimelineConsensus(eventPt.snapshotId, dataRoot),
               loadTimelinePrefixes(eventPt.snapshotId, dataRoot),
+              loadTimelinePathFamilies(eventPt.snapshotId, dataRoot),
             ]);
             setTimelineConsensus(cons);
             setTimelinePrefixes(pfx);
             setTimelineSnapshotId(eventPt.snapshotId);
+            if (pfs && realData) setRealData(prev => prev ? { ...prev, pathFamilies: pfs } : null);
+            else if (pfs) setRealData({ prefixes: pfx ?? [], viewpoints: [], asViews: [], pathFamilies: pfs, consensus: null });
           }
         }
       } catch (e) {
@@ -181,12 +185,14 @@ export function App() {
   const selectTimelineSnapshot = useCallback(async (snapId: string, dataRoot: string) => {
     setTimelineSnapshotId(snapId);
     setSelectedVp(null); setSelectedAsView(null); setSelectedPrefix(null);
-    const [cons, pfx] = await Promise.all([
+    const [cons, pfx, pfs] = await Promise.all([
       loadTimelineConsensus(snapId, dataRoot),
       loadTimelinePrefixes(snapId, dataRoot),
+      loadTimelinePathFamilies(snapId, dataRoot),
     ]);
     setTimelineConsensus(cons);
     setTimelinePrefixes(pfx);
+    if (pfs) setRealData(prev => prev ? { ...prev, pathFamilies: pfs } : null);
   }, []);
 
   // Handlers
