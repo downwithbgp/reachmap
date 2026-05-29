@@ -112,8 +112,8 @@ export function SidePanel({
           {selectedAsView && (
             <StatRow label="Viewpoints" value={selectedAsView.viewpointIds.length.toString()} />
           )}
-          <StatRow label="Visible" value={`${visibleCount} / ${total} (${pct}%)`} accent={pct > 60 ? "green" : pct > 30 ? "yellow" : "red"} />
-          <StatRow label="Not visible" value={missingCount.toString()} accent="red" />
+          <StatRow label="BGP-visible" value={`${visibleCount} / ${total} (${pct}%)`} accent={pct > 60 ? "green" : pct > 30 ? "yellow" : "red"} />
+          <StatRow label="Not in sampled RIBs" value={missingCount.toString()} accent="red" />
         </Section>
       )}
 
@@ -128,9 +128,9 @@ export function SidePanel({
                selectionMode === "asn_aggregate" ? "#64b4c8" : "#888",
         fontWeight: 600,
       }}>
-        {selectionMode === "viewpoint" ? "Viewpoint mode — one observation point" :
+        {selectionMode === "viewpoint" ? "Single observation point" :
          selectionMode === "asn_aggregate" ? "ASN aggregate — all viewpoints for this AS" :
-         "All viewpoints — global consensus"}
+         "All viewpoints — union"}
       </div>
 
       {/* Path families */}
@@ -218,9 +218,9 @@ export function SidePanel({
                "#89c8d8",
         fontWeight: 600,
       }}>
-        {colorMode === "consensus" ? "BGP collector RIB visibility" :
+        {colorMode === "consensus" ? "Control-plane visibility" :
          colorMode === "selected" ?
-           (selectionMode === "viewpoint" ? "Viewpoint mode" :
+           (selectionMode === "viewpoint" ? "Single observation point" :
             selectionMode === "asn_aggregate" ? "ASN aggregate" : "Selected") :
          "Origin ASN mode"}
       </div>
@@ -239,10 +239,11 @@ export function SidePanel({
 
       {/* Disclaimer */}
       <div style={{ fontSize: 10, color: "#667788", lineHeight: 1.5, fontStyle: "italic", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10 }}>
-        <strong style={{ color: "#777" }}>Important:</strong> IP prefix positions are logical,
-        not physical. AS paths are BGP routing policy, not fiber routes.
-        Viewpoint geography is approximate. BGP collector RIB visibility
-        does not prove end-user reachability.
+        <strong style={{ color: "#777" }}>Important:</strong> This shows control-plane
+        BGP collector RIB observations — not data-plane reachability, physical
+        cables, or traceroutes. AS paths are logical routing policy, not fiber
+        routes. Collector geography is approximate. BGP visibility does
+        not prove end-user reachability.
       </div>
       {/* About / Method */}
       <Section title="About">
@@ -254,8 +255,8 @@ export function SidePanel({
           </p>
           <p style={{ marginBottom: 6 }}>
             <strong>What does green mean?</strong> At least one BGP peer at each sampled
-            collector announced a route overlapping that prefix. Green does not prove
-            end-user reachability — it proves the route existed in the RIB dump.
+            collector announced a route for that prefix. Green indicates control-plane
+            visibility in the RIB dump — not end-user reachability.
           </p>
           <p style={{ marginBottom: 6 }}>
             <strong>Why can traffic drop while BGP stays green?</strong> BGP is the

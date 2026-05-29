@@ -163,28 +163,10 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
         {/* Cuba geographic position (small) */}
         <path d={cubaGeoPath} fill="rgba(40,80,140,0.3)" stroke="rgba(80,130,200,0.4)" strokeWidth={1} />
 
-        {/* Callout line from geographic Cuba to enlarged callout */}
-        <line x1={CALLOUT_CENTER[0]} y1={CALLOUT_CENTER[1]} x2={CALLOUT_OFFSET[0]} y2={CALLOUT_OFFSET[1]}
-          stroke="rgba(80,130,200,0.3)" strokeWidth={1} strokeDasharray="4 3" />
-
-        {/* Cuba enlarged callout — country-shaped IP-space weather */}
-        <path d={cubaCalloutPath} fill={bgpStatus === "green" ? "rgba(40,185,94,0.6)" : "rgba(210,170,50,0.5)"}
-          stroke="rgba(80,150,220,0.8)" strokeWidth={1.5} />
-
-        {/* Callout label */}
-        {(() => { const [cx, cy] = CALLOUT_OFFSET; return (<>
-          <text x={cx} y={cy + 65} textAnchor="middle" fill="#7799bb" fontSize={11} fontWeight={600}>
-            {countryName} · IP-space weather
-          </text>
-          <text x={cx} y={cy + 78} textAnchor="middle" fill="#445566" fontSize={9}>
-            BGP-visible in all sampled collector RIBs
-          </text>
-        </>); })()}
-
         {/* Geographic anchor label */}
         {(() => { const [gx, gy] = CALLOUT_CENTER; return (
           <text x={gx} y={gy + 16} textAnchor="middle" fill="#3a5570" fontSize={8}>
-            geographic location
+            geographic context
           </text>
         ); })()}
 
@@ -220,31 +202,9 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
           </g>
         ))}
 
-        {/* Flow arcs: collectors → transit band */}
-        {COLLECTORS.map(c => {
-          const [sx, sy] = project(c.lon, c.lat);
-          // Connect to nearest transit nodes
-          return transitNodes.slice(0, 3).map((t, i) => (
-            <path key={`${c.id}-${t.asn}`}
-              d={`M ${sx} ${sy} C ${(sx + transitX) / 2} ${sy}, ${(sx + transitX) / 2} ${t.y}, ${transitX} ${t.y}`}
-              fill="none" stroke="rgba(100,140,200,0.18)" strokeWidth={1} />
-          ));
-        })}
-
-        {/* Flow arcs: transit → Cuba callout */}
-        {transitNodes.map(t => {
-          const [tx, ty] = CALLOUT_OFFSET;
-          return (
-            <path key={`t-${t.asn}`}
-              d={`M ${transitX} ${t.y} C ${(transitX + tx) / 2} ${t.y}, ${(transitX + tx) / 2} ${ty}, ${tx} ${ty}`}
-              fill="none" stroke="rgba(40,185,94,0.3)" strokeWidth={Math.max(1, t.prefixCount / 4)} />
-          );
-        })}
-
         {/* Column labels */}
         <text x={100} y={SVG_H - 20} fill="#445" fontSize={9}>Collector RIB locations</text>
-        <text x={transitX} y={SVG_H - 20} textAnchor="middle" fill="#445" fontSize={9}>Logical transit ASNs</text>
-        <text x={CALLOUT_OFFSET[0]} y={SVG_H - 20} textAnchor="middle" fill="#445" fontSize={9}>IP-space weather</text>
+        <text x={SVG_W / 2} y={SVG_H - 20} textAnchor="middle" fill="#445" fontSize={9}>Observation locations only — not network paths</text>
 
         {/* Bottom disclaimer */}
         <text x={SVG_W / 2} y={SVG_H - 6} textAnchor="middle" fill="#333" fontSize={8}>

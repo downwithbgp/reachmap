@@ -2,6 +2,88 @@ import React, { useState, useMemo, useCallback, useEffect, Suspense } from "reac
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { SidePanel } from "./components/SidePanel";
 import { ReachMapStage } from "./components/ReachMapStage";
+import { PathGraph } from "./components/PathGraph";
+
+// Cuba IP-space weather card — standalone callout (not map-attached)
+import { useRef, useEffect as useEffectRaw } from "react";
+
+const CUBA_OUTLINE: [number, number][] = [
+  [-84.95,21.85],[-84.35,21.83],[-83.90,22.08],[-83.47,22.55],[-83.01,22.65],
+  [-82.28,22.92],[-81.72,23.12],[-81.18,23.12],[-80.80,23.10],[-80.33,22.98],
+  [-79.98,22.80],[-79.62,22.76],[-79.18,22.39],[-78.73,22.39],[-78.18,22.44],
+  [-77.90,22.08],[-77.55,21.77],[-77.10,21.60],[-76.61,21.48],[-76.02,21.61],
+  [-75.55,21.43],[-75.23,21.17],[-74.90,20.70],[-74.70,20.13],[-75.05,19.83],
+  [-75.68,19.97],[-76.20,19.99],[-77.07,19.87],[-77.85,19.66],[-78.55,19.85],
+  [-79.10,19.95],[-80.10,19.88],[-80.55,19.86],[-81.42,20.30],[-81.98,20.88],
+  [-82.61,21.37],[-83.20,21.70],[-83.65,21.73],[-84.25,21.58],[-84.95,21.85],
+];
+
+function CubaWeatherCard({ countryName, totalCollectors }: { countryName: string; totalCollectors: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffectRaw(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const W = canvas.width, H = canvas.height;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (const [lon, lat] of CUBA_OUTLINE) {
+      if (lon < minX) minX = lon; if (lon > maxX) maxX = lon;
+      if (lat < minY) minY = lat; if (lat > maxY) maxY = lat;
+    }
+    const pad = 16;
+    const geoW = maxX - minX, geoH = maxY - minY;
+    const scale = Math.min((W - pad * 2) / geoW, (H - pad * 2) / geoH);
+    const offX = pad + ((W - pad * 2) - geoW * scale) / 2;
+    const offY = pad + ((H - pad * 2) - geoH * scale) / 2;
+    ctx.clearRect(0, 0, W, H);
+    ctx.shadowColor = "rgba(40, 200, 130, 0.3)";
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    CUBA_OUTLINE.forEach(([lon, lat], i) => {
+      const x = offX + (lon - minX) * scale;
+      const y = offY + (maxY - lat) * scale;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, "rgba(40, 200, 130, 0.55)");
+    grad.addColorStop(1, "rgba(30, 160, 100, 0.45)");
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "rgba(80, 200, 240, 0.8)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }, []);
+
+  return (
+    <div style={{
+      background: "rgba(8,16,40,0.92)", border: "1px solid rgba(40,200,130,0.35)", borderRadius: 8,
+      backdropFilter: "blur(8px)", overflow: "hidden",
+      boxShadow: "0 0 24px rgba(40,180,100,0.08), 0 4px 20px rgba(0,0,0,0.3)",
+    }}>
+      <div style={{ padding: "10px 14px 8px", borderBottom: "1px solid rgba(40,200,130,0.18)" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+          <div style={{ fontSize: 12, color: "#2ecc71", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>
+            {countryName} · IP-space weather
+          </div>
+          <div style={{
+            padding: "2px 8px", borderRadius: 3, fontSize: 11, fontWeight: 600,
+            background: "rgba(40,200,130,0.12)", color: "#2ecc71",
+          }}>
+            BGP-visible · {totalCollectors}/{totalCollectors} RIBs
+          </div>
+        </div>
+      </div>
+      <canvas ref={canvasRef} width={480} height={210} style={{ display: "block", width: "100%", height: "auto" }} />
+      <div style={{ padding: "6px 14px 8px", fontSize: 9, color: "#667788", lineHeight: 1.5 }}>
+        Packed national routed address space. Not physical prefix locations.
+      </div>
+    </div>
+  );
+}
 
 // Lazy-load GL stage — only fetched when WebGL is available and ?stage=gl requested
 const MapStageGL = React.lazy(() => import("./components/MapStageGL").then(m => ({ default: m.MapStageGL })));
@@ -361,84 +443,100 @@ export function App() {
         </div>
       )}
 
-      {/* Hero summary — prominent BGP vs traffic contrast */}
+      {/* Status strip — BGP control plane vs traffic signal */}
       {!bootstrapError && dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
         <div style={{
-          padding: "16px 24px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
-          display: "flex", gap: 40, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
+          padding: "12px 24px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+          display: "flex", gap: 36, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
         }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e8f8", marginBottom: 4, letterSpacing: "-0.01em" }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#e8e8f8", marginBottom: 2, letterSpacing: "-0.01em" }}>
               Cuba · March 2026
             </div>
-            <div style={{ fontSize: 12, color: "#99aabb", lineHeight: 1.5 }}>
-              BGP collector RIB visibility compared with reported traffic-volume decline.
+            <div style={{ fontSize: 11, color: "#99aabb" }}>
+              BGP collector RIB visibility remained stable while an external traffic signal declined.
             </div>
           </div>
-          <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 11, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 4, fontWeight: 500, letterSpacing: "0.04em" }}>BGP RIBs</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>4/4</div>
-              <div style={{ fontSize: 10, color: "#6a8a70", marginTop: 2 }}>observed</div>
+              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 3, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>4/4</div>
+              <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>BGP-visible</div>
             </div>
-            <div style={{ color: "#4a5568", fontSize: 18, fontWeight: 300 }}>vs</div>
+            <div style={{ color: "#4a5568", fontSize: 16, fontWeight: 300 }}>vs</div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 11, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 4, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~35%</div>
-              <div style={{ fontSize: 10, color: "#8a7a60", marginTop: 2 }}>of baseline</div>
+              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 3, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic signal</div>
+              <div style={{ fontSize: 26, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~35%</div>
+              <div style={{ fontSize: 9, color: "#8a7a60", marginTop: 1 }}>of baseline</div>
             </div>
           </div>
-          <div style={{ flex: 1, fontSize: 13, color: "#aabbcc", lineHeight: 1.6, minWidth: 220 }}>
-            Sampled BGP collector RIBs continued to observe Cuban prefixes while the external traffic signal declined.
+          <div style={{ flex: 1, fontSize: 12, color: "#aabbcc", lineHeight: 1.6, minWidth: 200 }}>
+            Control plane: BGP collector RIBs continued to observe Cuban prefixes.<br />
+            Traffic signal: external measurement showed ~65% decline.
           </div>
-          <div style={{ fontSize: 10, color: "#667788" }}>Traffic source: Cloudflare Radar</div>
+          <div style={{ fontSize: 9, color: "#667788" }}>Traffic source: Cloudflare Radar</div>
         </div>
       )}
 
       {/* Main content */}
       {!bootstrapError && (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
-          {/* Main stage: integrated map + logical paths + country weather */}
-          <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-            {(() => {
-              const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
-              const webglOk = hasWebGL();
-              const stageProps = {
-                pathFamilies, asnMap, visibilityScores, totalCollectors,
-                countryName: countryConfig?.name ?? "Cuba",
-                selectedPrefix: selectedPrefix?.prefix ?? null,
-                selectedCollectorId: selectedVp?.collector ?? null,
-                onSelectCollector: (cid: string | null) => {
+          {/* Main row: AS-path visibility graph (dominant) + IP-space weather card (right) */}
+          <div style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden", gap: 10, padding: "10px 12px 6px" }}>
+            <div style={{ flex: 3, minWidth: 0, display: "flex", flexDirection: "column" }}>
+              <PathGraph
+                pathFamilies={pathFamilies}
+                viewpoints={viewpoints}
+                asnMap={asnMap}
+                selectedPrefix={selectedPrefix?.prefix ?? null}
+                selectedCollectorId={selectedVp?.collector ?? null}
+                onSelectCollector={(cid: string | null) => {
                   if (!cid) { handleClearSelection(); return; }
                   const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
                   if (vp) handleSelectViewpoint(vp);
                   else handleClearSelection();
-                },
-              };
-              // GL-first: default to GL when WebGL available
-              if (!requestedSVG && webglOk) return (
-                <Suspense fallback={<div style={{ padding: 20, color: "#666" }}>Loading map...</div>}>
-                  <MapStageGL {...stageProps} />
-                </Suspense>
-              );
-              // SVG fallback via ?stage=svg
-              if (requestedSVG) return <ReachMapStage {...stageProps} />;
-              // WebGL unavailable
-              return (
-                <div style={{ padding: "32px 20px", textAlign: "center", color: "#999" }}>
-                  <p style={{ fontSize: 14, marginBottom: 8 }}>ReachMap's interactive map requires WebGL.</p>
-                  <p style={{ fontSize: 12, color: "#777" }}>WebGL appears to be unavailable or disabled in this browser.</p>
-                  <p style={{ fontSize: 11, color: "#666", marginTop: 12 }}>
-                    You can enable WebGL, try another browser, or{" "}
-                    <a href="?stage=svg" style={{ color: "#5588aa" }}>open the static fallback</a>.
-                  </p>
-                </div>
-              );
-            })()}
+                }}
+              />
+            </div>
+            <div style={{ flex: "0 0 320px", display: "flex", flexDirection: "column", gap: 8 }}>
+              <CubaWeatherCard
+                countryName={countryConfig?.name ?? "Cuba"}
+                totalCollectors={totalCollectors}
+              />
+            </div>
           </div>
 
-          {/* Bottom row: Hilbert technical inset + side panel */}
-          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", borderTop: "1px solid rgba(255,255,255,0.05)", padding: "10px 12px 12px", maxHeight: 260, overflow: "hidden" }}>
+          {/* Bottom row: observation map (inset) + Hilbert + side panel */}
+          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", borderTop: "1px solid rgba(255,255,255,0.05)", padding: "6px 12px 12px", maxHeight: 280, overflow: "hidden" }}>
+            <div style={{ flex: "0 0 300px", height: 260 }}>
+              {(() => {
+                const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
+                const webglOk = hasWebGL();
+                const stageProps = {
+                  pathFamilies, asnMap, visibilityScores, totalCollectors,
+                  countryName: countryConfig?.name ?? "Cuba",
+                  selectedPrefix: selectedPrefix?.prefix ?? null,
+                  selectedCollectorId: selectedVp?.collector ?? null,
+                  onSelectCollector: (cid: string | null) => {
+                    if (!cid) { handleClearSelection(); return; }
+                    const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
+                    if (vp) handleSelectViewpoint(vp);
+                    else handleClearSelection();
+                  },
+                };
+                if (!requestedSVG && webglOk) return (
+                  <Suspense fallback={<div style={{ padding: 12, color: "#667788", fontSize: 11 }}>Loading map...</div>}>
+                    <MapStageGL {...stageProps} />
+                  </Suspense>
+                );
+                if (requestedSVG) return <ReachMapStage {...stageProps} />;
+                return (
+                  <div style={{ padding: 16, textAlign: "center", color: "#667788", fontSize: 11 }}>
+                    WebGL unavailable. <a href="?stage=svg" style={{ color: "#5588aa" }}>Use SVG fallback</a>.
+                  </div>
+                );
+              })()}
+            </div>
             <div style={{ flex: "0 0 250px" }}>
               <HilbertCanvas
                 prefixes={prefixes}
