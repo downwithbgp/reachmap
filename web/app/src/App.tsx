@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
-import { PathGraph } from "./components/PathGraph";
 import { SidePanel } from "./components/SidePanel";
-import { CollectorMap } from "./components/CollectorMap";
-import { CountryWeather } from "./components/CountryWeather";
+import { ReachMapStage } from "./components/ReachMapStage";
 import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes, loadTimelinePathFamilies } from "./dataLoader";
 import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
 import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
@@ -391,33 +389,23 @@ export function App() {
       {/* Main content — v0.1 country-shaped weather layout */}
       {!bootstrapError && (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 6, padding: "6px 8px" }}>
-          {/* Top row: path flow (45%) + country weather (55%) */}
-          <div style={{ display: "flex", flex: 1, gap: 8, minHeight: 0, overflow: "hidden" }}>
-            {/* Left: Collector RIBs → transit → origin flow */}
-            <div style={{ flex: "0 0 45%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-              <PathGraph
-                pathFamilies={pathFamilies}
-                asnMap={asnMap}
-                selectedPrefix={selectedPrefix?.prefix ?? null}
-                selectedCollectorId={selectedVp?.collector ?? null}
-                onSelectCollector={(cid) => {
-                  if (!cid) { handleClearSelection(); return; }
-                  const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
-                  if (vp) handleSelectViewpoint(vp);
-                  else handleClearSelection();
-                }}
-              />
-            </div>
-
-            {/* Right: Country-shaped IP-space weather */}
-            <div style={{ flex: "0 0 55%", overflow: "hidden" }}>
-              <CountryWeather
-                prefixes={prefixes}
-                visibilityScores={visibilityScores}
-                totalCollectors={totalCollectors}
-                mapConfig={{ name: countryConfig?.name ?? "Cuba" }}
-              />
-            </div>
+          {/* Main stage: integrated map + logical paths + country weather */}
+          <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+            <ReachMapStage
+              pathFamilies={pathFamilies}
+              asnMap={asnMap}
+              visibilityScores={visibilityScores}
+              totalCollectors={totalCollectors}
+              countryName={countryConfig?.name ?? "Cuba"}
+              selectedPrefix={selectedPrefix?.prefix ?? null}
+              selectedCollectorId={selectedVp?.collector ?? null}
+              onSelectCollector={(cid) => {
+                if (!cid) { handleClearSelection(); return; }
+                const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
+                if (vp) handleSelectViewpoint(vp);
+                else handleClearSelection();
+              }}
+            />
           </div>
 
           {/* Bottom row: Hilbert technical inset + side panel */}
