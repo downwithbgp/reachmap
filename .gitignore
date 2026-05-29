@@ -5,8 +5,9 @@ target/
 # Dependencies
 **/node_modules/
 
-# Large binary data (RIBs, GeoIP)
+# Large binary data (RIBs, GeoIP) and pipeline output
 data/snapshots/
+data/processed/
 data/geo/
 *.bz2
 *.gz
