@@ -56,8 +56,8 @@ export function SidePanel({
   return (
     <div style={{
       width: 280, maxHeight: "calc(100vh - 80px)", overflowY: "auto",
-      background: "#12122a", border: "1px solid #2a2a48", borderRadius: 6,
-      padding: "14px 16px", display: "flex", flexDirection: "column", gap: 14,
+      background: "#111830", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 6,
+      padding: "16px 18px", display: "flex", flexDirection: "column", gap: 16,
       fontSize: 13, color: "#c8c8d8",
     }}>
       {/* Viewpoint / ASN selector */}
@@ -238,7 +238,7 @@ export function SidePanel({
       </Section>
 
       {/* Disclaimer */}
-      <div style={{ fontSize: 10, color: "#555", lineHeight: 1.5, fontStyle: "italic", borderTop: "1px solid #2a2a48", paddingTop: 8 }}>
+      <div style={{ fontSize: 10, color: "#667788", lineHeight: 1.5, fontStyle: "italic", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 10 }}>
         <strong style={{ color: "#777" }}>Important:</strong> IP prefix positions are logical,
         not physical. AS paths are BGP routing policy, not fiber routes.
         Viewpoint geography is approximate. BGP collector RIB visibility
@@ -272,7 +272,7 @@ export function SidePanel({
       </Section>
 
       {/* Data provenance */}
-      <div style={{ fontSize: 9, color: "#444", lineHeight: 1.5, borderTop: "1px solid #2a2a48", paddingTop: 6 }}>
+      <div style={{ fontSize: 9, color: "#556678", lineHeight: 1.5, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 8 }}>
         <strong style={{ color: "#555" }}>Data:</strong> RouteViews &amp; RIPE RIS RIBs.
         Prefix source: RIR delegated stats. Snapshot: 2026-05-28 00:00 UTC.
         External signal: Cloudflare Radar.
@@ -287,9 +287,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div>
       <div style={{
-        fontSize: 10, fontWeight: 600, textTransform: "uppercase",
-        letterSpacing: "0.08em", color: "#7777a0", marginBottom: 8,
-        paddingBottom: 4, borderBottom: "1px solid #2a2a48",
+        fontSize: 11, fontWeight: 600, textTransform: "uppercase",
+        letterSpacing: "0.06em", color: "#8899bb", marginBottom: 8,
+        paddingBottom: 5, borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
         {title}
       </div>
@@ -299,10 +299,10 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function StatRow({ label, value, accent }: { label: string; value: string; accent?: "green" | "red" | "yellow" }) {
-  const color = accent === "green" ? "#2ecc71" : accent === "red" ? "#e74c3c" : accent === "yellow" ? "#d4b840" : "#bbb";
+  const color = accent === "green" ? "#2ecc71" : accent === "red" ? "#e74c3c" : accent === "yellow" ? "#d4b840" : "#bbccdd";
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "2px 0", fontSize: 11 }}>
-      <span style={{ color: "#7777a0", fontSize: 10 }}>{label}</span>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "2px 0", fontSize: 12 }}>
+      <span style={{ color: "#8899bb", fontSize: 11 }}>{label}</span>
       <span style={{ fontWeight: 500, color, textAlign: "right" }}>{value}</span>
     </div>
   );

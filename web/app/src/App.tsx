@@ -243,16 +243,16 @@ export function App() {
     ? timelineIndex.points.find(p => p.snapshotId === timelineSnapshotId) ?? null : null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#080812", color: "#c8c8d8", fontFamily: "system-ui, sans-serif", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#0a1020", color: "#c8c8d8", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
       {/* Header */}
       <header style={{
-        padding: "10px 20px", borderBottom: "1px solid #2a2a48", background: "#0d0d20",
-        display: "flex", alignItems: "center", gap: 12, flexShrink: 0,
+        padding: "12px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#0d1530",
+        display: "flex", alignItems: "center", gap: 14, flexShrink: 0,
       }}>
-        <h1 style={{ fontSize: 20, fontWeight: 600, color: "#e0e0f0", letterSpacing: "-0.02em", margin: 0 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "#e8e8f8", letterSpacing: "-0.02em", margin: 0 }}>
           ReachMap
         </h1>
-        <span style={{ color: "#7777a0", fontSize: 13, fontWeight: 400 }}>
+        <span style={{ color: "#8899bb", fontSize: 14, fontWeight: 400 }}>
           What the routing table sees — and what it misses
         </span>
 
@@ -364,40 +364,40 @@ export function App() {
       {/* Hero summary — prominent BGP vs traffic contrast */}
       {!bootstrapError && dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
         <div style={{
-          padding: "12px 20px", background: "rgba(0,0,0,0.4)", borderBottom: "1px solid #2a2a48",
-          display: "flex", gap: 32, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
+          padding: "16px 24px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+          display: "flex", gap: 40, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
         }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#e0e0f0", marginBottom: 2 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#e8e8f8", marginBottom: 4, letterSpacing: "-0.01em" }}>
               Cuba · March 2026
             </div>
-            <div style={{ fontSize: 11, color: "#999" }}>
-              BGP collector visibility compared with reported traffic-volume decline.
+            <div style={{ fontSize: 12, color: "#99aabb", lineHeight: 1.5 }}>
+              BGP collector RIB visibility compared with reported traffic-volume decline.
             </div>
           </div>
-          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 28, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>BGP collector RIBs</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "#28b85e" }}>4/4</div>
-              <div style={{ fontSize: 9, color: "#666" }}>observed</div>
+              <div style={{ fontSize: 11, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 4, fontWeight: 500, letterSpacing: "0.04em" }}>BGP RIBs</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>4/4</div>
+              <div style={{ fontSize: 10, color: "#6a8a70", marginTop: 2 }}>observed</div>
             </div>
-            <div style={{ color: "#555", fontSize: 16 }}>vs</div>
+            <div style={{ color: "#4a5568", fontSize: 18, fontWeight: 300 }}>vs</div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>Traffic signal</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "#e8a040" }}>~35%</div>
-              <div style={{ fontSize: 9, color: "#666" }}>of baseline</div>
+              <div style={{ fontSize: 11, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 4, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~35%</div>
+              <div style={{ fontSize: 10, color: "#8a7a60", marginTop: 2 }}>of baseline</div>
             </div>
           </div>
-          <div style={{ flex: 1, fontSize: 11, color: "#aaa", lineHeight: 1.5, minWidth: 200 }}>
+          <div style={{ flex: 1, fontSize: 13, color: "#aabbcc", lineHeight: 1.6, minWidth: 220 }}>
             Sampled BGP collector RIBs continued to observe Cuban prefixes while the external traffic signal declined.
           </div>
-          <div style={{ fontSize: 9, color: "#555" }}>Traffic source: Cloudflare Radar</div>
+          <div style={{ fontSize: 10, color: "#667788" }}>Traffic source: Cloudflare Radar</div>
         </div>
       )}
 
-      {/* Main content — v0.1 country-shaped weather layout */}
+      {/* Main content */}
       {!bootstrapError && (
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 6, padding: "6px 8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
           {/* Main stage: integrated map + logical paths + country weather */}
           <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
             {(() => {
@@ -438,8 +438,8 @@ export function App() {
           </div>
 
           {/* Bottom row: Hilbert technical inset + side panel */}
-          <div style={{ display: "flex", flexShrink: 0, gap: 8, alignItems: "flex-start", borderTop: "1px solid #2a2a48", paddingTop: 6, maxHeight: 240, overflow: "hidden" }}>
-            <div style={{ flex: "0 0 220px" }}>
+          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", borderTop: "1px solid rgba(255,255,255,0.05)", padding: "10px 12px 12px", maxHeight: 260, overflow: "hidden" }}>
+            <div style={{ flex: "0 0 250px" }}>
               <HilbertCanvas
                 prefixes={prefixes}
                 colorMode={effectiveColorMode}

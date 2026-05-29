@@ -46,19 +46,19 @@ const MAP_STYLE: maplibregl.StyleSpecification = {
     {
       id: "background",
       type: "background",
-      paint: { "background-color": "#0a0a1e" },
+      paint: { "background-color": "#0d1530" },
     },
     {
       id: "land-fill",
       type: "fill",
       source: "land",
-      paint: { "fill-color": "#141428", "fill-opacity": 0.9 },
+      paint: { "fill-color": "#1a2848", "fill-opacity": 0.95 },
     },
     {
       id: "land-stroke",
       type: "line",
       source: "land",
-      paint: { "line-color": "#252550", "line-width": 0.5 },
+      paint: { "line-color": "#2a4070", "line-width": 0.6 },
     },
   ],
 };
@@ -90,13 +90,17 @@ function CubaWeatherCanvas() {
       if (lon < minX) minX = lon; if (lon > maxX) maxX = lon;
       if (lat < minY) minY = lat; if (lat > maxY) maxY = lat;
     }
-    const pad = 12;
+    const pad = 16;
     const geoW = maxX - minX, geoH = maxY - minY;
     const scale = Math.min((W - pad * 2) / geoW, (H - pad * 2) / geoH);
     const offX = pad + ((W - pad * 2) - geoW * scale) / 2;
     const offY = pad + ((H - pad * 2) - geoH * scale) / 2;
 
     ctx.clearRect(0, 0, W, H);
+
+    // Subtle glow shadow
+    ctx.shadowColor = "rgba(40, 200, 130, 0.3)";
+    ctx.shadowBlur = 12;
 
     // Draw country shape
     ctx.beginPath();
@@ -107,15 +111,21 @@ function CubaWeatherCanvas() {
     });
     ctx.closePath();
 
-    // Green fill (BGP-visible)
-    ctx.fillStyle = "rgba(40, 185, 94, 0.5)";
+    // Green fill (BGP-visible) with gradient
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, "rgba(40, 200, 130, 0.55)");
+    grad.addColorStop(1, "rgba(30, 160, 100, 0.45)");
+    ctx.fillStyle = grad;
     ctx.fill();
-    ctx.strokeStyle = "rgba(80, 180, 220, 0.7)";
-    ctx.lineWidth = 1.5;
+
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = "rgba(80, 200, 240, 0.8)";
+    ctx.lineWidth = 2;
     ctx.stroke();
   }, []);
 
-  return <canvas ref={ref} width={320} height={140} style={{ display: "block", width: "100%", height: "auto" }} />;
+  return <canvas ref={ref} width={480} height={210} style={{ display: "block", width: "100%", height: "auto" }} />;
 }
 
 export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollectors, countryName, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
@@ -134,9 +144,9 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: MAP_STYLE,
-      center: [-55, 35],
-      zoom: 2.3,
-      minZoom: 1.5,
+      center: [-50, 32],
+      zoom: 2.8,
+      minZoom: 1.8,
       maxZoom: 8,
       attributionControl: false,
       dragRotate: false,
@@ -187,13 +197,13 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
       id: "collectors",
       data: COLLECTORS,
       getPosition: (d: typeof COLLECTORS[0]) => [d.lon, d.lat],
-      getRadius: 60000,
-      getFillColor: (d: typeof COLLECTORS[0]) => d.id === selectedCollectorId ? [255, 204, 64] : [85, 136, 170],
-      getLineColor: [136, 187, 221],
+      getRadius: 80000,
+      getFillColor: (d: typeof COLLECTORS[0]) => d.id === selectedCollectorId ? [255, 210, 80] : [100, 160, 210],
+      getLineColor: [160, 210, 240],
       getLineWidth: 2,
       lineWidthMinPixels: 1,
-      radiusMinPixels: 7,
-      radiusMaxPixels: 20,
+      radiusMinPixels: 8,
+      radiusMaxPixels: 22,
       stroked: true,
       pickable: true,
       onClick: (info: any) => {
@@ -206,13 +216,13 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
       id: "target",
       data: [{ position: CUBA_CENTER }],
       getPosition: (d: any) => d.position,
-      getRadius: 40000,
-      getFillColor: [50, 100, 180],
-      getLineColor: [80, 150, 220],
-      getLineWidth: 2,
+      getRadius: 60000,
+      getFillColor: [60, 140, 220],
+      getLineColor: [120, 200, 255],
+      getLineWidth: 2.5,
       lineWidthMinPixels: 1.5,
-      radiusMinPixels: 5,
-      radiusMaxPixels: 14,
+      radiusMinPixels: 6,
+      radiusMaxPixels: 16,
       stroked: true,
       pickable: false,
     });
@@ -223,12 +233,12 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
       data: COLLECTORS,
       getSourcePosition: (d: typeof COLLECTORS[0]) => [d.lon, d.lat],
       getTargetPosition: () => CUBA_CENTER,
-      getSourceColor: (d: typeof COLLECTORS[0]) => d.id === selectedCollectorId ? [255, 200, 70, 200] : [80, 130, 200, 80],
-      getTargetColor: [40, 185, 94, 120],
-      getWidth: (d: typeof COLLECTORS[0]) => d.id === selectedCollectorId ? 3 : 1,
+      getSourceColor: (d: typeof COLLECTORS[0]) => d.id === selectedCollectorId ? [255, 210, 80, 220] : [100, 150, 220, 100],
+      getTargetColor: [40, 200, 130, 140],
+      getWidth: (d: typeof COLLECTORS[0]) => d.id === selectedCollectorId ? 3.5 : 1.2,
       widthMinPixels: 0.5,
-      widthMaxPixels: 4,
-      getHeight: 0.15,
+      widthMaxPixels: 4.5,
+      getHeight: 0.12,
       pickable: false,
     });
 
@@ -256,7 +266,7 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
   }, [pathFamilies, asnMap]);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 420, background: "#080812", overflow: "hidden" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 420, background: "#0d1530", overflow: "hidden" }}>
       {/* MapLibre container — fills parent */}
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
@@ -265,85 +275,101 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
         <svg style={{ position:"absolute", inset:0, pointerEvents:"none", zIndex:10, overflow:"visible" }}>
           <defs>
             <marker id="callout-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="rgba(0,210,180,0.5)" />
+              <polygon points="0 0, 8 3, 0 6" fill="rgba(0,220,190,0.6)" />
             </marker>
           </defs>
           <line
             x1={cubaScreen.x} y1={cubaScreen.y}
             x2={calloutAnchor.x} y2={calloutAnchor.y}
-            stroke="rgba(0,210,180,0.45)"
-            strokeWidth={1.5}
+            stroke="rgba(0,220,190,0.55)"
+            strokeWidth={1.8}
             strokeDasharray="6 4"
             markerEnd="url(#callout-arrow)"
           />
-          <text x={(cubaScreen.x + calloutAnchor.x) / 2} y={(cubaScreen.y + calloutAnchor.y) / 2 - 8}
-            textAnchor="middle" fill="rgba(0,200,180,0.5)" fontSize={8}>
+          <text x={(cubaScreen.x + calloutAnchor.x) / 2} y={(cubaScreen.y + calloutAnchor.y) / 2 - 10}
+            textAnchor="middle" fill="rgba(0,210,180,0.6)" fontSize={9}>
             geographic anchor → IP-space weather
           </text>
         </svg>
       )}
 
-      {/* Transit ASN logical overlay (HTML, not geographic) */}
-      <div style={{
-        position: "absolute", bottom: 50, right: 12, padding: "8px 12px",
-        background: "rgba(10,10,30,0.85)", border: "1px solid #2a2a48", borderRadius: 6,
-        backdropFilter: "blur(4px)", maxWidth: 180,
-      }}>
-        <div style={{ fontSize: 9, color: "#666", textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>
-          Logical transit ASNs
+      {/* Transit ASN flow corridor — integrated between collectors and callout */}
+      {transitNodes.length > 0 && (
+        <div style={{
+          position: "absolute", top: "30%", right: "calc(38% + 48px)", transform: "translateY(-30%)",
+          display: "flex", flexDirection: "column", gap: 6, pointerEvents: "none",
+        }}>
+          <div style={{ fontSize: 9, color: "#7788aa", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.04em", marginBottom: 2 }}>
+            Transit ASNs
+          </div>
+          {transitNodes.map((t, i) => (
+            <div key={t.asn} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{
+                width: 8, height: 8, borderRadius: "50%",
+                background: "rgba(120,140,200,0.7)",
+                boxShadow: "0 0 6px rgba(120,140,220,0.3)",
+                flexShrink: 0,
+              }} />
+              <div style={{ fontSize: 10, color: "#aabbdd", fontWeight: 500, lineHeight: 1.3 }}>
+                {t.label}
+                <span style={{ display: "block", fontSize: 8, color: "#667799", fontWeight: 400 }}>AS{t.asn}</span>
+              </div>
+            </div>
+          ))}
+          <div style={{ fontSize: 7, color: "#445566", marginTop: 2 }}>Not physical locations</div>
         </div>
-        {transitNodes.map(t => (
-          <div key={t.asn} style={{ fontSize: 10, color: "#aaa", padding: "2px 0" }}>
-            <span style={{ color: "#7777aa" }}>●</span> {t.label} <span style={{ color: "#555" }}>AS{t.asn}</span>
-          </div>
-        ))}
-        <div style={{ fontSize: 8, color: "#445", marginTop: 4 }}>Not physical locations</div>
-      </div>
+      )}
 
-      {/* Country IP-space weather — large callout with actual country shape */}
+      {/* Country IP-space weather — hero callout with actual country shape */}
       <div ref={calloutRef} style={{
-        position: "absolute", top: 12, right: 12, width: "30%", minWidth: 260, maxWidth: 380,
-        background: "rgba(8,8,20,0.88)", border: "1px solid rgba(40,185,94,0.25)", borderRadius: 8,
-        backdropFilter: "blur(6px)", overflow: "hidden",
+        position: "absolute", top: 16, right: 16, width: "38%", minWidth: 320, maxWidth: 440,
+        background: "rgba(8,16,40,0.92)", border: "1px solid rgba(40,200,130,0.35)", borderRadius: 8,
+        backdropFilter: "blur(8px)", overflow: "hidden",
+        boxShadow: "0 0 24px rgba(40,180,100,0.08), 0 4px 20px rgba(0,0,0,0.3)",
       }}>
-        <div style={{ padding: "6px 12px", borderBottom: "1px solid rgba(40,185,94,0.15)" }}>
-          <div style={{ fontSize: 10, color: "#28b85e", textTransform: "uppercase", fontWeight: 600 }}>
-            {countryName} · IP-space weather
-          </div>
-          <div style={{ fontSize: 11, color: "#ccc", marginTop: 2 }}>
-            BGP-visible · {totalCollectors}/{totalCollectors} collector RIBs
+        <div style={{ padding: "10px 14px 8px", borderBottom: "1px solid rgba(40,200,130,0.18)" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <div style={{ fontSize: 12, color: "#2ecc71", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>
+              {countryName} · IP-space weather
+            </div>
+            <div style={{
+              padding: "2px 8px", borderRadius: 3, fontSize: 11, fontWeight: 600,
+              background: "rgba(40,200,130,0.12)", color: "#2ecc71",
+            }}>
+              BGP-visible · {totalCollectors}/{totalCollectors} RIBs
+            </div>
           </div>
         </div>
         <CubaWeatherCanvas />
-        <div style={{ padding: "4px 12px 6px", fontSize: 8, color: "#556", lineHeight: 1.4 }}>
+        <div style={{ padding: "6px 14px 8px", fontSize: 9, color: "#667788", lineHeight: 1.5 }}>
           Address space packed into country outline. Not physical prefix locations.
         </div>
       </div>
 
       {/* Collector labels */}
       <div style={{
-        position: "absolute", top: 12, left: 12, padding: "8px 12px",
-        background: "rgba(10,10,30,0.85)", border: "1px solid #2a2a48", borderRadius: 6,
-        backdropFilter: "blur(4px)",
+        position: "absolute", top: 16, left: 16, padding: "10px 14px",
+        background: "rgba(10,20,48,0.88)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 6,
+        backdropFilter: "blur(6px)",
       }}>
-        <div style={{ fontSize: 9, color: "#666", textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>
-          Collector RIB locations
+        <div style={{ fontSize: 10, color: "#8899bb", textTransform: "uppercase", marginBottom: 6, fontWeight: 600, letterSpacing: "0.04em" }}>
+          Collector RIBs
         </div>
         {COLLECTORS.map(c => (
-          <div key={c.id} style={{ fontSize: 10, color: c.id === selectedCollectorId ? "#ffcc40" : "#aaccdd", padding: "1px 0", cursor: "pointer" }}
+          <div key={c.id} style={{ fontSize: 11, color: c.id === selectedCollectorId ? "#ffd048" : "#aac8e0", padding: "2px 0", cursor: "pointer", fontWeight: c.id === selectedCollectorId ? 600 : 400 }}
             onClick={() => onSelectCollector(c.id === selectedCollectorId ? null : c.id)}>
-            <span style={{ color: "#5588aa" }}>●</span> {c.label}
+            <span style={{ color: c.id === selectedCollectorId ? "#ffd048" : "#68a0cc", marginRight: 4 }}>●</span>{c.label}
           </div>
         ))}
       </div>
 
       {/* Bottom disclaimer */}
-      <div style={{ position: "absolute", bottom: 4, left: "50%", transform: "translateX(-50%)", fontSize: 8, color: "#333" }}>
+      <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", fontSize: 9, color: "#445566" }}>
         Logical BGP AS-path structure from sampled collector RIBs. Not physical cables.
       </div>
 
       {/* Path families count */}
-      <div style={{ position: "absolute", top: 4, left: "50%", transform: "translateX(-50%)", fontSize: 9, color: "#445" }}>
+      <div style={{ position: "absolute", top: 6, left: "50%", transform: "translateX(-50%)", fontSize: 10, color: "#556678" }}>
         {pathFamilies.length} path families observed
       </div>
     </div>

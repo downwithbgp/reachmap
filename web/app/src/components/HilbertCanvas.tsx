@@ -173,27 +173,27 @@ export function HilbertCanvas({
   return (
     <div style={{ position: "relative", display: "inline-block" }}>
       <div style={{
-        padding: "4px 8px", fontSize: 10, fontWeight: 600, color: "#7777a0",
-        textTransform: "uppercase", letterSpacing: "0.05em",
-        background: "rgba(0,0,0,0.4)", borderBottom: "1px solid #2a2a48",
+        padding: "6px 10px", fontSize: 11, fontWeight: 600, color: "#8899bb",
+        textTransform: "uppercase", letterSpacing: "0.04em",
+        background: "#111830", borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
-        National IPv4 fingerprint
-        <span style={{ display: "block", fontWeight: 400, fontSize: 9, textTransform: "none", letterSpacing: 0, color: "#666", marginTop: 1 }}>
-          Complete national IP-space fingerprint · BGP visibility only
+        IP-space fingerprint
+        <span style={{ display: "block", fontWeight: 400, fontSize: 9, textTransform: "none", letterSpacing: 0, color: "#667788", marginTop: 2 }}>
+          Complete national address space · BGP visibility only
         </span>
       </div>
       <canvas
         ref={canvasRef}
         width={COMPACT_SIZE}
         height={COMPACT_SIZE}
-        style={{ display: "block", width: 220, maxWidth: "100%", height: "auto", aspectRatio: "1", cursor: "crosshair", imageRendering: "pixelated" }}
+        style={{ display: "block", width: 240, maxWidth: "100%", height: "auto", aspectRatio: "1", cursor: "crosshair", imageRendering: "pixelated" }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
       />
       <div style={{
-        padding: "3px 8px", fontSize: 9, color: "#666", fontFamily: "monospace",
-        background: "rgba(0,0,0,0.3)", borderTop: "1px solid #2a2a48",
+        padding: "4px 10px", fontSize: 9, color: "#667788", fontFamily: "monospace",
+        background: "#0d1530", borderTop: "1px solid rgba(255,255,255,0.06)",
       }}>
         {inBgp}/{prefixes.length} prefixes · ~{ipsPerCell} IPs/cell · order {COMPACT_ORDER} · {fillPct}% fill
       </div>
