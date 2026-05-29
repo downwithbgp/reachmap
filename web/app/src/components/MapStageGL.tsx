@@ -123,6 +123,9 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
   const mapRef = useRef<maplibregl.Map | null>(null);
   const overlayRef = useRef<MapboxOverlay | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const calloutRef = useRef<HTMLDivElement>(null);
+  const [cubaScreen, setCubaScreen] = useState<{x:number, y:number}|null>(null);
+  const [calloutAnchor, setCalloutAnchor] = useState<{x:number, y:number}|null>(null);
 
   // Initialize MapLibre
   useEffect(() => {
@@ -144,15 +147,38 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
     const overlay = new MapboxOverlay({ layers: [] });
     map.addControl(overlay as any);
 
+    const updateCubaScreen = () => {
+      const p = map.project(CUBA_CENTER);
+      setCubaScreen({x: p.x, y: p.y});
+    };
     map.on("load", () => {
       setMapReady(true);
+      updateCubaScreen();
     });
+    map.on("move", updateCubaScreen);
+    map.on("resize", updateCubaScreen);
 
     mapRef.current = map;
     overlayRef.current = overlay;
 
     return () => { map.remove(); mapRef.current = null; };
   }, []);
+
+  // Track callout panel position for connector endpoint
+  useEffect(() => {
+    const update = () => {
+      if (!calloutRef.current || !containerRef.current) return;
+      const cr = calloutRef.current.getBoundingClientRect();
+      const pr = containerRef.current.getBoundingClientRect();
+      setCalloutAnchor({
+        x: cr.left - pr.left,
+        y: cr.top + 50,
+      });
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [mapReady]);
 
   // Build deck.gl layers
   const deckLayers = useMemo(() => {
@@ -234,6 +260,29 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
       {/* MapLibre container — fills parent */}
       <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
+      {/* Callout connector — dashed line from geographic Cuba marker to IP-space weather panel */}
+      {cubaScreen && calloutAnchor && (
+        <svg style={{ position:"absolute", inset:0, pointerEvents:"none", zIndex:10, overflow:"visible" }}>
+          <defs>
+            <marker id="callout-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <polygon points="0 0, 8 3, 0 6" fill="rgba(0,210,180,0.5)" />
+            </marker>
+          </defs>
+          <line
+            x1={cubaScreen.x} y1={cubaScreen.y}
+            x2={calloutAnchor.x} y2={calloutAnchor.y}
+            stroke="rgba(0,210,180,0.45)"
+            strokeWidth={1.5}
+            strokeDasharray="6 4"
+            markerEnd="url(#callout-arrow)"
+          />
+          <text x={(cubaScreen.x + calloutAnchor.x) / 2} y={(cubaScreen.y + calloutAnchor.y) / 2 - 8}
+            textAnchor="middle" fill="rgba(0,200,180,0.5)" fontSize={8}>
+            geographic anchor → IP-space weather
+          </text>
+        </svg>
+      )}
+
       {/* Transit ASN logical overlay (HTML, not geographic) */}
       <div style={{
         position: "absolute", bottom: 50, right: 12, padding: "8px 12px",
@@ -252,7 +301,7 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
       </div>
 
       {/* Country IP-space weather — large callout with actual country shape */}
-      <div style={{
+      <div ref={calloutRef} style={{
         position: "absolute", top: 12, right: 12, width: "30%", minWidth: 260, maxWidth: 380,
         background: "rgba(8,8,20,0.88)", border: "1px solid rgba(40,185,94,0.25)", borderRadius: 8,
         backdropFilter: "blur(6px)", overflow: "hidden",
@@ -266,9 +315,8 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
           </div>
         </div>
         <CubaWeatherCanvas />
-        <div style={{ padding: "4px 12px 6px", display: "flex", justifyContent: "space-between", fontSize: 8, color: "#445" }}>
-          <span>IP-space packed into country outline</span>
-          <span>Not physical locations</span>
+        <div style={{ padding: "4px 12px 6px", fontSize: 8, color: "#556", lineHeight: 1.4 }}>
+          Address space packed into country outline. Not physical prefix locations.
         </div>
       </div>
 
