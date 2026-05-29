@@ -391,15 +391,10 @@ export function App() {
       {/* Main content — v0.1 country-shaped weather layout */}
       {!bootstrapError && (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 6, padding: "6px 8px" }}>
-          {/* Top row: collector map + transit flows + country weather */}
-          <div style={{ display: "flex", flex: 1, gap: 6, minHeight: 0, overflow: "hidden" }}>
-            {/* Left: Collector geography */}
-            <div style={{ flex: "0 0 240px", overflow: "hidden" }}>
-              <CollectorMap mapConfig={{ name: countryConfig?.name ?? "Cuba" }} />
-            </div>
-
-            {/* Center: Transit AS-path flows */}
-            <div style={{ flex: "0 0 300px", overflow: "hidden" }}>
+          {/* Top row: path flow (45%) + country weather (55%) */}
+          <div style={{ display: "flex", flex: 1, gap: 8, minHeight: 0, overflow: "hidden" }}>
+            {/* Left: Collector RIBs → transit → origin flow */}
+            <div style={{ flex: "0 0 45%", overflow: "hidden", display: "flex", flexDirection: "column" }}>
               <PathGraph
                 pathFamilies={pathFamilies}
                 asnMap={asnMap}
@@ -415,7 +410,7 @@ export function App() {
             </div>
 
             {/* Right: Country-shaped IP-space weather */}
-            <div style={{ flex: 1, minWidth: 300, overflow: "hidden" }}>
+            <div style={{ flex: "0 0 55%", overflow: "hidden" }}>
               <CountryWeather
                 prefixes={prefixes}
                 visibilityScores={visibilityScores}
