@@ -467,8 +467,8 @@ export function App() {
           <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 2, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>4/4</div>
-              <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>sampled RIBs</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>{totalCollectors}/{totalCollectors}</div>
+              <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>parsed RIBs observed</div>
             </div>
             <div style={{ color: "#4a5568", fontSize: 14, fontWeight: 300 }}>vs</div>
             <div style={{ textAlign: "center" }}>

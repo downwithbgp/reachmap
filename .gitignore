@@ -9,6 +9,7 @@ target/
 data/snapshots/
 data/processed/
 data/geo/
+data/cache/bgp/
 *.bz2
 *.gz
 *.mrt

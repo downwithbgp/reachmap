@@ -1,136 +1,269 @@
 {
-  "description": "Known BGP observation collectors with documented geography. Used as the primary geographic observation layer for ReachMap visibility consensus.",
+  "description": "Known BGP observation collectors with documented geography. Used as the primary geographic observation layer for ReachMap visibility consensus. RouteViews and RIPE RIS collectors with metadata for cache-first data ingestion.",
   "collectors": {
     "route-views2": {
-      "id": "route-views2",
-      "name": "RouteViews route-views2",
-      "source": "routeviews",
-      "latitude": 44.05,
-      "longitude": -123.09,
-      "city": "Eugene",
-      "region": "Oregon",
-      "countryCode": "US",
-      "continent": "North America",
-      "regionGroup": "North America",
-      "confidence": 0.95,
-      "multihopPolicy": "mixed",
-      "notes": "University of Oregon. Primary RouteViews collector."
+      "id": "route-views2", "name": "RouteViews route-views2", "source": "routeviews",
+      "latitude": 44.05, "longitude": -123.09, "city": "Eugene", "region": "Oregon",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.95, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views2/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views3": {
+      "id": "route-views3", "name": "RouteViews route-views3", "source": "routeviews",
+      "latitude": 39.04, "longitude": -77.49, "city": "Ashburn", "region": "Virginia",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views3/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "route-views4": {
-      "id": "route-views4",
-      "name": "RouteViews route-views4",
-      "source": "routeviews",
-      "latitude": 37.34,
-      "longitude": -121.89,
-      "city": "San Jose",
-      "region": "California",
-      "countryCode": "US",
-      "continent": "North America",
-      "regionGroup": "North America",
-      "confidence": 0.95,
-      "multihopPolicy": "mixed",
-      "notes": "Equinix SV1."
+      "id": "route-views4", "name": "RouteViews route-views4", "source": "routeviews",
+      "latitude": 37.34, "longitude": -121.89, "city": "San Jose", "region": "California",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.95, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views4/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "route-views6": {
-      "id": "route-views6",
-      "name": "RouteViews route-views6",
-      "source": "routeviews",
-      "latitude": 33.64,
-      "longitude": -84.44,
-      "city": "Atlanta",
-      "region": "Georgia",
-      "countryCode": "US",
-      "continent": "North America",
-      "regionGroup": "North America",
-      "confidence": 0.95,
-      "multihopPolicy": "mixed",
-      "notes": "Equinix AT1."
+      "id": "route-views6", "name": "RouteViews route-views6", "source": "routeviews",
+      "latitude": 33.64, "longitude": -84.44, "city": "Atlanta", "region": "Georgia",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.95, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views6/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "route-views.eqix": {
-      "id": "route-views.eqix",
-      "name": "RouteViews route-views.eqix",
-      "source": "routeviews",
-      "latitude": 39.04,
-      "longitude": -77.49,
-      "city": "Ashburn",
-      "region": "Virginia",
-      "countryCode": "US",
-      "continent": "North America",
-      "regionGroup": "North America",
-      "confidence": 0.95,
-      "multihopPolicy": "mixed",
-      "notes": "Equinix Ashburn."
+      "id": "route-views.eqix", "name": "RouteViews route-views.eqix", "source": "routeviews",
+      "latitude": 39.04, "longitude": -77.49, "city": "Ashburn", "region": "Virginia",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.95, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.eqix/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.isc": {
+      "id": "route-views.isc", "name": "RouteViews route-views.isc", "source": "routeviews",
+      "latitude": 37.75, "longitude": -122.41, "city": "San Francisco", "region": "California",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.isc/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.kixp": {
+      "id": "route-views.kixp", "name": "RouteViews route-views.kixp", "source": "routeviews",
+      "latitude": -1.28, "longitude": 36.82, "city": "Nairobi", "countryCode": "KE",
+      "continent": "Africa", "regionGroup": "Africa",
+      "confidence": 0.80, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.kixp/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.jinx": {
+      "id": "route-views.jinx", "name": "RouteViews route-views.jinx", "source": "routeviews",
+      "latitude": -26.20, "longitude": 28.04, "city": "Johannesburg", "countryCode": "ZA",
+      "continent": "Africa", "regionGroup": "Africa",
+      "confidence": 0.80, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.jinx/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "route-views.linx": {
-      "id": "route-views.linx",
-      "name": "RouteViews route-views.linx",
-      "source": "routeviews",
-      "latitude": 51.51,
-      "longitude": -0.09,
-      "city": "London",
-      "countryCode": "GB",
-      "continent": "Europe",
-      "regionGroup": "Europe",
-      "confidence": 0.90,
-      "multihopPolicy": "mixed",
-      "notes": "LINX, London."
+      "id": "route-views.linx", "name": "RouteViews route-views.linx", "source": "routeviews",
+      "latitude": 51.51, "longitude": -0.09, "city": "London", "countryCode": "GB",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.linx/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.nwax": {
+      "id": "route-views.nwax", "name": "RouteViews route-views.nwax", "source": "routeviews",
+      "latitude": 45.52, "longitude": -122.68, "city": "Portland", "region": "Oregon",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.nwax/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.sg": {
+      "id": "route-views.sg", "name": "RouteViews route-views.sg", "source": "routeviews",
+      "latitude": 1.35, "longitude": 103.82, "city": "Singapore", "countryCode": "SG",
+      "continent": "Asia", "regionGroup": "Asia",
+      "confidence": 0.80, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.sg/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.sydney": {
+      "id": "route-views.sydney", "name": "RouteViews route-views.sydney", "source": "routeviews",
+      "latitude": -33.87, "longitude": 151.21, "city": "Sydney", "countryCode": "AU",
+      "continent": "Oceania", "regionGroup": "Asia",
+      "confidence": 0.80, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.sydney/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.telxatl": {
+      "id": "route-views.telxatl", "name": "RouteViews route-views.telxatl", "source": "routeviews",
+      "latitude": 33.75, "longitude": -84.39, "city": "Atlanta", "region": "Georgia",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.telxatl/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.wide": {
+      "id": "route-views.wide", "name": "RouteViews route-views.wide", "source": "routeviews",
+      "latitude": 35.68, "longitude": 139.76, "city": "Tokyo", "countryCode": "JP",
+      "continent": "Asia", "regionGroup": "Asia",
+      "confidence": 0.80, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.wide/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.chicago": {
+      "id": "route-views.chicago", "name": "RouteViews route-views.chicago", "source": "routeviews",
+      "latitude": 41.88, "longitude": -87.63, "city": "Chicago", "region": "Illinois",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.chicago/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.saopaulo": {
+      "id": "route-views.saopaulo", "name": "RouteViews route-views.saopaulo", "source": "routeviews",
+      "latitude": -23.55, "longitude": -46.63, "city": "São Paulo", "countryCode": "BR",
+      "continent": "South America", "regionGroup": "South America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.saopaulo/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.perth": {
+      "id": "route-views.perth", "name": "RouteViews route-views.perth", "source": "routeviews",
+      "latitude": -31.95, "longitude": 115.86, "city": "Perth", "countryCode": "AU",
+      "continent": "Oceania", "regionGroup": "Asia",
+      "confidence": 0.80, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.perth/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
+    },
+    "route-views.sfmix": {
+      "id": "route-views.sfmix", "name": "RouteViews route-views.sfmix", "source": "routeviews",
+      "latitude": 37.77, "longitude": -122.42, "city": "San Francisco", "region": "California",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.sfmix/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "route-views.amsix": {
-      "id": "route-views.amsix",
-      "name": "RouteViews route-views.amsix",
-      "source": "routeviews",
-      "latitude": 52.37,
-      "longitude": 4.90,
-      "city": "Amsterdam",
-      "countryCode": "NL",
-      "continent": "Europe",
-      "regionGroup": "Europe",
-      "confidence": 0.90,
-      "multihopPolicy": "mixed",
-      "notes": "AMS-IX, Amsterdam."
+      "id": "route-views.amsix", "name": "RouteViews route-views.amsix", "source": "routeviews",
+      "latitude": 52.37, "longitude": 4.90, "city": "Amsterdam", "countryCode": "NL",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.amsix/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "route-views.decix": {
-      "id": "route-views.decix",
-      "name": "RouteViews route-views.decix",
-      "source": "routeviews",
-      "latitude": 50.11,
-      "longitude": 8.68,
-      "city": "Frankfurt",
-      "countryCode": "DE",
-      "continent": "Europe",
-      "regionGroup": "Europe",
-      "confidence": 0.90,
-      "multihopPolicy": "mixed",
-      "notes": "DE-CIX, Frankfurt."
+      "id": "route-views.decix", "name": "RouteViews route-views.decix", "source": "routeviews",
+      "latitude": 50.11, "longitude": 8.68, "city": "Frankfurt", "countryCode": "DE",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://archive.routeviews.org/route-views.decix/bgpdata/{YYYY}.{MM}/RIBS/rib.{YYYY}{MM}{DD}.{HH}00.bz2",
+      "enabled": true
     },
     "rrc00": {
-      "id": "rrc00",
-      "name": "RIPE RIS rrc00",
-      "source": "ris",
-      "latitude": 52.37,
-      "longitude": 4.90,
-      "city": "Amsterdam",
-      "region": "Noord-Holland",
-      "countryCode": "NL",
-      "continent": "Europe",
-      "regionGroup": "Europe",
-      "confidence": 0.95,
-      "multihopPolicy": "mixed",
-      "notes": "RIPE NCC, Amsterdam. Multi-hop peer policy."
+      "id": "rrc00", "name": "RIPE RIS rrc00", "source": "ris",
+      "latitude": 52.37, "longitude": 4.90, "city": "Amsterdam", "region": "Noord-Holland",
+      "countryCode": "NL", "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.95, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc00/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": true
+    },
+    "rrc01": {
+      "id": "rrc01", "name": "RIPE RIS rrc01", "source": "ris",
+      "latitude": 51.51, "longitude": -0.09, "city": "London", "countryCode": "GB",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc01/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": true
+    },
+    "rrc03": {
+      "id": "rrc03", "name": "RIPE RIS rrc03", "source": "ris",
+      "latitude": 52.37, "longitude": 4.90, "city": "Amsterdam", "countryCode": "NL",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc03/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc04": {
+      "id": "rrc04", "name": "RIPE RIS rrc04", "source": "ris",
+      "latitude": 48.86, "longitude": 2.35, "city": "Paris", "countryCode": "FR",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc04/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc05": {
+      "id": "rrc05", "name": "RIPE RIS rrc05", "source": "ris",
+      "latitude": 47.38, "longitude": 8.54, "city": "Zürich", "countryCode": "CH",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc05/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc06": {
+      "id": "rrc06", "name": "RIPE RIS rrc06", "source": "ris",
+      "latitude": 35.68, "longitude": 139.76, "city": "Tokyo", "countryCode": "JP",
+      "continent": "Asia", "regionGroup": "Asia",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc06/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc07": {
+      "id": "rrc07", "name": "RIPE RIS rrc07", "source": "ris",
+      "latitude": 59.33, "longitude": 18.07, "city": "Stockholm", "countryCode": "SE",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc07/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc10": {
+      "id": "rrc10", "name": "RIPE RIS rrc10", "source": "ris",
+      "latitude": 37.75, "longitude": -122.41, "city": "San Francisco", "region": "California",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc10/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc11": {
+      "id": "rrc11", "name": "RIPE RIS rrc11", "source": "ris",
+      "latitude": -23.55, "longitude": -46.63, "city": "São Paulo", "countryCode": "BR",
+      "continent": "South America", "regionGroup": "South America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc11/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc12": {
+      "id": "rrc12", "name": "RIPE RIS rrc12", "source": "ris",
+      "latitude": 51.51, "longitude": -0.09, "city": "London", "countryCode": "GB",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc12/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc13": {
+      "id": "rrc13", "name": "RIPE RIS rrc13", "source": "ris",
+      "latitude": 55.75, "longitude": 37.62, "city": "Moscow", "countryCode": "RU",
+      "continent": "Europe", "regionGroup": "Europe",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc13/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
+    },
+    "rrc14": {
+      "id": "rrc14", "name": "RIPE RIS rrc14", "source": "ris",
+      "latitude": 37.75, "longitude": -122.41, "city": "San Francisco", "region": "California",
+      "countryCode": "US", "continent": "North America", "regionGroup": "North America",
+      "confidence": 0.85, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc14/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
     },
     "rrc15": {
-      "id": "rrc15",
-      "name": "RIPE RIS rrc15",
-      "source": "ris",
-      "latitude": -23.55,
-      "longitude": -46.63,
-      "city": "São Paulo",
-      "countryCode": "BR",
-      "continent": "South America",
-      "regionGroup": "South America",
-      "confidence": 0.90,
-      "multihopPolicy": "mixed",
-      "notes": "PTT-SP, São Paulo."
+      "id": "rrc15", "name": "RIPE RIS rrc15", "source": "ris",
+      "latitude": -23.55, "longitude": -46.63, "city": "São Paulo", "countryCode": "BR",
+      "continent": "South America", "regionGroup": "South America",
+      "confidence": 0.90, "multihopPolicy": "mixed",
+      "ribUrlTemplate": "https://data.ris.ripe.net/rrc15/{YYYY}.{MM}/bview.{YYYY}{MM}{DD}.{HH}00.gz",
+      "enabled": false
     }
   }
 }

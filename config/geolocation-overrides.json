@@ -49,14 +49,74 @@
   },
   "collector:rrc00": {
     "kind": "collector_location",
-    "latitude": 52.37,
-    "longitude": 4.90,
-    "city": "Amsterdam",
-    "region": "Noord-Holland",
-    "countryCode": "NL",
-    "continent": "Europe",
-    "confidence": 0.95,
-    "precision": "exact",
+    "latitude": 52.37, "longitude": 4.90, "city": "Amsterdam", "region": "Noord-Holland",
+    "countryCode": "NL", "continent": "Europe", "confidence": 0.95, "precision": "exact",
     "note": "RIPE RIS rrc00 — Amsterdam, Netherlands"
+  },
+  "collector:rrc01": {
+    "kind": "collector_location",
+    "latitude": 51.51, "longitude": -0.09, "city": "London",
+    "countryCode": "GB", "continent": "Europe", "confidence": 0.90, "precision": "exact",
+    "note": "RIPE RIS rrc01 — London, UK"
+  },
+  "collector:route-views3": {
+    "kind": "collector_location",
+    "latitude": 39.04, "longitude": -77.49, "city": "Ashburn", "region": "Virginia",
+    "countryCode": "US", "continent": "North America", "confidence": 0.90, "precision": "exact",
+    "note": "RouteViews route-views3 — Ashburn, VA"
+  },
+  "collector:route-views.isc": {
+    "kind": "collector_location",
+    "latitude": 37.75, "longitude": -122.41, "city": "San Francisco", "region": "California",
+    "countryCode": "US", "continent": "North America", "confidence": 0.85, "precision": "exact",
+    "note": "RouteViews route-views.isc — San Francisco, CA"
+  },
+  "collector:route-views.kixp": {
+    "kind": "collector_location",
+    "latitude": -1.28, "longitude": 36.82, "city": "Nairobi",
+    "countryCode": "KE", "continent": "Africa", "confidence": 0.80, "precision": "approximate",
+    "note": "RouteViews route-views.kixp — Nairobi, Kenya"
+  },
+  "collector:route-views.jinx": {
+    "kind": "collector_location",
+    "latitude": -26.20, "longitude": 28.04, "city": "Johannesburg",
+    "countryCode": "ZA", "continent": "Africa", "confidence": 0.80, "precision": "approximate",
+    "note": "RouteViews route-views.jinx — Johannesburg, South Africa"
+  },
+  "collector:route-views.sg": {
+    "kind": "collector_location",
+    "latitude": 1.35, "longitude": 103.82, "city": "Singapore",
+    "countryCode": "SG", "continent": "Asia", "confidence": 0.80, "precision": "approximate",
+    "note": "RouteViews route-views.sg — Singapore"
+  },
+  "collector:route-views.sydney": {
+    "kind": "collector_location",
+    "latitude": -33.87, "longitude": 151.21, "city": "Sydney",
+    "countryCode": "AU", "continent": "Oceania", "confidence": 0.80, "precision": "approximate",
+    "note": "RouteViews route-views.sydney — Sydney, Australia"
+  },
+  "collector:route-views.wide": {
+    "kind": "collector_location",
+    "latitude": 35.68, "longitude": 139.76, "city": "Tokyo",
+    "countryCode": "JP", "continent": "Asia", "confidence": 0.80, "precision": "approximate",
+    "note": "RouteViews route-views.wide — Tokyo, Japan"
+  },
+  "collector:route-views.chicago": {
+    "kind": "collector_location",
+    "latitude": 41.88, "longitude": -87.63, "city": "Chicago", "region": "Illinois",
+    "countryCode": "US", "continent": "North America", "confidence": 0.85, "precision": "exact",
+    "note": "RouteViews route-views.chicago — Chicago, IL"
+  },
+  "collector:route-views.saopaulo": {
+    "kind": "collector_location",
+    "latitude": -23.55, "longitude": -46.63, "city": "São Paulo",
+    "countryCode": "BR", "continent": "South America", "confidence": 0.85, "precision": "exact",
+    "note": "RouteViews route-views.saopaulo — São Paulo, Brazil"
+  },
+  "collector:route-views.nwax": {
+    "kind": "collector_location",
+    "latitude": 45.52, "longitude": -122.68, "city": "Portland", "region": "Oregon",
+    "countryCode": "US", "continent": "North America", "confidence": 0.85, "precision": "exact",
+    "note": "RouteViews route-views.nwax — Portland, OR"
   }
 }

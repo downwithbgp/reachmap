@@ -178,3 +178,104 @@ export interface TimelineIndex {
   caseStudyId?: string;
   points: TimelinePoint[];
 }
+
+/** Collector metadata from registry */
+export interface CollectorMeta {
+  id: string;
+  name: string;
+  source: "routeviews" | "ris" | "openbmp" | "local";
+  latitude: number;
+  longitude: number;
+  city?: string;
+  region?: string;
+  countryCode?: string;
+  continent?: string;
+  regionGroup: string;
+  confidence: number;
+  multihopPolicy?: string;
+  ribUrlTemplate?: string;
+  enabled: boolean;
+}
+
+/** Per-collector status in a snapshot */
+export type CollectorStatus =
+  | "parsed_observed"
+  | "parsed_no_match"
+  | "fetch_failed"
+  | "parse_failed"
+  | "disabled"
+  | "not_requested";
+
+/** Collector entry in a snapshot manifest */
+export interface SnapshotCollectorEntry {
+  collectorId: string;
+  status: CollectorStatus;
+  rawPath?: string;
+  parsedPath?: string;
+  prefixesObserved: number;
+  pathFamilies: number;
+  error?: string | null;
+}
+
+/** Cache manifest for a snapshot */
+export interface CacheManifest {
+  timestamp: string;
+  country: string;
+  collectorsRequested: number;
+  collectorsFetched: number;
+  collectorsParsed: number;
+  collectorsWithCountryPrefixes: number;
+  createdAt: string;
+  sources: SnapshotCollectorEntry[];
+}
+
+/** ASN entry in graph-ready artifact */
+export interface SnapshotAsnEntry {
+  asn: number;
+  name?: string;
+  role: "peer" | "transit" | "origin";
+  prefixes: number;
+  pathFamilies: number;
+  collectors: string[];
+}
+
+/** Edge entry in graph-ready artifact */
+export interface SnapshotEdgeEntry {
+  from: string;
+  to: string;
+  role: "collector_peer" | "as_adjacency" | "origin_prefix_space";
+  prefixes: number;
+  pathFamilies: number;
+  collectors: string[];
+  examplePaths: number[][];
+}
+
+/** Top-level graph-ready snapshot artifact */
+export interface ReachMapSnapshot {
+  country: string;
+  timestamp: string;
+  prefixSet: {
+    total: number;
+    prefixes: string[];
+    source: string;
+  };
+  collectors: Array<{
+    id: string;
+    label: string;
+    source: string;
+    region?: string;
+    regionGroup?: string;
+    lat?: number;
+    lon?: number;
+    status: CollectorStatus;
+    prefixesObserved: number;
+    pathFamilies: number;
+  }>;
+  asns: SnapshotAsnEntry[];
+  edges: SnapshotEdgeEntry[];
+  trafficSignal?: {
+    source: string;
+    baselinePercent: number;
+    declinePercent?: number;
+  };
+}
