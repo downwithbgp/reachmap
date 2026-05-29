@@ -7,14 +7,10 @@ export type RGB = [number, number, number];
 // Background
 export const BG: RGB = [8, 8, 18];
 
-// ASN base hues (soft, editorial)
+// Deterministic ASN hue assignment via golden-ratio hash.
+// Produces stable, well-distributed hues for any ASN without hardcoding.
 export function asnHue(asn: number): number {
-  switch (asn) {
-    case 27725: return 215; // ETECSA — soft electric blue
-    case 11960: return 175; // ETECSA IXP — muted teal
-    case 10569: return 40;  // CENIAInternet — warm amber
-    default:    return 270; // other — muted violet
-  }
+  return ((asn * 137.508) % 360 + 360) % 360;
 }
 
 export function getPrefixColor(

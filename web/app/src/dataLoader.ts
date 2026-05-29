@@ -242,12 +242,19 @@ function ipv4ToU32(ip: string): number {
 
 export async function loadAsnMetadata(): Promise<Map<number, AsnMetadata>> {
   try {
-    const res = await fetch(`${BASE}/asn-metadata.json`);
+    const res = await fetch(`${BASE}/asn-catalog.json`);
     if (!res.ok) return new Map();
     const data = await res.json();
     const map = new Map<number, AsnMetadata>();
     for (const entry of data.asns ?? []) {
-      map.set(entry.asn, entry);
+      // Derive primary role from appearances for backward compat
+      const app = entry.appearances ?? {};
+      const role = app.origin ? "origin" : app.transit ? "transit" : app.collectorPeer ? "peer" : undefined;
+      map.set(entry.asn, {
+        asn: entry.asn,
+        displayName: entry.displayName ?? `AS${entry.asn}`,
+        role,
+      });
     }
     return map;
   } catch { return new Map(); }
