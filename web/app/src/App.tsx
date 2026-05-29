@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { SidePanel } from "./components/SidePanel";
 import { ReachMapStage } from "./components/ReachMapStage";
+import { MapStageGL } from "./components/MapStageGL";
 import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes, loadTimelinePathFamilies } from "./dataLoader";
 import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
 import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
@@ -391,21 +392,39 @@ export function App() {
         <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", gap: 6, padding: "6px 8px" }}>
           {/* Main stage: integrated map + logical paths + country weather */}
           <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-            <ReachMapStage
-              pathFamilies={pathFamilies}
-              asnMap={asnMap}
-              visibilityScores={visibilityScores}
-              totalCollectors={totalCollectors}
-              countryName={countryConfig?.name ?? "Cuba"}
-              selectedPrefix={selectedPrefix?.prefix ?? null}
-              selectedCollectorId={selectedVp?.collector ?? null}
-              onSelectCollector={(cid) => {
-                if (!cid) { handleClearSelection(); return; }
-                const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
-                if (vp) handleSelectViewpoint(vp);
-                else handleClearSelection();
-              }}
-            />
+            {new URLSearchParams(window.location.search).get("stage") === "gl" ? (
+              <MapStageGL
+                pathFamilies={pathFamilies}
+                asnMap={asnMap}
+                visibilityScores={visibilityScores}
+                totalCollectors={totalCollectors}
+                countryName={countryConfig?.name ?? "Cuba"}
+                selectedPrefix={selectedPrefix?.prefix ?? null}
+                selectedCollectorId={selectedVp?.collector ?? null}
+                onSelectCollector={(cid) => {
+                  if (!cid) { handleClearSelection(); return; }
+                  const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
+                  if (vp) handleSelectViewpoint(vp);
+                  else handleClearSelection();
+                }}
+              />
+            ) : (
+              <ReachMapStage
+                pathFamilies={pathFamilies}
+                asnMap={asnMap}
+                visibilityScores={visibilityScores}
+                totalCollectors={totalCollectors}
+                countryName={countryConfig?.name ?? "Cuba"}
+                selectedPrefix={selectedPrefix?.prefix ?? null}
+                selectedCollectorId={selectedVp?.collector ?? null}
+                onSelectCollector={(cid) => {
+                  if (!cid) { handleClearSelection(); return; }
+                  const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
+                  if (vp) handleSelectViewpoint(vp);
+                  else handleClearSelection();
+                }}
+              />
+            )}
           </div>
 
           {/* Bottom row: Hilbert technical inset + side panel */}
