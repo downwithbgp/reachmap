@@ -7,6 +7,21 @@ address space appears from global BGP collector RIBs, then compares that
 control-plane view against disruption signals like traffic volume, probes, and
 censorship measurements.
 
+## Current demo
+
+The live demo at [reachmap.vadimpetrov.com](https://reachmap.vadimpetrov.com)
+visualizes BGP collector RIB visibility for Cuba's national address space during
+the March 2026 grid collapse. A GL map shows documented collector RIB locations
+and logical BGP path context — not physical cables or fiber routes. A
+country-shaped IP-space weather callout displays which prefixes are
+BGP-visible across sampled collectors, with address space packed into the
+country outline; it is an IP-space view, not a map of physical prefix locations.
+In this case, sampled BGP collector RIBs continued to observe Cuban prefixes
+while an external traffic signal (Cloudflare Radar) declined by ~65%. This
+demonstrates why BGP visibility and end-user reachability are different layers:
+the disruption occurred below the global routing control plane. Data sources and
+provenance are documented below.
+
 ## What it is
 
 - A BGP control-plane visibility tool: are routes to a country's prefixes present in sampled RouteViews and RIPE RIS collector RIBs?
