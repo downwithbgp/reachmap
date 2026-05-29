@@ -164,8 +164,11 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
       </div>
 
       {/* Observation disclaimer */}
-      <div style={{ position: "absolute", bottom: 4, left: 8, fontSize: 8, color: "#556678" }}>
+      <div style={{ position: "absolute", bottom: 16, left: 8, fontSize: 8, color: "#556678" }}>
         Observation locations only — not network paths
+      </div>
+      <div style={{ position: "absolute", bottom: 4, left: 8, fontSize: 7, color: "#4a5a6a" }}>
+        {COLLECTORS.length} observation locations · {totalCollectors} with RIB data for this timestamp
       </div>
 
       {/* Country label */}

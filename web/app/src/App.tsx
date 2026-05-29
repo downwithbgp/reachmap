@@ -81,7 +81,11 @@ function CubaWeatherCard({ countryName, totalCollectors }: { countryName: string
         </div>
       </div>
       <canvas ref={canvasRef} width={480} height={210} style={{ display: "block", width: "100%", height: "auto" }} />
-      <div style={{ padding: "6px 14px 8px", fontSize: 9, color: "#667788", lineHeight: 1.5 }}>
+      <div style={{ padding: "6px 14px 8px", display: "flex", gap: 16, fontSize: 9, borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+        <span style={{ color: "#2ecc71" }}>Control plane: visible</span>
+        <span style={{ color: "#e8a040" }}>Traffic signal: degraded</span>
+      </div>
+      <div style={{ padding: "2px 14px 6px", fontSize: 8, color: "#556678", lineHeight: 1.4 }}>
         Packed national routed address space. Not physical prefix locations.
       </div>
     </div>
@@ -328,7 +332,7 @@ export function App() {
     ? timelineIndex.points.find(p => p.snapshotId === timelineSnapshotId) ?? null : null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#0a1020", color: "#c8c8d8", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "#0a1020", color: "#c8c8d8", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
       {/* Header */}
       <header style={{
         padding: "12px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#0d1530",
@@ -446,36 +450,32 @@ export function App() {
         </div>
       )}
 
-      {/* Status strip — BGP control plane vs traffic signal */}
+      {/* Status strip — prominent insight + metrics */}
       {!bootstrapError && dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
         <div style={{
-          padding: "12px 24px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
-          display: "flex", gap: 36, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
+          padding: "14px 24px 12px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+          display: "flex", gap: 32, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
         }}>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#e8e8f8", marginBottom: 2, letterSpacing: "-0.01em" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#e8e8f8", letterSpacing: "-0.01em" }}>
               Cuba · March 2026
             </div>
-            <div style={{ fontSize: 11, color: "#99aabb" }}>
-              BGP collector RIB visibility remained stable while an external traffic signal declined.
+            <div style={{ fontSize: 13, color: "#aabbcc", marginTop: 2, fontWeight: 500 }}>
+              BGP stayed green while traffic fell to roughly one-third of normal.
             </div>
           </div>
-          <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 3, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>4/4</div>
-              <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>BGP-visible</div>
+              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 2, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>4/4</div>
+              <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>sampled RIBs</div>
             </div>
-            <div style={{ color: "#4a5568", fontSize: 16, fontWeight: 300 }}>vs</div>
+            <div style={{ color: "#4a5568", fontSize: 14, fontWeight: 300 }}>vs</div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 3, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic signal</div>
-              <div style={{ fontSize: 26, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~35%</div>
+              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 2, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic signal</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~35%</div>
               <div style={{ fontSize: 9, color: "#8a7a60", marginTop: 1 }}>of baseline</div>
             </div>
-          </div>
-          <div style={{ flex: 1, fontSize: 12, color: "#aabbcc", lineHeight: 1.6, minWidth: 200 }}>
-            Control plane: BGP collector RIBs continued to observe Cuban prefixes.<br />
-            Traffic signal: external traffic volume fell to roughly one-third of normal.
           </div>
           <div style={{ fontSize: 9, color: "#667788" }}>Traffic source: Cloudflare Radar</div>
         </div>
@@ -485,8 +485,8 @@ export function App() {
       {!bootstrapError && (
         <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
           {/* Main row: AS-path visibility graph (dominant) + IP-space weather card (right) */}
-          <div style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden", gap: 10, padding: "10px 12px 6px" }}>
-            <div style={{ flex: 3, minWidth: 0, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden", gap: 10, padding: "12px 12px 4px" }}>
+            <div style={{ flex: 4, minWidth: 0, display: "flex", flexDirection: "column" }}>
               <PathGraph
                 pathFamilies={pathFamilies}
                 viewpoints={viewpoints}
@@ -510,9 +510,9 @@ export function App() {
             </div>
           </div>
 
-          {/* Bottom row: observation map (inset) + Hilbert + side panel */}
-          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", borderTop: "1px solid rgba(255,255,255,0.05)", padding: "6px 12px 12px", maxHeight: 280, overflow: "hidden" }}>
-            <div style={{ flex: "0 0 300px", height: 260 }}>
+          {/* Bottom row: observation map (inset) + fingerprint (compact) + side panel */}
+          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", borderTop: "1px solid rgba(255,255,255,0.04)", padding: "6px 12px 8px", maxHeight: 220, overflow: "hidden" }}>
+            <div style={{ flex: "0 0 260px", height: 200 }}>
               {(() => {
                 const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
                 const webglOk = hasWebGL();
@@ -541,7 +541,7 @@ export function App() {
                 );
               })()}
             </div>
-            <div style={{ flex: "0 0 250px" }}>
+            <div style={{ flex: "0 0 200px", opacity: 0.85 }}>
               <HilbertCanvas
                 prefixes={prefixes}
                 colorMode={effectiveColorMode}
@@ -553,7 +553,7 @@ export function App() {
                 onClickPrefix={handleClickPrefix}
               />
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: 1, minWidth: 0, maxHeight: 200, overflow: "hidden" }}>
               <SidePanel
                 selectionMode={selectionMode}
                 colorMode={effectiveColorMode}

@@ -60,41 +60,6 @@ export function SidePanel({
       padding: "16px 18px", display: "flex", flexDirection: "column", gap: 16,
       fontSize: 13, color: "#c8c8d8",
     }}>
-      {/* Viewpoint / ASN selector */}
-      <Section title="Observation Point">
-        <select
-          value={selectedVp?.id ?? (selectedAsView ? `asn-${selectedAsView.peerAsn}` : "")}
-          onChange={(e) => {
-            const val = e.target.value;
-            if (!val) { onClearSelection(); return; }
-            if (val.startsWith("asn-")) {
-              onSelectAsn(parseInt(val.replace("asn-", "")));
-            }
-          }}
-          style={{
-            width: "100%", padding: "6px 8px", fontSize: 12,
-            background: "#0a0a14", color: "#c8c8d8", border: "1px solid #2a2a48",
-            borderRadius: 4, cursor: "pointer",
-          }}
-        >
-          <option value="">All viewpoints</option>
-          <optgroup label="By ASN (aggregate)">
-            {asViews.map(a => (
-              <option key={`asn-${a.peerAsn}`} value={`asn-${a.peerAsn}`}>
-                {a.peerAsName ?? `AS${a.peerAsn}`} ({a.viewpointIds.length} viewpoints)
-              </option>
-            ))}
-          </optgroup>
-          <optgroup label="By viewpoint">
-            {allViewpoints.map(vp => (
-              <option key={vp.id} value={vp.id}>
-                {vp.displayName} {vp.peerAsName ? `/ AS${vp.peerAsn}` : ""}
-              </option>
-            ))}
-          </optgroup>
-        </select>
-      </Section>
-
       {/* Detail */}
       {showDetail && (
         <Section title={selectedVp ? "Viewpoint Detail" : "ASN Aggregate"}>

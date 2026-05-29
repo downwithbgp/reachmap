@@ -23,15 +23,15 @@ const COLLECTORS = [
 const ORIGIN_PALETTE = ["#5b9bd5", "#45b7aa", "#d4a040", "#8877aa", "#cc6666", "#55aa88"];
 
 const COLUMNS = [
-  { id: "collectors", label: "Collector RIBs", x: 50 },
-  { id: "peers", label: "Peer ASNs", x: 200 },
-  { id: "transit", label: "Transit ASNs", x: 340 },
-  { id: "origin", label: "Origin ASNs", x: 490 },
-  { id: "prefixes", label: "Prefix space", x: 620 },
+  { id: "collectors", label: "Collector RIBs", x: 55 },
+  { id: "peers", label: "Peer ASNs", x: 215 },
+  { id: "transit", label: "Transit ASNs", x: 375 },
+  { id: "origin", label: "Origin ASNs", x: 540 },
+  { id: "prefixes", label: "Prefix space", x: 690 },
 ];
 
-const GRAPH_W = 740;
-const GRAPH_H = 380;
+const GRAPH_W = 820;
+const GRAPH_H = 420;
 
 interface NodeInfo {
   id: string; label: string; sublabel?: string; column: number; y: number;
@@ -67,6 +67,11 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
   const [hoveredNode, setHoveredNode] = useState<NodeInfo | null>(null);
   const [hoveredEdge, setHoveredEdge] = useState<EdgeInfo | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<EdgeInfo | null>(null);
+  const [selectedNode, setSelectedNode] = useState<NodeInfo | null>(null);
+
+  function truncateLabel(label: string, maxLen: number = 18): string {
+    return label.length > maxLen ? label.slice(0, maxLen - 1) + "…" : label;
+  }
 
   const filteredFamilies = useMemo(() => {
     if (!selectedCollectorId) return pathFamilies;
@@ -245,7 +250,13 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
   }, [selectedEdge, hoveredEdge]);
 
   const handleEdgeClick = useCallback((e: EdgeInfo) => {
+    setSelectedNode(null);
     setSelectedEdge(prev => prev?.id === e.id ? null : e);
+  }, []);
+
+  const handleNodeClick = useCallback((node: NodeInfo) => {
+    setSelectedEdge(null);
+    setSelectedNode(prev => prev?.id === node.id ? null : node);
   }, []);
 
   const modeLabel = selectedCollectorId
@@ -254,7 +265,7 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
 
   return (
     <div style={{
-      position: "relative", width: "100%", height: "100%", minHeight: 480,
+      position: "relative", width: "100%", height: "100%", minHeight: 460,
       background: "#0d1530", borderRadius: 6,
       border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden",
     }}>
@@ -298,8 +309,13 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
         </div>
       </div>
 
+      {/* Narrative caption */}
+      <div style={{ padding: "2px 14px", fontSize: 8, color: "#556678", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        Each line is an AS adjacency observed in collector RIBs for Cuban prefixes at this timestamp. Wider lines carried visibility for more prefixes.
+      </div>
+
       {/* Legends */}
-      <div style={{ display: "flex", gap: 16, padding: "3px 14px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+      <div style={{ display: "flex", gap: 16, padding: "3px 14px" }}>
         <span style={{ fontSize: 7, color: "#556678" }}>Edge width = prefix count through adjacency</span>
         <span style={{ fontSize: 7, color: "#556678" }}>Node size = prefixes associated</span>
         <span style={{ fontSize: 7, color: "#556678" }}>Click edge/node to inspect · Click again to clear</span>
@@ -375,21 +391,26 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
 
           return (
             <g key={node.id}
-              style={{ cursor: isCollector ? "pointer" : "default", opacity: dimOpacity, transition: "opacity 0.2s" }}
-              onClick={() => { if (isCollector) onSelectCollector(selectedCollectorId === node.collectorId ? null : node.collectorId!); }}
+              style={{ cursor: isCollector || !isPrefix ? "pointer" : "default", opacity: dimOpacity, transition: "opacity 0.2s" }}
+              onClick={() => {
+                if (isCollector) onSelectCollector(selectedCollectorId === node.collectorId ? null : node.collectorId!);
+                if (!isPrefix) handleNodeClick(node);
+              }}
               onMouseEnter={() => setHoveredNode(node)}
               onMouseLeave={() => setHoveredNode(null)}
             >
-              {isHovered && (
-                <circle cx={x} cy={y} r={r + 4} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={1.5} />
+              {(isHovered || selectedNode?.id === node.id) && (
+                <circle cx={x} cy={y} r={r + 4} fill="none"
+                  stroke={selectedNode?.id === node.id ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.3)"}
+                  strokeWidth={selectedNode?.id === node.id ? 2 : 1.5} />
               )}
               <circle cx={x} cy={y} r={r}
-                fill={fillColor} stroke={strokeColor} strokeWidth={isSelected ? 2.5 : 1.5}
+                fill={fillColor} stroke={strokeColor} strokeWidth={isSelected ? 2.5 : (selectedNode?.id === node.id ? 2.5 : 1.5)}
                 fillOpacity={isCollector ? 1 : 0.85} />
               <text x={x + r + 6} y={y + 1} textAnchor="start"
                 fill={isSelected ? "#ffe080" : isOrigin ? fillColor : "#c8d8f0"}
                 fontSize={isPrefix ? 11 : 10} fontWeight={isPrefix ? 600 : 500} dominantBaseline="middle">
-                {node.label}
+                {isPrefix ? node.label : truncateLabel(node.label)}
               </text>
               {node.sublabel && (
                 <text x={x + r + 6} y={y + (isPrefix ? 14 : 13)} textAnchor="start" fill="#667788" fontSize={8}>
@@ -478,14 +499,76 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
         </div>
       )}
 
-      {/* Selected edge badge */}
-      {selectedEdge && (
+      {/* Persistent inspector — shown when node or edge is selected */}
+      {(selectedNode || selectedEdge) && (
         <div style={{
-          position: "absolute", top: 52, right: 14,
-          padding: "4px 10px", background: "rgba(255,255,255,0.08)", borderRadius: 3,
-          fontSize: 9, color: "#aabbdd", cursor: "pointer",
-        }} onClick={() => setSelectedEdge(null)}>
-          Edge selected — click to clear ✕
+          position: "absolute", bottom: 24, left: 14, right: 14,
+          padding: "8px 14px", background: "rgba(10,20,48,0.97)", borderRadius: 6,
+          border: "1px solid rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
+          fontSize: 10, color: "#c8d8f0", display: "flex", gap: 20, alignItems: "flex-start",
+          zIndex: 20, flexWrap: "wrap",
+        }}>
+          {selectedNode && (
+            <>
+              <div>
+                <div style={{ fontWeight: 600, color: "#e8e8f8", fontSize: 11, marginBottom: 2 }}>
+                  {selectedNode.column === 0 ? "Observation point" :
+                   selectedNode.column === 1 ? "Peer ASN" :
+                   selectedNode.column === 2 ? "Transit ASN" :
+                   selectedNode.column === 3 ? "Origin ASN" : "Prefix space"}
+                </div>
+                <div style={{ color: "#aabbdd" }}>
+                  {selectedNode.label}{selectedNode.asn ? <span style={{ color: "#667788" }}> · AS{selectedNode.asn}</span> : null}
+                </div>
+                <div style={{ color: "#8899bb", marginTop: 2 }}>
+                  Prefixes: <span style={{ color: "#2ecc71", fontWeight: 600 }}>{selectedNode.prefixCount}</span> · Path families: {selectedNode.count}
+                  {selectedNode.collectorIds && <span> · Seen by {selectedNode.collectorIds.length} collectors</span>}
+                </div>
+              </div>
+              {selectedNode.adjacentAsns && selectedNode.adjacentAsns.length > 0 && (
+                <div style={{ color: "#667788", fontSize: 9 }}>
+                  Adjacent ASNs: {selectedNode.adjacentAsns.map(a => `AS${a}`).join(", ")}
+                </div>
+              )}
+              <div style={{ fontSize: 8, color: "#556678", marginLeft: "auto" }}>
+                {selectedNode.column === 0 ? "BGP RIB source — not a network endpoint" :
+                 "Logical ASN in BGP paths — not a physical location"}
+              </div>
+            </>
+          )}
+          {selectedEdge && (
+            <>
+              <div>
+                <div style={{ fontWeight: 600, color: "#e8e8f8", fontSize: 11, marginBottom: 2 }}>
+                  Observed AS-path adjacency
+                </div>
+                <div style={{ fontFamily: "monospace", fontSize: 11, color: "#aabbdd" }}>
+                  {selectedEdge.srcAsn ? `AS${selectedEdge.srcAsn}` : selectedEdge.src} →{" "}
+                  {selectedEdge.tgtAsn ? `AS${selectedEdge.tgtAsn}` : selectedEdge.tgt}
+                </div>
+                <div style={{ color: "#8899bb", marginTop: 2 }}>
+                  Prefixes: <span style={{ color: "#2ecc71", fontWeight: 600 }}>{selectedEdge.prefixCount}</span> · Path families: {selectedEdge.count}
+                </div>
+              </div>
+              {selectedEdge.examplePaths.length > 0 && (
+                <div style={{ color: "#667788", fontSize: 9 }}>
+                  Example paths:<br />
+                  {selectedEdge.examplePaths.map((p, i) => (
+                    <span key={i} style={{ color: "#7788aa", fontFamily: "monospace" }}>
+                      {p.map(a => `AS${a}`).join(" → ")}{i < selectedEdge.examplePaths.length - 1 ? <br key={i} /> : null}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div style={{ fontSize: 8, color: "#556678", marginLeft: "auto" }}>
+                Not a physical link — adjacency inside BGP AS paths in collector RIBs
+              </div>
+            </>
+          )}
+          <div style={{ position: "absolute", top: 4, right: 10, cursor: "pointer", color: "#667788", fontSize: 11 }}
+            onClick={() => { setSelectedNode(null); setSelectedEdge(null); }}>
+            ✕
+          </div>
         </div>
       )}
 
