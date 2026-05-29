@@ -321,6 +321,24 @@ export async function loadTimelinePathFamilies(snapshotId: string, dataRoot: str
   try {
     const res = await fetch(`${dataRoot}/path-families.json`);
     if (!res.ok) return null;
-    return await res.json();
+    const raw = await res.json();
+    const arr = Array.isArray(raw) ? raw : raw?.pathFamilies ?? [];
+    return arr.map(normalizePathFamily).filter(Boolean) as PathFamilyRecord[];
   } catch { return null; }
+}
+
+function normalizePathFamily(raw: any): PathFamilyRecord | null {
+  const path = Array.isArray(raw.path) ? raw.path
+    : Array.isArray(raw.normalizedPath) ? raw.normalizedPath
+    : Array.isArray(raw.asPath) ? raw.asPath
+    : null;
+  if (!path || path.length === 0) return null;
+  return {
+    id: raw.id ?? "",
+    path,
+    upstreamAsn: raw.upstreamAsn ?? (path.length > 1 ? path[path.length - 2] : 0),
+    originAsn: raw.originAsn ?? path[path.length - 1] ?? 0,
+    prefixes: Array.isArray(raw.prefixes) ? raw.prefixes : [],
+    collectorCount: raw.collectorCount ?? raw.collectors?.length ?? 0,
+  };
 }

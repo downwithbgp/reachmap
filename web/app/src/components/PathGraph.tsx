@@ -51,7 +51,7 @@ function prefixOverlaps(a: string, b: string): boolean {
 export function PathGraph({ pathFamilies, asnMap, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
   function asnLabel(asn: number): string { return asnMap.get(asn)?.displayName ?? `AS${asn}`; }
   const { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount, matchCount } = useMemo(() => {
-    let pfs = pathFamilies;
+    let pfs = pathFamilies.filter(pf => Array.isArray(pf.path) && pf.path.length > 0);
     if (selectedPrefix) {
       pfs = pfs.filter(pf => pf.prefixes.some(p => prefixOverlaps(p, selectedPrefix)));
     }
