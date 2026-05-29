@@ -52,6 +52,8 @@ interface Props {
   selectedPrefix: string | null;
   selectedCollectorId: string | null;
   timestamp?: string;
+  registrySize?: number;
+  registryEnabled?: number;
   onSelectCollector: (id: string | null) => void;
 }
 
@@ -63,7 +65,7 @@ function asnRole(asn: number, map: Map<number, AsnMetadata>): string {
   return map.get(asn)?.role ?? "unknown";
 }
 
-export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, selectedCollectorId, timestamp, onSelectCollector }: Props) {
+export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, selectedCollectorId, timestamp, registrySize, registryEnabled, onSelectCollector }: Props) {
   const [hoveredNode, setHoveredNode] = useState<NodeInfo | null>(null);
   const [hoveredEdge, setHoveredEdge] = useState<EdgeInfo | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<EdgeInfo | null>(null);
@@ -293,6 +295,11 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
             <span style={{ fontSize: 8, color: "#667788" }}>
               Edges: <span style={{ color: "#8899bb" }}>{edgeCount}</span> observed AS adjacencies
             </span>
+            {(registrySize ?? 0) > 0 && (
+              <span style={{ fontSize: 7, color: "#4a5a6a" }}>
+                Registry: <span style={{ color: "#667788" }}>{registrySize}</span> collectors · {registryEnabled} enabled
+              </span>
+            )}
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>

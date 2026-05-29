@@ -103,7 +103,7 @@ function hasWebGL(): boolean {
 }
 import { loadAllRealData, loadConsensusData, loadAsnMetadata, loadManifest, loadCountryConfig, loadCasesFromManifest, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes, loadTimelinePathFamilies } from "./dataLoader";
 import { viewpoints as mockViewpoints, asViews as mockAsViews, cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams, getViewpoint, getAsView } from "./data";
-import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry } from "./types";
+import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint, AsnMetadata, AppManifest, CountryEntry, CountryMapConfig, CaseEntry, CollectorMeta, CollectorStatus } from "./types";
 
 type DataMode = "mock" | "real" | "timeline";
 
@@ -177,6 +177,8 @@ export function App() {
   }, [selectedVp, selectedAsView, viewpoints]);
 
   const [bootstrapError, setBootstrapError] = useState<string | null>(null);
+  const [collectorRegistry, setCollectorRegistry] = useState<Map<string, CollectorMeta>>(new Map());
+  const [registryLoaded, setRegistryLoaded] = useState(false);
 
   // Auto-load: manifest → country config → cases → case timeline
   useEffect(() => {
@@ -237,6 +239,28 @@ export function App() {
       }
     }
     bootstrap();
+
+    // Load collector registry for coverage display
+    fetch("/data/collectors.json")
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.collectors) {
+          const map = new Map<string, CollectorMeta>();
+          for (const [id, c] of Object.entries(data.collectors) as [string, any][]) {
+            map.set(id, {
+              id: c.id, name: c.name, source: c.source as CollectorMeta["source"],
+              latitude: c.latitude, longitude: c.longitude,
+              city: c.city, region: c.region, countryCode: c.countryCode,
+              continent: c.continent, regionGroup: c.regionGroup,
+              confidence: c.confidence, multihopPolicy: c.multihopPolicy,
+              ribUrlTemplate: c.ribUrlTemplate, enabled: c.enabled ?? true,
+            });
+          }
+          setCollectorRegistry(map);
+        }
+        setRegistryLoaded(true);
+      })
+      .catch(() => setRegistryLoaded(true));
   }, []);
 
   // Load real data
@@ -467,8 +491,13 @@ export function App() {
           <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 2, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>{totalCollectors}/{totalCollectors}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }} title={`${totalCollectors} parsed RIBs observed Cuban prefixes · ${collectorRegistry.size > 0 ? collectorRegistry.size + ' registered' : ''}`}>{totalCollectors}/{totalCollectors}</div>
               <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>parsed RIBs observed</div>
+              {collectorRegistry.size > 0 && (
+                <div style={{ fontSize: 7, color: "#4a5a6a", marginTop: 2 }}>
+                  {[...collectorRegistry.values()].filter(c => c.enabled).length} enabled in registry
+                </div>
+              )}
             </div>
             <div style={{ color: "#4a5568", fontSize: 14, fontWeight: 300 }}>vs</div>
             <div style={{ textAlign: "center" }}>
@@ -494,6 +523,8 @@ export function App() {
                 selectedPrefix={selectedPrefix?.prefix ?? null}
                 selectedCollectorId={selectedVp?.collector ?? null}
                 timestamp={activeTimelinePoint?.timestamp}
+                registrySize={collectorRegistry.size}
+                registryEnabled={[...collectorRegistry.values()].filter(c => c.enabled).length}
                 onSelectCollector={(cid: string | null) => {
                   if (!cid) { handleClearSelection(); return; }
                   const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
@@ -516,29 +547,41 @@ export function App() {
               {(() => {
                 const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
                 const webglOk = hasWebGL();
-                const stageProps = {
-                  pathFamilies, asnMap, visibilityScores, totalCollectors,
-                  countryName: countryConfig?.name ?? "Cuba",
-                  selectedPrefix: selectedPrefix?.prefix ?? null,
-                  selectedCollectorId: selectedVp?.collector ?? null,
-                  onSelectCollector: (cid: string | null) => {
-                    if (!cid) { handleClearSelection(); return; }
-                    const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
-                    if (vp) handleSelectViewpoint(vp);
-                    else handleClearSelection();
-                  },
-                };
+                // Build collector display list from registry with per-collector status
+                const parsedIds = new Set(viewpoints.map(v => v.collector).filter(Boolean));
+                const collectorDisplays: Array<{id:string;label:string;lon:number;lat:number;status:CollectorStatus;source:string;city?:string;enabled:boolean}> = [];
+                for (const c of collectorRegistry.values()) {
+                  const isParsed = parsedIds.has(c.id);
+                  const hasObserved = isParsed && viewpoints.some(v => v.collector === c.id && v.visiblePrefixes.length > 0);
+                  let status: CollectorStatus = c.enabled ? "not_requested" : "disabled";
+                  if (isParsed) status = hasObserved ? "parsed_observed" : "parsed_no_match";
+                  collectorDisplays.push({ id: c.id, label: c.name, lon: c.longitude, lat: c.latitude, status, source: c.source, city: c.city, enabled: c.enabled });
+                }
+                // Fallback hardcoded if registry not loaded
+                if (collectorDisplays.length === 0) {
+                  for (const h of [{id:"route-views2",label:"Eugene, OR",lon:-123.09,lat:44.05},{id:"route-views4",label:"San Jose, CA",lon:-121.89,lat:37.34},{id:"route-views.eqix",label:"Ashburn, VA",lon:-77.49,lat:39.04},{id:"route-views.linx",label:"London, UK",lon:-0.09,lat:51.51},{id:"rrc00",label:"Amsterdam, NL",lon:4.90,lat:52.37}]) {
+                    collectorDisplays.push({...h, status: parsedIds.has(h.id) ? "parsed_observed" : "not_requested", source:"unknown", enabled:true});
+                  }
+                }
                 if (!requestedSVG && webglOk) return (
                   <Suspense fallback={<div style={{ padding: 12, color: "#667788", fontSize: 11 }}>Loading map...</div>}>
-                    <MapStageGL {...stageProps} />
+                    <MapStageGL
+                      collectors={collectorDisplays}
+                      totalParsed={collectorDisplays.filter(c => c.status === "parsed_observed" || c.status === "parsed_no_match").length}
+                      totalObserved={collectorDisplays.filter(c => c.status === "parsed_observed").length}
+                      countryName={countryConfig?.name ?? "Cuba"}
+                      selectedCollectorId={selectedVp?.collector ?? null}
+                      onSelectCollector={(cid: string | null) => {
+                        if (!cid) { handleClearSelection(); return; }
+                        const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
+                        if (vp) handleSelectViewpoint(vp);
+                        else handleClearSelection();
+                      }}
+                    />
                   </Suspense>
                 );
-                if (requestedSVG) return <ReachMapStage {...stageProps} />;
-                return (
-                  <div style={{ padding: 16, textAlign: "center", color: "#667788", fontSize: 11 }}>
-                    WebGL unavailable. <a href="?stage=svg" style={{ color: "#5588aa" }}>Use SVG fallback</a>.
-                  </div>
-                );
+                if (requestedSVG) return <ReachMapStage pathFamilies={pathFamilies} asnMap={asnMap} visibilityScores={visibilityScores} totalCollectors={totalCollectors} countryName={countryConfig?.name ?? "Cuba"} selectedPrefix={selectedPrefix?.prefix ?? null} selectedCollectorId={selectedVp?.collector ?? null} onSelectCollector={(cid: string | null) => { if (!cid) { handleClearSelection(); return; } const vp = viewpoints.find(v => v.collector === cid || v.id === cid); if (vp) handleSelectViewpoint(vp); else handleClearSelection(); }} />;
+                return (<div style={{ padding: 16, textAlign: "center", color: "#667788", fontSize: 11 }}>WebGL unavailable. <a href="?stage=svg" style={{ color: "#5588aa" }}>Use SVG fallback</a>.</div>);
               })()}
             </div>
             <div style={{ flex: "0 0 200px", opacity: 0.85 }}>
