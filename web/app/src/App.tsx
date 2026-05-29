@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { HilbertCanvas } from "./components/HilbertCanvas";
-import { GeoMap } from "./components/GeoMap";
+import { PathGraph } from "./components/PathGraph";
 import { SidePanel } from "./components/SidePanel";
 import {
   viewpoints as mockViewpoints, asViews as mockAsViews,
@@ -336,14 +336,21 @@ export function App() {
         </div>
 
         <div style={{ flex: 1, minWidth: 0, padding: 8 }}>
-          <GeoMap
-            viewpoints={viewpoints}
-            selectedVp={selectedVp}
-            highlightedVpIds={highlightedVpIds}
-            selectionMode={selectionMode}
-            mapConfig={DEFAULT_MAP_CONFIG}
-            onSelectViewpoint={handleSelectViewpoint}
-            onHoverViewpoint={handleHoverViewpoint}
+          <PathGraph
+            pathFamilies={pathFamilies}
+            collectors={viewpoints.map(v => ({
+              collectorId: v.id,
+              collectorName: v.displayName,
+              city: v.geo.city,
+              countryCode: v.geo.countryCode,
+            }))}
+            selectedPrefix={selectedPrefix?.prefix ?? null}
+            selectedCollectorId={selectedVp?.collector ?? null}
+            onSelectCollector={(cid) => {
+              if (!cid) { handleClearSelection(); return; }
+              const vp = viewpoints.find(v => v.collector === cid || v.id === cid || v.displayName.includes(cid));
+              if (vp) handleSelectViewpoint(vp);
+            }}
           />
         </div>
 
