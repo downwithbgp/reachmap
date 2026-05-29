@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useEffect, Suspense } from "reac
 import { HilbertCanvas } from "./components/HilbertCanvas";
 import { ReachMapStage } from "./components/ReachMapStage";
 import { PathGraph } from "./components/PathGraph";
+import { TimeScrubber } from "./components/TimeScrubber";
 
 // Cuba IP-space weather card — standalone callout (not map-attached)
 import { useRef, useEffect as useEffectRaw } from "react";
@@ -388,39 +389,7 @@ export function App() {
           ))}
         </div>
 
-        {/* Timeline controls */}
-        {dataMode === "timeline" && timelineIndex && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 16 }}>
-            <span style={{ fontSize: 9, color: "#555", textTransform: "uppercase" }}>Timeline</span>
-            {timelineIndex.points.map((pt, i) => (
-              <button
-                key={pt.snapshotId}
-                onClick={() => { if (manifest) selectTimelineSnapshot(pt.snapshotId, manifest.countries[0].dataRoot); }}
-                style={{
-                  padding: "3px 8px", fontSize: 10, cursor: "pointer",
-                  background: pt.snapshotId === timelineSnapshotId ? "rgba(100,180,200,0.2)" : "transparent",
-                  color: pt.snapshotId === timelineSnapshotId ? "#89c8d8" : pt.role === "event" ? "#e8a040" : "#666",
-                  border: `1px solid ${pt.snapshotId === timelineSnapshotId ? "rgba(100,180,200,0.3)"
-                    : pt.role === "event" ? "rgba(232,160,64,0.25)" : "transparent"}`,
-                  borderRadius: 3,
-                  fontWeight: pt.role === "event" ? 600 : 400,
-                }}
-                title={`${pt.timestamp} (${pt.role.replace(/_/g, " ")}) · ${pt.collectorCount} collectors · ${pt.observedPrefixCount}/${pt.totalPrefixCount} observed`}
-              >
-                {pt.role === "event" && <span style={{ marginRight: 2 }}>⚡</span>}
-                {pt.snapshotId.replace("T", " ").replace("00Z", "00 UTC").slice(5, 16)}
-                {pt.role === "event" && <span style={{ marginLeft: 2 }}>⚡</span>}
-              </button>
-            ))}
-            <span style={{ fontSize: 9, color: "#555" }}>
-              {timelineSnapshotId && (() => {
-                const pt = timelineIndex.points.find(p => p.snapshotId === timelineSnapshotId);
-                if (!pt) return null;
-                return `${pt.observedPrefixCount}/${pt.totalPrefixCount} prefixes · ${pt.collectorCount} collectors`;
-              })()}
-            </span>
-          </div>
-        )}
+        {/* Timeline controls — removed from header, now TimeScrubber below */}
 
         {/* Data source toggle */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
@@ -473,40 +442,51 @@ export function App() {
         </div>
       )}
 
-      {/* Status strip — prominent insight + metrics */}
-      {!bootstrapError && dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
+      {/* Status strip — BGP vs traffic for current snapshot */}
+      {!bootstrapError && dataMode === "timeline" && activeTimelinePoint && (
         <div style={{
-          padding: "14px 24px 12px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
-          display: "flex", gap: 32, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
+          padding: "10px 24px 8px", background: "rgba(20,30,60,0.5)", borderBottom: "1px solid rgba(255,255,255,0.06)",
+          display: "flex", gap: 28, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#e8e8f8", letterSpacing: "-0.01em" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#e8e8f8", letterSpacing: "-0.01em" }}>
               Cuba · March 2026
             </div>
-            <div style={{ fontSize: 13, color: "#aabbcc", marginTop: 2, fontWeight: 500 }}>
-              BGP stayed green while traffic fell to roughly one-third of normal.
+            <div style={{ fontSize: 12, color: "#aabbcc", marginTop: 1, fontWeight: 500 }}>
+              BGP control plane vs traffic signal over time
             </div>
           </div>
-          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 2, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }} title={`${totalCollectors} parsed RIBs observed Cuban prefixes · ${collectorRegistry.size > 0 ? collectorRegistry.size + ' registered' : ''}`}>{totalCollectors}/{totalCollectors}</div>
-              <div style={{ fontSize: 9, color: "#6a8a70", marginTop: 1 }}>parsed RIBs observed</div>
+              <div style={{ fontSize: 9, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 1, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>{activeTimelinePoint.collectorCount}/{activeTimelinePoint.collectorCount}</div>
+              <div style={{ fontSize: 8, color: "#6a8a70" }}>parsed RIBs observed</div>
               {collectorRegistry.size > 0 && (
-                <div style={{ fontSize: 7, color: "#4a5a6a", marginTop: 2 }}>
+                <div style={{ fontSize: 7, color: "#4a5a6a", marginTop: 1 }}>
                   {[...collectorRegistry.values()].filter(c => c.enabled).length} enabled in registry
                 </div>
               )}
             </div>
-            <div style={{ color: "#4a5568", fontSize: 14, fontWeight: 300 }}>vs</div>
+            <div style={{ color: "#4a5568", fontSize: 13, fontWeight: 300 }}>vs</div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 10, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 2, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic signal</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~35%</div>
-              <div style={{ fontSize: 9, color: "#8a7a60", marginTop: 1 }}>of baseline</div>
+              <div style={{ fontSize: 9, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 1, fontWeight: 500, letterSpacing: "0.04em" }}>Traffic signal</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: "#e8a040", lineHeight: 1 }}>~{activeTimelinePoint.trafficBaselinePercent ?? 35}%</div>
+              <div style={{ fontSize: 8, color: "#8a7a60" }}>of baseline</div>
             </div>
           </div>
-          <div style={{ fontSize: 9, color: "#667788" }}>Traffic source: Cloudflare Radar</div>
+          <div style={{ fontSize: 8, color: "#667788" }}>Traffic: approximate demo series · Cloudflare Radar context</div>
         </div>
+      )}
+
+      {/* Time scrubber — timeline navigation */}
+      {!bootstrapError && dataMode === "timeline" && timelineIndex && (
+        <TimeScrubber
+          points={timelineIndex.points}
+          selectedSnapshotId={timelineSnapshotId}
+          onSelectSnapshot={(snapId) => {
+            if (manifest) selectTimelineSnapshot(snapId, manifest.countries[0].dataRoot);
+          }}
+        />
       )}
 
       {/* Main content */}

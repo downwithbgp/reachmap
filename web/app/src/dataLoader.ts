@@ -319,6 +319,15 @@ export async function loadTimelinePrefixes(snapshotId: string, dataRoot: string)
 
 export async function loadTimelinePathFamilies(snapshotId: string, dataRoot: string): Promise<PathFamilyRecord[] | null> {
   try {
+    // Try snapshot-specific path families first
+    const snapRes = await fetch(`${dataRoot}/timeline/${snapshotId}/path-families.json`);
+    if (snapRes.ok) {
+      const raw = await snapRes.json();
+      const arr = Array.isArray(raw) ? raw : raw?.pathFamilies ?? [];
+      return arr.map(normalizePathFamily).filter(Boolean) as PathFamilyRecord[];
+    }
+    // Fall back to global
+    console.warn(`loadTimelinePathFamilies: no per-snapshot file for ${snapshotId}, using global path-families.json`);
     const res = await fetch(`${dataRoot}/path-families.json`);
     if (!res.ok) return null;
     const raw = await res.json();

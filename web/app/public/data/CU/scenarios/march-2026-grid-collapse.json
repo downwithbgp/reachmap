@@ -1,0 +1,16 @@
+{
+  "scenario": "march-2026-grid-collapse",
+  "country": "CU",
+  "trafficSource": "Cloudflare Radar context",
+  "trafficDataQuality": "approximate-demo",
+  "trafficDataNote": "Values are approximate demo series based on Cloudflare Radar context for the March 2026 Cuba grid collapse. Not exact Radar measurements.",
+  "traffic": [
+    { "requestedTimestamp": "2026-03-16T00:00:00Z", "baselinePercent": 96 },
+    { "requestedTimestamp": "2026-03-16T04:00:00Z", "baselinePercent": 82 },
+    { "requestedTimestamp": "2026-03-16T08:00:00Z", "baselinePercent": 61 },
+    { "requestedTimestamp": "2026-03-16T12:00:00Z", "baselinePercent": 44 },
+    { "requestedTimestamp": "2026-03-16T16:00:00Z", "baselinePercent": 38 },
+    { "requestedTimestamp": "2026-03-16T20:00:00Z", "baselinePercent": 35 },
+    { "requestedTimestamp": "2026-03-17T00:00:00Z", "baselinePercent": 39 }
+  ]
+}

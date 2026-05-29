@@ -1,0 +1,11 @@
+{
+  "snapshotId": "2026-03-16T0800Z",
+  "requestedTimestamp": "2026--0-3-T6T:00:00Z",
+  "actualRibTimestamp": "2026-03-16T20:00:00Z",
+  "ribTimestampsMatch": false,
+  "collectors": 5,
+  "collectorsObserved": 5,
+  "prefixesTotal": 21,
+  "prefixesObserved": 17,
+  "pathFamilies": 614
+}

@@ -153,6 +153,9 @@ export interface ConsensusVisibility {
 export interface TimelinePoint {
   snapshotId: string;
   timestamp: string;
+  requestedTimestamp?: string;
+  actualRibTimestamp?: string;
+  ribTimestampsMatch?: boolean;
   role: "before" | "pre_event" | "event" | "after" | "recovered";
   collectorCount: number;
   collectorIds: string[];
@@ -162,6 +165,7 @@ export interface TimelinePoint {
   partialVisibleCount: number;
   notObservedCount: number;
   pathFamilyCount: number;
+  trafficBaselinePercent?: number;
   notes?: string[];
   externalEventContext?: {
     title: string;
