@@ -1,205 +1,118 @@
 /**
  * Logical AS-path flow graph.
- *
- * Shows observed BGP path families from collectors through transit ASNs
- * to origin ASNs. SVG-based Sankey-style flow diagram.
+ * Shows observed BGP path families from collector RIBs through transit ASNs to origin ASNs.
  * NOT physical cables — logical routing paths from sampled collector RIBs.
  */
 
 import React, { useMemo } from "react";
-
 import type { PathFamilyRecord } from "../types";
 
-interface PathFamily extends PathFamilyRecord {
-  normalizedPath?: number[];
-  collectors?: string[];
-  observationCount?: number;
-}
+// Known ASN names for legibility
+const ASN_NAMES: Record<number, string> = {
+  3356: "Lumen", 1299: "Arelion", 174: "Cogent", 6939: "HE",
+  6762: "Telecom Italia", 3549: "Level3", 3257: "GTT", 2914: "NTT",
+  5511: "Orange", 3303: "Swisscom", 1403: "GÉANT", 2497: "IIJ",
+  6830: "LibertyGlobal", 9304: "HGC", 23520: "Columbus",
+  11960: "ETECSA IXP", 27725: "ETECSA", 10569: "CENIAInternet",
+};
 
-interface Collector {
-  collectorId: string;
-  collectorName: string;
-  city?: string | null;
-  countryCode?: string | null;
-}
+// Documented collector set
+const COLLECTORS = [
+  { id: "route-views2", label: "Eugene, OR", sublabel: "route-views2" },
+  { id: "route-views4", label: "San Jose, CA", sublabel: "route-views4" },
+  { id: "route-views.eqix", label: "Ashburn, VA", sublabel: "route-views.eqix" },
+  { id: "route-views.linx", label: "London, UK", sublabel: "route-views.linx" },
+  { id: "rrc00", label: "Amsterdam, NL", sublabel: "rrc00" },
+];
+
+const ORIGIN_COLORS: Record<number, string> = {
+  27725: "#5b9bd5",
+  11960: "#45b7aa",
+  10569: "#d4a040",
+};
 
 interface Props {
-  pathFamilies: PathFamily[];
-  collectors: Collector[];
+  pathFamilies: PathFamilyRecord[];
   selectedPrefix: string | null;
   selectedCollectorId: string | null;
   onSelectCollector: (id: string | null) => void;
 }
 
-interface FlowNode {
-  id: string;
-  label: string;
-  sublabel?: string;
-  column: number; // 0=collectors, 1=transit, 2=origin
-  y: number;
-  count: number; // number of path families through this node
-}
-
-interface FlowEdge {
-  source: string;
-  target: string;
-  count: number;
-  prefixCount: number;
-  opacity: number;
-}
-
-const COLORS: Record<string, string> = {
-  "27725": "#5b9bd5", // ETECSA — blue
-  "11960": "#45b7aa", // ETECSA IXP — teal
-  "10569": "#d4a040", // CENIAInternet — amber
-  default: "#8877aa",
-};
-
-function originColor(asn: number): string {
-  return COLORS[String(asn)] ?? COLORS.default;
-}
-
-export function PathGraph({ pathFamilies, collectors, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
-  const { nodes, edges, maxCount } = useMemo(() => {
-    // Filter by selected prefix
+export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
+  const { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount } = useMemo(() => {
     let pfs = pathFamilies;
     if (selectedPrefix) {
       pfs = pfs.filter(pf => pf.prefixes.includes(selectedPrefix));
     }
-    if (selectedCollectorId) {
-      const cidLabel = `AS-${selectedCollectorId}`; // rough match
-      pfs = pfs.filter(pf => pf.collectors?.some(c => c.replace("AS", "") === selectedCollectorId.replace("vp-", "")));
-    }
 
-    // Build nodes from data
-    const collectorNodes: FlowNode[] = collectors.slice(0, 5).map((c, i) => {
-      const cid = c.collectorId;
-      const count = pfs.filter(pf => pf.collectors?.some(co => co.includes(cid) || cid.includes(co))).length;
-      return {
-        id: cid,
-        label: c.city ?? c.collectorId,
-        sublabel: c.countryCode ?? undefined,
-        column: 0,
-        y: i,
-        count,
-      };
-    });
-
-    // Top transit ASNs (by prefix count across all relevant paths)
-    const transitCounts = new Map<number, { count: number; prefixes: Set<string> }>();
-    for (const pf of pfs) {
-      // All ASNs between first and last are transit
-      const transit = pf.path.slice(1, -1);
-      for (const asn of transit) {
-        const entry = transitCounts.get(asn) ?? { count: 0, prefixes: new Set() };
-        entry.count++;
-        pf.prefixes.forEach(p => entry.prefixes.add(p));
-        transitCounts.set(asn, entry);
-      }
-    }
-
-    const topTransit = [...transitCounts.entries()]
-      .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size)
-      .slice(0, 8);
-
-    const transitNodes: FlowNode[] = topTransit.map(([asn, data], i) => ({
-      id: `AS${asn}`,
-      label: `AS${asn}`,
-      column: 1,
-      y: i,
-      count: data.count,
+    // Collector nodes (left column)
+    const collectorNodes = COLLECTORS.map((c, i) => ({
+      id: c.id, label: c.label, sublabel: c.sublabel, column: 0, y: i,
+      count: pfs.length, // all paths observed at all collectors in this dataset
     }));
 
-    // Origin ASNs
-    const originCounts = new Map<number, number>();
+    // Transit ASNs (middle column) — unique ASNs appearing between first and last hop
+    const transitMap = new Map<number, { count: number; prefixes: Set<string> }>();
     for (const pf of pfs) {
-      originCounts.set(pf.originAsn, (originCounts.get(pf.originAsn) ?? 0) + pf.prefixes.length);
+      const hops = pf.path.slice(1, -1); // between peer and origin
+      for (const asn of hops) {
+        const e = transitMap.get(asn) ?? { count: 0, prefixes: new Set() };
+        e.count++;
+        pf.prefixes.forEach(p => e.prefixes.add(p));
+        transitMap.set(asn, e);
+      }
     }
-    const originNodes: FlowNode[] = [...originCounts.entries()]
+    const topTransit = [...transitMap.entries()]
+      .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size)
+      .slice(0, 7);
+    const transitNodes = topTransit.map(([asn, data], i) => ({
+      id: `t-${asn}`, asn, label: ASN_NAMES[asn] ?? `AS${asn}`, sublabel: ASN_NAMES[asn] ? `AS${asn}` : undefined,
+      column: 1, y: i, count: data.count, prefixCount: data.prefixes.size,
+    }));
+
+    // Origin ASNs (right column)
+    const originMap = new Map<number, number>();
+    for (const pf of pfs) { originMap.set(pf.originAsn, (originMap.get(pf.originAsn) ?? 0) + pf.prefixes.length); }
+    const originNodes = [...originMap.entries()]
       .sort((a, b) => b[1] - a[1])
       .map(([asn, count], i) => ({
-        id: `AS${asn}`,
-        label: asn === 27725 ? "ETECSA" : asn === 11960 ? "ETECSA IXP" : asn === 10569 ? "CENIAInternet" : `AS${asn}`,
-        sublabel: `AS${asn}`,
-        column: 2,
-        y: i,
-        count,
+        id: `o-${asn}`, asn, label: ASN_NAMES[asn] ?? `AS${asn}`, sublabel: `AS${asn}`,
+        column: 2, y: i, count,
       }));
 
-    // Build edges: collector → transit → origin
-    const edges: FlowEdge[] = [];
-    const maxCount = Math.max(
-      ...[...collectorNodes, ...transitNodes, ...originNodes].map(n => n.count),
-      1
-    );
-
-    // Collector → transit edges
-    for (const cn of collectorNodes) {
-      const relevantPfs = pfs.filter(pf => pf.collectors?.some(c => c.includes(cn.id) || cn.id.includes(c)));
-      for (const tn of transitNodes) {
-        const asn = parseInt(tn.id.replace("AS", ""));
-        const count = relevantPfs.filter(pf => pf.path.includes(asn)).length;
-        if (count > 0) {
-          const prefixes = new Set(relevantPfs.filter(pf => pf.path.includes(asn)).flatMap(pf => pf.prefixes));
-          edges.push({ source: cn.id, target: tn.id, count, prefixCount: prefixes.size, opacity: Math.max(0.15, count / maxCount) });
-        }
-      }
-    }
-
-    // Transit → origin edges
+    // Build edges: transit → origin
+    const edges: { src: string; tgt: string; count: number; opacity: number }[] = [];
+    let maxEdgeCount = 1;
     for (const tn of transitNodes) {
-      const tasn = parseInt(tn.id.replace("AS", ""));
       for (const on of originNodes) {
-        const oasn = parseInt(on.id.replace("AS", ""));
-        const count = pfs.filter(pf => pf.path.includes(tasn) && pf.originAsn === oasn).length;
+        const count = pfs.filter(pf => pf.path.includes(tn.asn) && pf.originAsn === on.asn).length;
         if (count > 0) {
-          const prefixes = new Set(pfs.filter(pf => pf.path.includes(tasn) && pf.originAsn === oasn).flatMap(pf => pf.prefixes));
-          edges.push({ source: tn.id, target: on.id, count, prefixCount: prefixes.size, opacity: Math.max(0.15, count / maxCount) });
+          maxEdgeCount = Math.max(maxEdgeCount, count);
+          edges.push({ src: tn.id, tgt: on.id, count, opacity: 0.6 });
         }
       }
     }
-
-    // Also direct collector → origin edges for single-hop paths
+    // Collector → transit edges (simplified: all collectors feed all transit equally)
     for (const cn of collectorNodes) {
-      const relevantPfs = pfs.filter(pf => pf.collectors?.some(c => c.includes(cn.id) || cn.id.includes(c)));
-      for (const on of originNodes) {
-        const oasn = parseInt(on.id.replace("AS", ""));
-        const directPfs = relevantPfs.filter(pf => pf.path.length <= 2 && pf.originAsn === oasn);
-        if (directPfs.length > 0) {
-          const prefixes = new Set(directPfs.flatMap(pf => pf.prefixes));
-          edges.push({ source: cn.id, target: on.id, count: directPfs.length, prefixCount: prefixes.size, opacity: Math.max(0.15, directPfs.length / maxCount) });
-        }
+      for (const tn of transitNodes) {
+        edges.push({ src: cn.id, tgt: tn.id, count: tn.count, opacity: 0.25 });
       }
     }
 
-    return {
-      nodes: [...collectorNodes, ...transitNodes, ...originNodes],
-      edges,
-      maxCount,
-    };
-  }, [pathFamilies, collectors, selectedPrefix, selectedCollectorId]);
+    return { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount };
+  }, [pathFamilies, selectedPrefix]);
 
-  // Layout
-  const W = 600, H = 400;
-  const cols = [60, 260, 480]; // x positions for each column
-  const colWidths = [160, 180, 110];
+  // SVG layout
+  const W = 620, H = 380;
+  const colX = [50, 280, 500];
+  const spacing = (nodes: unknown[]) => H / (nodes.length + 1);
 
-  // Position nodes
-  const nodePositions = new Map<string, { x: number; y: number }>();
-  const nodesByCol: FlowNode[][] = [[], [], []];
-  for (const n of nodes) {
-    nodesByCol[n.column].push(n);
-  }
-  for (let col = 0; col < 3; col++) {
-    const colNodes = nodesByCol[col];
-    const spacing = H / (colNodes.length + 1);
-    colNodes.forEach((n, i) => {
-      nodePositions.set(n.id, { x: cols[col] + colWidths[col] / 2, y: spacing * (i + 1) });
-    });
+  function nodeXY(column: number, y: number, nodes: unknown[]): [number, number] {
+    return [colX[column], spacing(nodes) * (y + 1)];
   }
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 380, background: "rgba(0,0,0,0.2)" }}>
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 380, background: "#0c0c1c", borderRadius: 4, border: "1px solid #2a2a48" }}>
       <div style={{
         padding: "6px 10px", fontSize: 10, fontWeight: 600, color: "#7777a0",
         textTransform: "uppercase", letterSpacing: "0.05em", background: "rgba(0,0,0,0.3)",
@@ -207,68 +120,83 @@ export function PathGraph({ pathFamilies, collectors, selectedPrefix, selectedCo
       }}>
         Observed BGP AS-path families
         <span style={{ display: "block", fontWeight: 400, fontSize: 9, textTransform: "none", color: "#555", marginTop: 1 }}>
-          Logical routing paths from sampled collector RIBs. Not physical cables.
+          Collector RIBs → transit ASNs → origin ASNs. Line thickness = observed path count. Not physical cables.
         </span>
       </div>
       <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
+        {/* Column headers */}
+        <text x={colX[0]} y={18} textAnchor="middle" fill="#666" fontSize={9} fontWeight={600}>COLLECTOR RIBS</text>
+        <text x={colX[1]} y={18} textAnchor="middle" fill="#666" fontSize={9} fontWeight={600}>TRANSIT / UPSTREAM</text>
+        <text x={colX[2]} y={18} textAnchor="middle" fill="#666" fontSize={9} fontWeight={600}>ORIGIN ASNS</text>
+
         {/* Edges */}
         {edges.map((e, i) => {
-          const sp = nodePositions.get(e.source);
-          const tp = nodePositions.get(e.target);
-          if (!sp || !tp) return null;
-          // Find the origin ASN for coloring
-          const targetNode = nodes.find(n => n.id === e.target);
-          const color = targetNode ? originColor(parseInt(targetNode.id.replace("AS", "")) || 0) : "#666";
-          const midX = (sp.x + tp.x) / 2;
-          const d = `M ${sp.x} ${sp.y} C ${midX} ${sp.y}, ${midX} ${tp.y}, ${tp.x} ${tp.y}`;
-          const sw = Math.max(0.5, (e.count / maxCount) * 6);
+          // Find source/target positions
+          const sNode = [...collectorNodes, ...transitNodes].find(n => n.id === e.src);
+          const tNode = [...transitNodes, ...originNodes].find(n => n.id === e.tgt);
+          if (!sNode || !tNode) return null;
+          const sNodes = sNode.column === 0 ? collectorNodes : transitNodes;
+          const tNodes = tNode.column === 1 ? transitNodes : originNodes;
+          const [sx, sy] = nodeXY(sNode.column, sNode.y, sNodes);
+          const [tx, ty] = nodeXY(tNode.column, tNode.y, tNodes);
+          const midX = (sx + tx) / 2;
+          const sw = Math.max(0.3, (e.count / maxEdgeCount) * 4);
+          const color = tNode.column === 2 ? (ORIGIN_COLORS[(tNode as any).asn] ?? "#777") : "#556";
           return (
-            <path
-              key={i}
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth={sw}
-              strokeOpacity={e.opacity}
-            />
+            <path key={i} d={`M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`}
+              fill="none" stroke={color} strokeWidth={sw} strokeOpacity={e.opacity} />
           );
         })}
-        {/* Nodes */}
-        {nodes.map(n => {
-          const pos = nodePositions.get(n.id);
-          if (!pos) return null;
-          const isCol = n.column === 0;
-          const isOrigin = n.column === 2;
-          const asn = parseInt(n.id.replace("AS", ""));
-          const color = isOrigin ? originColor(asn || 0) : isCol ? "#89aacc" : "#999";
-          const r = Math.max(4, Math.min(18, 4 + (n.count / maxCount) * 14));
-          const isClickable = isCol;
+
+        {/* Collector nodes */}
+        {collectorNodes.map(n => {
+          const [x, y] = nodeXY(0, n.y, collectorNodes);
           return (
-            <g key={n.id} style={{ cursor: isClickable ? "pointer" : "default" }}
-               onClick={() => isClickable ? onSelectCollector(n.id) : undefined}>
-              <circle cx={pos.x} cy={pos.y} r={r} fill={color} fillOpacity={0.85} stroke={color} strokeWidth={1} />
-              <text x={pos.x} y={pos.y + r + 13} textAnchor="middle" fill="#ccc" fontSize={10} fontWeight={isOrigin ? 600 : 400}>
-                {n.label}
-              </text>
-              {n.sublabel && (
-                <text x={pos.x} y={pos.y + r + 25} textAnchor="middle" fill="#777" fontSize={9}>
-                  {n.sublabel}
-                </text>
-              )}
+            <g key={n.id} style={{ cursor: "pointer" }} onClick={() => onSelectCollector(n.id)}>
+              <circle cx={x} cy={y} r={6} fill="#5588aa" stroke="#7ab0cc" strokeWidth={1.5} />
+              <text x={x + 12} y={y + 1} textAnchor="start" fill="#b0c8dd" fontSize={10} dominantBaseline="middle">{n.label}</text>
+              <text x={x + 12} y={y + 13} textAnchor="start" fill="#556" fontSize={8}>{n.sublabel}</text>
             </g>
           );
         })}
-        {/* Column headers */}
-        <text x={cols[0] + colWidths[0]/2} y={15} textAnchor="middle" fill="#666" fontSize={9}>COLLECTORS</text>
-        <text x={cols[1] + colWidths[1]/2} y={15} textAnchor="middle" fill="#666" fontSize={9}>TRANSIT ASNS</text>
-        <text x={cols[2] + colWidths[2]/2} y={15} textAnchor="middle" fill="#666" fontSize={9}>ORIGIN ASNS</text>
+
+        {/* Transit nodes */}
+        {transitNodes.map(n => {
+          const [x, y] = nodeXY(1, n.y, transitNodes);
+          const r = Math.max(5, Math.min(14, 5 + (n.prefixCount ?? 0) / 3));
+          return (
+            <g key={n.id}>
+              <circle cx={x} cy={y} r={r} fill="#6a6a8a" stroke="#8888aa" strokeWidth={1} />
+              <text x={x + r + 6} y={y + 1} textAnchor="start" fill="#bbb" fontSize={10} dominantBaseline="middle">{n.label}</text>
+              {n.sublabel && <text x={x + r + 6} y={y + 13} textAnchor="start" fill="#666" fontSize={8}>{n.sublabel}</text>}
+            </g>
+          );
+        })}
+
+        {/* Origin nodes */}
+        {originNodes.map(n => {
+          const [x, y] = nodeXY(2, n.y, originNodes);
+          const r = Math.max(8, Math.min(20, 8 + n.count / 5));
+          const color = ORIGIN_COLORS[n.asn] ?? "#8877aa";
+          return (
+            <g key={n.id}>
+              <circle cx={x} cy={y} r={r} fill={color} stroke={color} strokeWidth={2} fillOpacity={0.8} />
+              <text x={x} y={y + r + 14} textAnchor="middle" fill={color} fontSize={11} fontWeight={600}>{n.label}</text>
+              <text x={x} y={y + r + 26} textAnchor="middle" fill="#777" fontSize={9}>{n.sublabel}</text>
+            </g>
+          );
+        })}
       </svg>
-      {/* Click instructions */}
       <div style={{
-        position: "absolute", bottom: 6, right: 10,
-        fontSize: 9, color: "#555",
+        position: "absolute", bottom: 6, left: 10, right: 10,
+        display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        Click collector to filter · Click prefix in Hilbert to filter paths
+        <span style={{ fontSize: 9, color: "#555" }}>
+          {pathFamilies.length} path families · {selectedPrefix ? "Filtered to selected prefix" : "All observed paths"}
+        </span>
+        <span style={{ fontSize: 9, color: "#555" }}>
+          Click collector to filter · Click prefix in fingerprint
+        </span>
       </div>
     </div>
   );

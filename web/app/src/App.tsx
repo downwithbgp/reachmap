@@ -338,18 +338,13 @@ export function App() {
         <div style={{ flex: 1, minWidth: 0, padding: 8 }}>
           <PathGraph
             pathFamilies={pathFamilies}
-            collectors={viewpoints.map(v => ({
-              collectorId: v.id,
-              collectorName: v.displayName,
-              city: v.geo.city,
-              countryCode: v.geo.countryCode,
-            }))}
             selectedPrefix={selectedPrefix?.prefix ?? null}
             selectedCollectorId={selectedVp?.collector ?? null}
             onSelectCollector={(cid) => {
               if (!cid) { handleClearSelection(); return; }
-              const vp = viewpoints.find(v => v.collector === cid || v.id === cid || v.displayName.includes(cid));
+              const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
               if (vp) handleSelectViewpoint(vp);
+              else handleClearSelection();
             }}
           />
         </div>
