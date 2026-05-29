@@ -12,7 +12,6 @@
 import React, { useMemo, useState, useCallback } from "react";
 import type { PathFamilyRecord, AsnMetadata, Viewpoint } from "../types";
 
-// Documented collector set
 const COLLECTORS = [
   { id: "route-views2", label: "Eugene, OR", sublabel: "route-views2", region: "US West" },
   { id: "route-views4", label: "San Jose, CA", sublabel: "route-views4", region: "US West" },
@@ -21,41 +20,29 @@ const COLLECTORS = [
   { id: "rrc00", label: "Amsterdam, NL", sublabel: "rrc00", region: "Europe" },
 ];
 
-// Origin color palette
 const ORIGIN_PALETTE = ["#5b9bd5", "#45b7aa", "#d4a040", "#8877aa", "#cc6666", "#55aa88"];
 
-// Column definitions
 const COLUMNS = [
-  { id: "collectors", label: "Collector RIBs", x: 50, width: 100 },
-  { id: "peers", label: "Peer ASNs", x: 200, width: 90 },
-  { id: "transit", label: "Transit ASNs", x: 340, width: 90 },
-  { id: "origin", label: "Origin ASNs", x: 490, width: 90 },
-  { id: "prefixes", label: "Prefix space", x: 620, width: 100 },
+  { id: "collectors", label: "Collector RIBs", x: 50 },
+  { id: "peers", label: "Peer ASNs", x: 200 },
+  { id: "transit", label: "Transit ASNs", x: 340 },
+  { id: "origin", label: "Origin ASNs", x: 490 },
+  { id: "prefixes", label: "Prefix space", x: 620 },
 ];
 
 const GRAPH_W = 740;
-const GRAPH_H = 420;
+const GRAPH_H = 380;
 
 interface NodeInfo {
-  id: string;
-  label: string;
-  sublabel?: string;
-  column: number;
-  y: number;
-  count: number;
-  prefixCount: number;
-  asn?: number;
-  role: string;
-  collectorId?: string;
+  id: string; label: string; sublabel?: string; column: number; y: number;
+  count: number; prefixCount: number; asn?: number; role: string; collectorId?: string;
+  adjacentAsns?: number[]; collectorIds?: string[];
 }
 
 interface EdgeInfo {
-  src: string;
-  tgt: string;
-  count: number;
-  opacity: number;
-  srcColumn: number;
-  tgtColumn: number;
+  id: string; src: string; tgt: string; count: number; opacity: number;
+  srcColumn: number; tgtColumn: number; srcAsn?: number; tgtAsn?: number;
+  collectorIds: string[]; examplePaths: number[][]; prefixCount: number;
 }
 
 interface Props {
@@ -64,6 +51,7 @@ interface Props {
   asnMap: Map<number, AsnMetadata>;
   selectedPrefix: string | null;
   selectedCollectorId: string | null;
+  timestamp?: string;
   onSelectCollector: (id: string | null) => void;
 }
 
@@ -75,10 +63,11 @@ function asnRole(asn: number, map: Map<number, AsnMetadata>): string {
   return map.get(asn)?.role ?? "unknown";
 }
 
-export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
+export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, selectedCollectorId, timestamp, onSelectCollector }: Props) {
   const [hoveredNode, setHoveredNode] = useState<NodeInfo | null>(null);
+  const [hoveredEdge, setHoveredEdge] = useState<EdgeInfo | null>(null);
+  const [selectedEdge, setSelectedEdge] = useState<EdgeInfo | null>(null);
 
-  // Filter path families by collector selection
   const filteredFamilies = useMemo(() => {
     if (!selectedCollectorId) return pathFamilies;
     const vp = viewpoints.find(v => v.collector === selectedCollectorId || v.id === selectedCollectorId);
@@ -87,212 +76,240 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
     return pathFamilies.filter(pf => ids.has(pf.id));
   }, [pathFamilies, viewpoints, selectedCollectorId]);
 
-  // Build graph nodes and edges
-  const { allNodes, allEdges, maxEdgeCount, totalPrefixes } = useMemo(() => {
+  const { allNodes, allEdges, maxEdgeCount, totalPrefixes, collectorCount, edgeCount } = useMemo(() => {
     const pfs = filteredFamilies.filter(pf => Array.isArray(pf.path) && pf.path.length > 0);
     const totalPrefixes = new Set<string>();
     pfs.forEach(pf => pf.prefixes.forEach(p => totalPrefixes.add(p)));
+    const activeCollectorIds = new Set(selectedCollectorId ? [selectedCollectorId] : COLLECTORS.map(c => c.id));
 
     // ── Column 0: Collectors ──
     const collectorNodes: NodeInfo[] = COLLECTORS.map((c, i) => ({
-      id: c.id,
-      label: c.label,
-      sublabel: c.sublabel,
-      column: 0,
-      y: i,
-      count: pfs.length,
-      prefixCount: selectedCollectorId === c.id
-        ? new Set(pfs.flatMap(pf => pf.prefixes)).size
-        : 0,
-      role: "collector",
-      collectorId: c.id,
+      id: c.id, label: c.label, sublabel: c.sublabel, column: 0, y: i,
+      count: pfs.length, prefixCount: totalPrefixes.size, role: "collector", collectorId: c.id,
     }));
 
-    // ── Column 1: Peer ASNs (first hop in path) ──
-    const peerMap = new Map<number, { count: number; prefixes: Set<string> }>();
+    // ── Column 1: Peer ASNs ──
+    const peerMap = new Map<number, { count: number; prefixes: Set<string>; collectors: Set<string> }>();
     for (const pf of pfs) {
       if (pf.path.length === 0) continue;
-      const peerAsn = pf.path[0];
-      const e = peerMap.get(peerAsn) ?? { count: 0, prefixes: new Set() };
-      e.count++;
-      pf.prefixes.forEach(p => e.prefixes.add(p));
-      peerMap.set(peerAsn, e);
+      const asn = pf.path[0];
+      const e = peerMap.get(asn) ?? { count: 0, prefixes: new Set(), collectors: new Set() };
+      e.count++; pf.prefixes.forEach(p => e.prefixes.add(p)); e.collectors.add("all");
+      peerMap.set(asn, e);
     }
     const peerNodes: NodeInfo[] = [...peerMap.entries()]
-      .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size)
-      .slice(0, 6)
+      .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size).slice(0, 6)
       .map(([asn, data], i) => ({
-        id: `peer-${asn}`,
-        label: asnLabel(asn, asnMap),
-        sublabel: `AS${asn}`,
-        column: 1,
-        y: i,
-        count: data.count,
-        prefixCount: data.prefixes.size,
-        asn,
-        role: asnRole(asn, asnMap),
+        id: `peer-${asn}`, label: asnLabel(asn, asnMap), sublabel: `AS${asn}`,
+        column: 1, y: i, count: data.count, prefixCount: data.prefixes.size,
+        asn, role: asnRole(asn, asnMap),
+        collectorIds: [...data.collectors],
       }));
 
-    // ── Column 2: Transit ASNs (middle hops) ──
-    const transitMap = new Map<number, { count: number; prefixes: Set<string> }>();
+    // ── Column 2: Transit ASNs ──
+    const transitMap = new Map<number, { count: number; prefixes: Set<string>; collectors: Set<string> }>();
     for (const pf of pfs) {
-      const hops = pf.path.slice(1, -1);
-      for (const asn of hops) {
-        const e = transitMap.get(asn) ?? { count: 0, prefixes: new Set() };
-        e.count++;
-        pf.prefixes.forEach(p => e.prefixes.add(p));
+      for (const asn of pf.path.slice(1, -1)) {
+        const e = transitMap.get(asn) ?? { count: 0, prefixes: new Set(), collectors: new Set() };
+        e.count++; pf.prefixes.forEach(p => e.prefixes.add(p)); e.collectors.add("all");
         transitMap.set(asn, e);
       }
     }
     const transitNodes: NodeInfo[] = [...transitMap.entries()]
-      .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size)
-      .slice(0, 8)
+      .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size).slice(0, 8)
       .map(([asn, data], i) => ({
-        id: `transit-${asn}`,
-        label: asnLabel(asn, asnMap),
-        sublabel: `AS${asn}`,
-        column: 2,
-        y: i,
-        count: data.count,
-        prefixCount: data.prefixes.size,
-        asn,
-        role: asnRole(asn, asnMap),
+        id: `transit-${asn}`, label: asnLabel(asn, asnMap), sublabel: `AS${asn}`,
+        column: 2, y: i, count: data.count, prefixCount: data.prefixes.size,
+        asn, role: asnRole(asn, asnMap),
+        collectorIds: [...data.collectors],
+        adjacentAsns: pfs.flatMap(pf => {
+          const idx = pf.path.indexOf(asn);
+          if (idx < 0) return [];
+          const adj: number[] = [];
+          if (idx > 0) adj.push(pf.path[idx - 1]);
+          if (idx < pf.path.length - 1) adj.push(pf.path[idx + 1]);
+          return adj;
+        }).filter((v, i, a) => a.indexOf(v) === i).slice(0, 10),
       }));
 
-    // ── Column 3: Origin ASNs (last hop) ──
-    const originMap = new Map<number, { count: number; prefixes: Set<string> }>();
+    // ── Column 3: Origin ASNs ──
+    const originMap = new Map<number, { count: number; prefixes: Set<string>; collectors: Set<string>; upstreams: Set<number> }>();
     for (const pf of pfs) {
-      const originAsn = pf.originAsn;
-      const e = originMap.get(originAsn) ?? { count: 0, prefixes: new Set() };
-      e.count++;
-      pf.prefixes.forEach(p => e.prefixes.add(p));
-      originMap.set(originAsn, e);
+      const asn = pf.originAsn;
+      const e = originMap.get(asn) ?? { count: 0, prefixes: new Set(), collectors: new Set(), upstreams: new Set() };
+      e.count++; pf.prefixes.forEach(p => e.prefixes.add(p)); e.collectors.add("all");
+      if (pf.path.length >= 2) e.upstreams.add(pf.path[pf.path.length - 2]);
+      originMap.set(asn, e);
     }
     const originNodes: NodeInfo[] = [...originMap.entries()]
       .sort((a, b) => b[1].prefixes.size - a[1].prefixes.size)
       .map(([asn, data], i) => ({
-        id: `origin-${asn}`,
-        label: asnLabel(asn, asnMap),
-        sublabel: `AS${asn}`,
-        column: 3,
-        y: i,
-        count: data.count,
-        prefixCount: data.prefixes.size,
-        asn,
-        role: "origin",
+        id: `origin-${asn}`, label: asnLabel(asn, asnMap), sublabel: `AS${asn}`,
+        column: 3, y: i, count: data.count, prefixCount: data.prefixes.size,
+        asn, role: "origin",
+        collectorIds: [...data.collectors],
+        adjacentAsns: [...data.upstreams].slice(0, 6),
       }));
 
-    // ── Column 4: Prefix space summary ──
+    // ── Column 4: Prefix space ──
     const prefixNodes: NodeInfo[] = [{
-      id: "prefix-space",
-      label: "Cuban prefixes",
-      sublabel: `${totalPrefixes.size} prefixes`,
-      column: 4,
-      y: 0,
-      count: pfs.length,
-      prefixCount: totalPrefixes.size,
-      role: "prefixes",
+      id: "prefix-space", label: "Cuban prefixes", sublabel: `${totalPrefixes.size} prefixes`,
+      column: 4, y: 0, count: pfs.length, prefixCount: totalPrefixes.size, role: "prefixes",
     }];
 
     const allNodes = [...collectorNodes, ...peerNodes, ...transitNodes, ...originNodes, ...prefixNodes];
 
-    // ── Build edges ──
+    // ── Build edges with inspection data ──
     const edges: EdgeInfo[] = [];
     let maxEdgeCount = 1;
 
-    // Collector → Peer edges
+    // Collector → Peer (all-to-all, low opacity)
     for (const cn of collectorNodes) {
       for (const pn of peerNodes) {
-        edges.push({ src: cn.id, tgt: pn.id, count: pn.count, opacity: 0.20, srcColumn: 0, tgtColumn: 1 });
+        edges.push({
+          id: `${cn.id}→${pn.id}`, src: cn.id, tgt: pn.id, count: pn.count, opacity: 0.15,
+          srcColumn: 0, tgtColumn: 1, collectorIds: [cn.id], examplePaths: [], prefixCount: pn.prefixCount,
+        });
       }
     }
 
-    // Peer → Transit edges (from actual AS-path adjacency)
+    // Peer → Transit (from actual AS-path adjacency)
     for (const pn of peerNodes) {
       for (const tn of transitNodes) {
-        const count = pfs.filter(pf => pf.path[0] === pn.asn && pf.path.slice(1, -1).includes(tn.asn!)).length;
-        if (count > 0) {
-          maxEdgeCount = Math.max(maxEdgeCount, count);
-          edges.push({ src: pn.id, tgt: tn.id, count, opacity: 0.50, srcColumn: 1, tgtColumn: 2 });
+        const matching = pfs.filter(pf => pf.path[0] === pn.asn && pf.path.slice(1, -1).includes(tn.asn!));
+        if (matching.length > 0) {
+          maxEdgeCount = Math.max(maxEdgeCount, matching.length);
+          const prefixSet = new Set(matching.flatMap(pf => pf.prefixes));
+          edges.push({
+            id: `${pn.id}→${tn.id}`, src: pn.id, tgt: tn.id, count: matching.length, opacity: 0.55,
+            srcColumn: 1, tgtColumn: 2, srcAsn: pn.asn, tgtAsn: tn.asn,
+            collectorIds: COLLECTORS.map(c => c.id),
+            examplePaths: matching.slice(0, 3).map(pf => pf.path),
+            prefixCount: prefixSet.size,
+          });
         }
       }
     }
 
-    // Transit → Origin edges
+    // Transit → Origin
     for (const tn of transitNodes) {
       for (const on of originNodes) {
-        const count = pfs.filter(pf => pf.path.slice(1, -1).includes(tn.asn!) && pf.originAsn === on.asn).length;
-        if (count > 0) {
-          maxEdgeCount = Math.max(maxEdgeCount, count);
-          edges.push({ src: tn.id, tgt: on.id, count, opacity: 0.55, srcColumn: 2, tgtColumn: 3 });
+        const matching = pfs.filter(pf => pf.path.slice(1, -1).includes(tn.asn!) && pf.originAsn === on.asn);
+        if (matching.length > 0) {
+          maxEdgeCount = Math.max(maxEdgeCount, matching.length);
+          const prefixSet = new Set(matching.flatMap(pf => pf.prefixes));
+          edges.push({
+            id: `${tn.id}→${on.id}`, src: tn.id, tgt: on.id, count: matching.length, opacity: 0.55,
+            srcColumn: 2, tgtColumn: 3, srcAsn: tn.asn, tgtAsn: on.asn,
+            collectorIds: COLLECTORS.map(c => c.id),
+            examplePaths: matching.slice(0, 3).map(pf => pf.path),
+            prefixCount: prefixSet.size,
+          });
         }
       }
     }
 
-    // Origin → Prefix space edges
+    // Origin → Prefix space
     for (const on of originNodes) {
-      edges.push({ src: on.id, tgt: "prefix-space", count: on.count, opacity: 0.45, srcColumn: 3, tgtColumn: 4 });
+      edges.push({
+        id: `${on.id}→prefix-space`, src: on.id, tgt: "prefix-space", count: on.count, opacity: 0.45,
+        srcColumn: 3, tgtColumn: 4, srcAsn: on.asn,
+        collectorIds: COLLECTORS.map(c => c.id), examplePaths: [], prefixCount: on.prefixCount,
+      });
     }
 
-    return { allNodes, allEdges: edges, maxEdgeCount, totalPrefixes: totalPrefixes.size };
+    return {
+      allNodes, allEdges: edges, maxEdgeCount,
+      totalPrefixes: totalPrefixes.size,
+      collectorCount: activeCollectorIds.size,
+      edgeCount: edges.filter(e => e.examplePaths.length > 0).length,
+    };
   }, [filteredFamilies, asnMap, selectedCollectorId]);
 
-  // Helpers
-  function nodesInColumn(col: number): NodeInfo[] {
-    return allNodes.filter(n => n.column === col);
-  }
-
+  function nodesInColumn(col: number): NodeInfo[] { return allNodes.filter(n => n.column === col); }
   function nodePos(node: NodeInfo): [number, number] {
     const colNodes = nodesInColumn(node.column);
-    const colDef = COLUMNS[node.column];
     const spacing = GRAPH_H / (colNodes.length + 1);
-    return [colDef.x, spacing * (colNodes.indexOf(node) + 1)];
+    return [COLUMNS[node.column].x, spacing * (colNodes.indexOf(node) + 1)];
   }
 
-  const handleNodeHover = useCallback((node: NodeInfo | null) => {
-    setHoveredNode(node);
+  // Edge highlighting logic
+  const isEdgeHighlighted = useCallback((e: EdgeInfo) => {
+    if (!selectedEdge && !hoveredEdge) return false;
+    return e.id === (selectedEdge ?? hoveredEdge)!.id;
+  }, [selectedEdge, hoveredEdge]);
+
+  const isEdgeDimmed = useCallback((e: EdgeInfo) => {
+    if (!selectedEdge && !hoveredEdge) return false;
+    return e.id !== (selectedEdge ?? hoveredEdge)!.id;
+  }, [selectedEdge, hoveredEdge]);
+
+  const handleEdgeClick = useCallback((e: EdgeInfo) => {
+    setSelectedEdge(prev => prev?.id === e.id ? null : e);
   }, []);
 
-  // Column header labels
   const modeLabel = selectedCollectorId
     ? `Filtered: ${COLLECTORS.find(c => c.id === selectedCollectorId)?.label ?? selectedCollectorId}`
     : "All viewpoints — union";
 
   return (
     <div style={{
-      position: "relative", width: "100%", height: "100%", minHeight: 420,
+      position: "relative", width: "100%", height: "100%", minHeight: 480,
       background: "#0d1530", borderRadius: 6,
-      border: "1px solid rgba(255,255,255,0.06)",
-      overflow: "hidden",
+      border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden",
     }}>
-      {/* Title bar */}
+      {/* Title bar + data summary */}
       <div style={{
-        padding: "8px 14px", display: "flex", justifyContent: "space-between", alignItems: "baseline",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "8px 14px 6px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+        display: "flex", justifyContent: "space-between", alignItems: "flex-start",
       }}>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: "#c8d8f0", letterSpacing: "-0.01em" }}>
             Observed BGP AS-path adjacencies
           </div>
-          <div style={{ fontSize: 9, color: "#667788", marginTop: 1 }}>
-            Each edge = an AS adjacency observed in at least one sampled collector RIB for Cuban prefixes.
-            Not physical cables or data-plane paths.
+          {/* Data summary strip */}
+          <div style={{ display: "flex", gap: 16, marginTop: 4, flexWrap: "wrap" }}>
+            {timestamp && <span style={{ fontSize: 8, color: "#556678" }}>Timestamp: {timestamp}</span>}
+            <span style={{ fontSize: 8, color: "#667788" }}>
+              Collectors: <span style={{ color: "#8899bb" }}>{collectorCount}</span>
+            </span>
+            <span style={{ fontSize: 8, color: "#667788" }}>
+              Prefixes: <span style={{ color: "#2ecc71" }}>{totalPrefixes}</span>
+            </span>
+            <span style={{ fontSize: 8, color: "#667788" }}>
+              Path families: <span style={{ color: "#8899bb" }}>{filteredFamilies.length}</span>
+            </span>
+            <span style={{ fontSize: 8, color: "#667788" }}>
+              Edges: <span style={{ color: "#8899bb" }}>{edgeCount}</span> observed AS adjacencies
+            </span>
           </div>
         </div>
-        <div style={{
-          fontSize: 10, color: "#8899bb", fontWeight: 500,
-          padding: "3px 10px", borderRadius: 3,
-          background: "rgba(255,255,255,0.04)",
-        }}>
-          {modeLabel}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
+          <div style={{
+            fontSize: 10, color: "#8899bb", fontWeight: 500,
+            padding: "2px 8px", borderRadius: 3, background: "rgba(255,255,255,0.04)",
+            cursor: "default",
+          }} title="Union: a prefix/path is included if at least one selected collector RIB observed it.">
+            {modeLabel}
+          </div>
+          <div style={{ fontSize: 7, color: "#445566" }}>
+            Union — seen by any selected collector
+          </div>
         </div>
+      </div>
+
+      {/* Legends */}
+      <div style={{ display: "flex", gap: 16, padding: "3px 14px", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        <span style={{ fontSize: 7, color: "#556678" }}>Edge width = prefix count through adjacency</span>
+        <span style={{ fontSize: 7, color: "#556678" }}>Node size = prefixes associated</span>
+        <span style={{ fontSize: 7, color: "#556678" }}>Click edge/node to inspect · Click again to clear</span>
       </div>
 
       {/* SVG graph */}
       <svg width="100%" height="100%" viewBox={`0 0 ${GRAPH_W} ${GRAPH_H}`} style={{ display: "block" }}>
-        {/* Column header text */}
+        {/* Column headers */}
         {COLUMNS.map(col => (
-          <text key={col.id} x={col.x} y={20} textAnchor="middle"
+          <text key={col.id} x={col.x} y={18} textAnchor="middle"
             fill="#667788" fontSize={8} fontWeight={600} letterSpacing="0.05em">
             {col.label.toUpperCase()}
           </text>
@@ -306,14 +323,31 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
           const [sx, sy] = nodePos(sNode);
           const [tx, ty] = nodePos(tNode);
           const midX = (sx + tx) / 2;
-          const sw = Math.max(0.4, Math.min(6, (e.count / Math.max(1, maxEdgeCount)) * 5));
+          const sw = Math.max(0.3, Math.min(6, (e.count / Math.max(1, maxEdgeCount)) * 5));
+          const highlighted = isEdgeHighlighted(e);
+          const dimmed = isEdgeDimmed(e);
           const getOriginNodes = () => allNodes.filter(n => n.column === 3);
-          const color = e.tgtColumn === 4 ? "rgba(46,204,113,0.4)"
+          const baseColor = e.tgtColumn === 4 ? "rgba(46,204,113,0.4)"
             : e.tgtColumn === 3 ? (ORIGIN_PALETTE[getOriginNodes().findIndex(o => o.id === e.tgt)] ?? "#777")
             : "rgba(120,150,200,0.3)";
+          const color = highlighted ? "rgba(255,255,255,0.7)" : dimmed ? "rgba(60,80,100,0.08)" : baseColor;
+          const opacity = highlighted ? 0.9 : dimmed ? 0.06 : e.opacity;
+          const strokeW = highlighted ? sw + 1.5 : sw;
+
           return (
-            <path key={i} d={`M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`}
-              fill="none" stroke={color} strokeWidth={sw} strokeOpacity={e.opacity} />
+            <g key={i}>
+              {/* Invisible wider hit area for hover */}
+              <path d={`M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`}
+                fill="none" stroke="transparent" strokeWidth={strokeW + 8}
+                style={{ cursor: "pointer" }}
+                onMouseEnter={() => setHoveredEdge(e)}
+                onMouseLeave={() => setHoveredEdge(null)}
+                onClick={() => handleEdgeClick(e)}
+              />
+              <path d={`M ${sx} ${sy} C ${midX} ${sy}, ${midX} ${ty}, ${tx} ${ty}`}
+                fill="none" stroke={color} strokeWidth={strokeW} strokeOpacity={opacity}
+                style={{ pointerEvents: "none" }} />
+            </g>
           );
         })}
 
@@ -325,39 +359,35 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
           const isOrigin = node.column === 3;
           const isSelected = isCollector && node.collectorId === selectedCollectorId;
           const isHovered = hoveredNode?.id === node.id;
+          const isDimmed = !!selectedEdge && !isHovered && !isSelected;
 
-          const r = isPrefix ? 22
-            : isOrigin ? Math.max(8, Math.min(18, 8 + node.prefixCount / 3))
-            : isCollector ? 7
-            : Math.max(5, Math.min(14, 5 + node.prefixCount / 4));
+          const r = isPrefix ? 22 : isOrigin ? Math.max(8, Math.min(18, 8 + node.prefixCount / 3))
+            : isCollector ? 7 : Math.max(5, Math.min(14, 5 + node.prefixCount / 4));
 
           const fillColor = isPrefix ? "rgba(46,204,113,0.25)"
             : isOrigin ? (ORIGIN_PALETTE[allNodes.filter(n => n.column === 3).indexOf(node)] ?? "#8877aa")
-            : isCollector ? (isSelected ? "#ffd048" : "#68a0cc")
-            : "#8899bb";
+            : isCollector ? (isSelected ? "#ffd048" : "#68a0cc") : "#8899bb";
 
-          const strokeColor = isPrefix ? "#2ecc71"
-            : isOrigin ? fillColor
-            : isCollector ? (isSelected ? "#ffe080" : "#88bbdd")
-            : "#aabbdd";
+          const strokeColor = isPrefix ? "#2ecc71" : isOrigin ? fillColor
+            : isCollector ? (isSelected ? "#ffe080" : "#88bbdd") : "#aabbdd";
+
+          const dimOpacity = isDimmed ? 0.25 : 1;
 
           return (
             <g key={node.id}
-              style={{ cursor: isCollector ? "pointer" : "default" }}
+              style={{ cursor: isCollector ? "pointer" : "default", opacity: dimOpacity, transition: "opacity 0.2s" }}
               onClick={() => { if (isCollector) onSelectCollector(selectedCollectorId === node.collectorId ? null : node.collectorId!); }}
-              onMouseEnter={() => handleNodeHover(node)}
-              onMouseLeave={() => handleNodeHover(null)}
+              onMouseEnter={() => setHoveredNode(node)}
+              onMouseLeave={() => setHoveredNode(null)}
             >
-              {/* Hover highlight ring */}
               {isHovered && (
-                <circle cx={x} cy={y} r={r + 4} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={1.5} />
+                <circle cx={x} cy={y} r={r + 4} fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={1.5} />
               )}
               <circle cx={x} cy={y} r={r}
                 fill={fillColor} stroke={strokeColor} strokeWidth={isSelected ? 2.5 : 1.5}
-                fillOpacity={isCollector ? 1 : 0.85}
-              />
-              {/* Label */}
-              <text x={x + r + 6} y={y + 1} textAnchor="start" fill={isSelected ? "#ffe080" : isOrigin ? fillColor : "#c8d8f0"}
+                fillOpacity={isCollector ? 1 : 0.85} />
+              <text x={x + r + 6} y={y + 1} textAnchor="start"
+                fill={isSelected ? "#ffe080" : isOrigin ? fillColor : "#c8d8f0"}
                 fontSize={isPrefix ? 11 : 10} fontWeight={isPrefix ? 600 : 500} dominantBaseline="middle">
                 {node.label}
               </text>
@@ -371,38 +401,103 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
         })}
       </svg>
 
-      {/* Hover tooltip */}
-      {hoveredNode && hoveredNode.column !== 4 && (
+      {/* Hover tooltip: Node */}
+      {hoveredNode && !hoveredEdge && (
         <div style={{
-          position: "absolute", bottom: 48, left: "50%", transform: "translateX(-50%)",
-          padding: "8px 14px", background: "rgba(10,20,48,0.95)", borderRadius: 6,
-          border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(6px)",
-          fontSize: 10, color: "#c8d8f0", display: "flex", gap: 16, alignItems: "center",
-          pointerEvents: "none",
+          position: "absolute", bottom: 52, left: "50%", transform: "translateX(-50%)",
+          padding: "10px 16px", background: "rgba(10,20,48,0.97)", borderRadius: 6,
+          border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(8px)",
+          fontSize: 10, color: "#c8d8f0", display: "flex", flexDirection: "column", gap: 4,
+          pointerEvents: "none", maxWidth: 500, zIndex: 20,
         }}>
+          <div style={{ fontWeight: 600, color: "#e8e8f8", fontSize: 11 }}>
+            {hoveredNode.column === 0 ? "Observation point" :
+             hoveredNode.column === 1 ? "Peer ASN" :
+             hoveredNode.column === 2 ? "Transit ASN" :
+             hoveredNode.column === 3 ? "Origin ASN" : "Prefix space"}
+          </div>
           <div>
-            <span style={{ fontWeight: 600, color: "#e8e8f8" }}>{hoveredNode.label}</span>
+            <span style={{ color: "#e8e8f8" }}>{hoveredNode.label}</span>
             {hoveredNode.asn && <span style={{ color: "#667788", marginLeft: 8 }}>AS{hoveredNode.asn}</span>}
           </div>
+          {hoveredNode.column === 0 && (
+            <div style={{ color: "#8899bb" }}>
+              Role: BGP RIB source<br />
+              Prefixes observed: <span style={{ color: "#2ecc71" }}>{hoveredNode.prefixCount}</span> · Path families: {hoveredNode.count}
+            </div>
+          )}
+          {hoveredNode.column >= 1 && hoveredNode.column <= 3 && (
+            <div style={{ color: "#8899bb" }}>
+              Seen by: <span style={{ color: "#aabbdd" }}>{hoveredNode.collectorIds?.length ?? 0}</span> collector RIBs<br />
+              Prefixes: <span style={{ color: "#2ecc71" }}>{hoveredNode.prefixCount}</span> · Path families: {hoveredNode.count}
+              {hoveredNode.adjacentAsns && hoveredNode.adjacentAsns.length > 0 && (
+                <span><br />Adjacent ASNs: {hoveredNode.adjacentAsns.map(a => `AS${a}`).join(", ")}</span>
+              )}
+            </div>
+          )}
+          <div style={{ fontSize: 8, color: "#556678", marginTop: 2 }}>
+            {hoveredNode.column === 0 ? "Not a network endpoint — an observation source" :
+             "Not a physical location — a logical ASN in BGP paths"}
+          </div>
+        </div>
+      )}
+
+      {/* Hover tooltip: Edge */}
+      {hoveredEdge && (
+        <div style={{
+          position: "absolute", bottom: 52, left: "50%", transform: "translateX(-50%)",
+          padding: "10px 16px", background: "rgba(10,20,48,0.97)", borderRadius: 6,
+          border: "1px solid rgba(255,255,255,0.12)", backdropFilter: "blur(8px)",
+          fontSize: 10, color: "#c8d8f0", display: "flex", flexDirection: "column", gap: 4,
+          pointerEvents: "none", maxWidth: 520, zIndex: 20,
+        }}>
+          <div style={{ fontWeight: 600, color: "#e8e8f8", fontSize: 11 }}>
+            Observed AS-path adjacency
+          </div>
+          <div style={{ fontFamily: "monospace", fontSize: 11, color: "#aabbdd" }}>
+            {hoveredEdge.srcAsn ? `AS${hoveredEdge.srcAsn}` : hoveredEdge.src} →{" "}
+            {hoveredEdge.tgtAsn ? `AS${hoveredEdge.tgtAsn}` : hoveredEdge.tgt}
+          </div>
           <div style={{ color: "#8899bb" }}>
-            <span style={{ color: "#2ecc71", fontWeight: 600 }}>{hoveredNode.prefixCount}</span> prefixes
+            Prefixes through this adjacency: <span style={{ color: "#2ecc71", fontWeight: 600 }}>{hoveredEdge.prefixCount}</span>
+            <br />Path families: {hoveredEdge.count}
           </div>
-          <div style={{ color: "#667788" }}>
-            {hoveredNode.count} path families · role: {hoveredNode.role}
+          {hoveredEdge.examplePaths.length > 0 && (
+            <div style={{ color: "#667788", fontSize: 9 }}>
+              Example observed AS paths:<br />
+              {hoveredEdge.examplePaths.map((p, i) => (
+                <span key={i} style={{ color: "#7788aa", fontFamily: "monospace" }}>
+                  {p.map(a => `AS${a}`).join(" → ")}{i < hoveredEdge.examplePaths.length - 1 ? <br key={i} /> : null}
+                </span>
+              ))}
+            </div>
+          )}
+          <div style={{ fontSize: 8, color: "#556678", marginTop: 2, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 4 }}>
+            Not a physical link. Adjacency observed inside BGP AS paths in collector RIBs.
           </div>
+        </div>
+      )}
+
+      {/* Selected edge badge */}
+      {selectedEdge && (
+        <div style={{
+          position: "absolute", top: 52, right: 14,
+          padding: "4px 10px", background: "rgba(255,255,255,0.08)", borderRadius: 3,
+          fontSize: 9, color: "#aabbdd", cursor: "pointer",
+        }} onClick={() => setSelectedEdge(null)}>
+          Edge selected — click to clear ✕
         </div>
       )}
 
       {/* Footer */}
       <div style={{
-        position: "absolute", bottom: 6, left: 14, right: 14,
+        position: "absolute", bottom: 4, left: 14, right: 14,
         display: "flex", justifyContent: "space-between",
-        fontSize: 8, color: "#556678",
-        borderTop: "1px solid rgba(255,255,255,0.04)",
-        paddingTop: 6,
+        fontSize: 7, color: "#556678",
+        borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: 4,
       }}>
-        <span>{filteredFamilies.length} path families · {totalPrefixes} prefixes observed</span>
-        <span>Click a collector to filter · Hover for details. Not physical cables.</span>
+        <span>Logical BGP view — AS-path adjacencies from collector RIBs</span>
+        <span>Not physical cables or data-plane paths</span>
       </div>
     </div>
   );

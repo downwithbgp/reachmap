@@ -177,9 +177,9 @@ export function HilbertCanvas({
         textTransform: "uppercase", letterSpacing: "0.04em",
         background: "#111830", borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
-        IP-space fingerprint
+        Prefix fingerprint
         <span style={{ display: "block", fontWeight: 400, fontSize: 9, textTransform: "none", letterSpacing: 0, color: "#667788", marginTop: 2 }}>
-          Complete national address space · BGP visibility only
+          Hilbert-packed national prefix space · Cell color = BGP visibility
         </span>
       </div>
       <canvas

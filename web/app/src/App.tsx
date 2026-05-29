@@ -69,6 +69,9 @@ function CubaWeatherCard({ countryName, totalCollectors }: { countryName: string
           <div style={{ fontSize: 12, color: "#2ecc71", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>
             {countryName} · IP-space weather
           </div>
+          <div style={{ fontSize: 8, color: "#556678", marginTop: 2 }}>
+            Country-shaped summary · Packed routed address space, not physical geography
+          </div>
           <div style={{
             padding: "2px 8px", borderRadius: 3, fontSize: 11, fontWeight: 600,
             background: "rgba(40,200,130,0.12)", color: "#2ecc71",
@@ -472,7 +475,7 @@ export function App() {
           </div>
           <div style={{ flex: 1, fontSize: 12, color: "#aabbcc", lineHeight: 1.6, minWidth: 200 }}>
             Control plane: BGP collector RIBs continued to observe Cuban prefixes.<br />
-            Traffic signal: external measurement showed ~65% decline.
+            Traffic signal: external traffic volume fell to roughly one-third of normal.
           </div>
           <div style={{ fontSize: 9, color: "#667788" }}>Traffic source: Cloudflare Radar</div>
         </div>
@@ -490,6 +493,7 @@ export function App() {
                 asnMap={asnMap}
                 selectedPrefix={selectedPrefix?.prefix ?? null}
                 selectedCollectorId={selectedVp?.collector ?? null}
+                timestamp={activeTimelinePoint?.timestamp}
                 onSelectCollector={(cid: string | null) => {
                   if (!cid) { handleClearSelection(); return; }
                   const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
