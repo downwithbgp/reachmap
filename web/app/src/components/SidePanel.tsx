@@ -1,6 +1,11 @@
 import React from "react";
 import type { Viewpoint, AsView, PathFamilyRecord, PrefixRecord, SelectionMode, ColorMode, PrefixVisibilityScore } from "../types";
 
+const ASN_LABELS: Record<number, string> = {
+  27725: "ETECSA", 11960: "ETECSA IXP", 10569: "CENIAInternet",
+};
+function asnLabel(asn: number): string { return ASN_LABELS[asn] ?? `AS${asn}`; }
+
 interface Props {
   selectionMode: SelectionMode;
   colorMode: ColorMode;
@@ -161,7 +166,7 @@ export function SidePanel({
           </div>
           {selectedPrefix && (
             <>
-              <StatRow label="Origin" value={`${selectedPrefix.originNames.join(", ")} (AS${selectedPrefix.originAsns.join(", AS")})`} />
+              <StatRow label="Origin" value={`${selectedPrefix.originAsns.map(a => asnLabel(a)).join(", ")} (AS${selectedPrefix.originAsns.join(", AS")})`} />
               <StatRow label="Allocation" value={`${selectedPrefix.addressCount.toLocaleString()} IPs /${selectedPrefix.prefixLength}`} />
               <StatRow label="BGP observed" value={selectedPrefix.observedInBgp ? "Yes" : "No"} accent={selectedPrefix.observedInBgp ? "green" : "red"} />
               {visibilityScores && (
