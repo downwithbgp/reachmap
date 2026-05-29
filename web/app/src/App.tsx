@@ -504,6 +504,24 @@ export function App() {
         </div>
       )}
 
+      {/* DEBUG PANEL — temporary, shows loaded state */}
+      {!bootstrapError && dataMode === "timeline" && activeTimelinePoint && (
+        <div style={{ padding: "4px 16px", background: "rgba(255,100,100,0.08)", borderBottom: "1px solid rgba(255,100,100,0.2)", fontSize: 8, color: "#cc8888", fontFamily: "monospace", display: "flex", gap: 16, flexWrap: "wrap", flexShrink: 0 }}>
+          <span>DEBUG</span>
+          <span>sid={activeTimelinePoint.snapshotId}</span>
+          <span>comparability={activeTimelinePoint.comparability ?? "MISSING"}</span>
+          <span>available={String(activeTimelinePoint.available)}</span>
+          <span>collectors={activeTimelinePoint.collectorCount}</span>
+          <span>target={activeTimelinePoint.targetCollectors ?? "?"}</span>
+          <span>parsed={activeTimelinePoint.parsedCollectors ?? "?"}</span>
+          <span>prefixes={activeTimelinePoint.observedPrefixCount}/{activeTimelinePoint.totalPrefixCount}</span>
+          <span>paths={activeTimelinePoint.pathFamilyCount}</span>
+          <span>traffic={activeTimelinePoint.trafficBaselinePercent}%</span>
+          <span>points={timelineIndex?.points?.length ?? 0}</span>
+          <span>complete={timelineIndex?.points?.filter(p => p.comparability === "complete").length ?? "?"}</span>
+        </div>
+      )}
+
       {/* Time scrubber — timeline navigation */}
       {!bootstrapError && dataMode === "timeline" && timelineIndex && (
         <TimeScrubber
