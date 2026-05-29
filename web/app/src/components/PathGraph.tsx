@@ -38,11 +38,32 @@ interface Props {
   onSelectCollector: (id: string | null) => void;
 }
 
+// IP range overlap helpers
+function cidrToRange(prefix: string): [number, number] | null {
+  const [ipStr, bitsStr] = prefix.split("/");
+  if (!ipStr || !bitsStr) return null;
+  const parts = ipStr.split(".");
+  if (parts.length !== 4) return null;
+  const ip = ((+parts[0] << 24) | (+parts[1] << 16) | (+parts[2] << 8) | +parts[3]) >>> 0;
+  const bits = parseInt(bitsStr);
+  if (isNaN(bits) || bits < 0 || bits > 32) return null;
+  const mask = bits === 0 ? 0 : (~0 << (32 - bits)) >>> 0;
+  const start = (ip & mask) >>> 0;
+  const end = (start + ((1 << (32 - bits)) >>> 0) - 1) >>> 0;
+  return [start, end];
+}
+
+function prefixOverlaps(a: string, b: string): boolean {
+  const ra = cidrToRange(a), rb = cidrToRange(b);
+  if (!ra || !rb) return false;
+  return ra[0] <= rb[1] && ra[1] >= rb[0];
+}
+
 export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, onSelectCollector }: Props) {
-  const { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount } = useMemo(() => {
+  const { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount, matchCount } = useMemo(() => {
     let pfs = pathFamilies;
     if (selectedPrefix) {
-      pfs = pfs.filter(pf => pf.prefixes.includes(selectedPrefix));
+      pfs = pfs.filter(pf => pf.prefixes.some(p => prefixOverlaps(p, selectedPrefix)));
     }
 
     // Collector nodes (left column)
@@ -99,7 +120,7 @@ export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, o
       }
     }
 
-    return { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount };
+    return { collectorNodes, transitNodes, originNodes, edges, maxEdgeCount, matchCount: pfs.length };
   }, [pathFamilies, selectedPrefix]);
 
   // SVG layout
@@ -123,7 +144,13 @@ export function PathGraph({ pathFamilies, selectedPrefix, selectedCollectorId, o
           Collector RIBs → transit ASNs → origin ASNs. Line thickness = observed path count. Not physical cables.
         </span>
       </div>
-      <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
+      {selectedPrefix && matchCount === 0 && (
+        <div style={{ padding: "20px", textAlign: "center", color: "#888", fontSize: 12 }}>
+          No path-family records matched prefix <code style={{ color: "#aaa" }}>{selectedPrefix}</code>.<br />
+          <span style={{ fontSize: 10, color: "#666" }}>This may indicate an allocation/BGP subprefix mapping issue.</span>
+        </div>
+      )}
+      <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: matchCount === 0 && selectedPrefix ? "none" : "block" }}>
         {/* Column headers */}
         <text x={colX[0]} y={18} textAnchor="middle" fill="#666" fontSize={9} fontWeight={600}>COLLECTOR RIBS</text>
         <text x={colX[1]} y={18} textAnchor="middle" fill="#666" fontSize={9} fontWeight={600}>TRANSIT / UPSTREAM</text>
