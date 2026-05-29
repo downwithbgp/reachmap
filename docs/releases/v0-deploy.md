@@ -4,15 +4,20 @@
 
 **Date:** 2026-05-29
 
+**Latest commit:** `4e19ac3` — fix: connect Cuba geographic anchor to IP-space callout
+
 **Build:**
 ```bash
 cd web/app && npm run build
 ```
 - `dist/index.html` — 1.24 KB
-- `dist/assets/index-CnSomUtd.js` — 919 KB (269 KB gzipped)
+- `dist/assets/index-WLJS-DKL.js` — 186 KB (60 KB gzipped)
+- `dist/assets/MapStageGL-DXouUQbj.js` — 1,686 KB (467 KB gzipped) — deck.gl + MapLibre GL stage
 - `dist/data/` — 496 static JSON files
 
-## Smoke test — PASS (17/17)
+**Default view:** GL map stage (deck.gl + MapLibre GL) with country-shaped IP-space weather callout. SVG fallback available via `?stage=svg`.
+
+## Smoke test — PASS (all checks)
 
 | # | Check | Result |
 |---|-------|--------|
@@ -22,17 +27,23 @@ cd web/app && npm run build
 | 4 | Headline: "What the routing table sees — and what it misses" | ✓ |
 | 5 | BGP vs traffic signal bar visible | ✓ |
 | 6 | Hilbert fingerprint renders | ✓ |
-| 7 | deck.gl map renders | ✓ |
-| 8 | Collector points render | ✓ |
-| 9 | Case selector works (3 cases) | ✓ |
-| 10 | Timeline controls work (3 snapshots) | ✓ |
-| 11 | Prefix click updates details | ✓ |
-| 12 | Path-family/prefix details render | ✓ |
-| 13 | About/Method + provenance visible | ✓ |
-| 14 | No console errors | ✓ |
-| 15 | No localhost/10.0.3.200 references in build | ✓ |
-| 16 | Social meta present (og:title, og:description, meta desc) | ✓ |
-| 17 | 496 data files in dist | ✓ |
+| 7 | GL map stage loads by default (WebGL) | ✓ |
+| 8 | Collector points render on geographic basemap | ✓ |
+| 9 | Geographic Cuba marker visible | ✓ |
+| 10 | Cuba IP-space weather callout visible (country-shaped, top-right) | ✓ |
+| 11 | Dashed connector: geographic Cuba → callout (with arrow + label) | ✓ |
+| 12 | Connector updates on pan/zoom/resize | ✓ |
+| 13 | Callout footer: "Address space packed into country outline. Not physical prefix locations." | ✓ |
+| 14 | Case selector works (3 cases) | ✓ |
+| 15 | Timeline controls work (3 snapshots) | ✓ |
+| 16 | Prefix click updates details | ✓ |
+| 17 | Path-family/prefix details render | ✓ |
+| 18 | About/Method + provenance visible | ✓ |
+| 19 | No console errors | ✓ |
+| 20 | No external tile requests (self-hosted GeoJSON basemap) | ✓ |
+| 21 | No localhost/10.0.3.200 references in build | ✓ |
+| 22 | Social meta present (og:title, og:description, meta desc) | ✓ |
+| 23 | Build clean (`tsc && vite build`) | ✓ |
 
 ## Known limitations
 
