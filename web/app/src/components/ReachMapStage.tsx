@@ -52,11 +52,11 @@ function project(lon: number, lat: number): [number, number] {
   return [x, y];
 }
 
-// Cuba enlarged callout (magnified for IP-space weather)
-const CALLOUT_SCALE = 3.2;
+// Cuba enlarged callout (magnified for IP-space weather) — focal endpoint
+const CALLOUT_SCALE = 5.0;
 const CALLOUT_CENTER = project(CUBA_CENTER[0], CUBA_CENTER[1]);
-// Shift callout slightly right and up for readability
-const CALLOUT_OFFSET: [number, number] = [CALLOUT_CENTER[0] + 60, CALLOUT_CENTER[1] - 30];
+// Position callout as dominant right-side focal point
+const CALLOUT_OFFSET: [number, number] = [SVG_W * 0.72, SVG_H * 0.42];
 
 function projectCubaCallout(lon: number, lat: number): [number, number] {
   const dx = (lon - CUBA_CENTER[0]) * CALLOUT_SCALE;
@@ -87,7 +87,7 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
         label: asnMap.get(asn)?.displayName ?? `AS${asn}`,
         count: data.count,
         prefixCount: data.prefixes.size,
-        y: 140 + i * 50, // vertical spacing in SVG
+        y: 100 + i * 55, // vertical spacing in SVG
       }));
   }, [pathFamilies, asnMap]);
 
@@ -110,8 +110,8 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
   // BGP status for callout fill
   const bgpStatus = visibilityScores && totalCollectors > 1 ? "green" : "green"; // all green for March 2026
 
-  // Transit node x position (logical band between collectors and Cuba)
-  const transitX = SVG_W * 0.52;
+  // Transit node x position (logical band — clear middle separation)
+  const transitX = SVG_W * 0.42;
 
   return (
     <div style={{ position: "relative", background: "#080812", borderRadius: 4, border: "1px solid #1a1a38", overflow: "hidden", width: "100%", height: "100%" }}>
@@ -139,9 +139,19 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
           stroke="rgba(80,150,220,0.8)" strokeWidth={1.5} />
 
         {/* Callout label */}
-        {(() => { const [cx, cy] = CALLOUT_OFFSET; return (
-          <text x={cx} y={cy + 55} textAnchor="middle" fill="#7799bb" fontSize={10} fontWeight={600}>
-            {countryName} · BGP-visible
+        {(() => { const [cx, cy] = CALLOUT_OFFSET; return (<>
+          <text x={cx} y={cy + 65} textAnchor="middle" fill="#7799bb" fontSize={11} fontWeight={600}>
+            {countryName} · IP-space weather
+          </text>
+          <text x={cx} y={cy + 78} textAnchor="middle" fill="#445566" fontSize={9}>
+            BGP-visible in all sampled collector RIBs
+          </text>
+        </>); })()}
+
+        {/* Geographic anchor label */}
+        {(() => { const [gx, gy] = CALLOUT_CENTER; return (
+          <text x={gx} y={gy + 16} textAnchor="middle" fill="#3a5570" fontSize={8}>
+            geographic location
           </text>
         ); })()}
 
@@ -184,7 +194,7 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
           return transitNodes.slice(0, 3).map((t, i) => (
             <path key={`${c.id}-${t.asn}`}
               d={`M ${sx} ${sy} C ${(sx + transitX) / 2} ${sy}, ${(sx + transitX) / 2} ${t.y}, ${transitX} ${t.y}`}
-              fill="none" stroke="rgba(100,140,200,0.12)" strokeWidth={0.8} />
+              fill="none" stroke="rgba(100,140,200,0.18)" strokeWidth={1} />
           ));
         })}
 
@@ -194,7 +204,7 @@ export function ReachMapStage({ pathFamilies, asnMap, visibilityScores, totalCol
           return (
             <path key={`t-${t.asn}`}
               d={`M ${transitX} ${t.y} C ${(transitX + tx) / 2} ${t.y}, ${(transitX + tx) / 2} ${ty}, ${tx} ${ty}`}
-              fill="none" stroke="rgba(40,185,94,0.2)" strokeWidth={Math.max(0.5, t.prefixCount / 5)} />
+              fill="none" stroke="rgba(40,185,94,0.3)" strokeWidth={Math.max(1, t.prefixCount / 4)} />
           );
         })}
 
