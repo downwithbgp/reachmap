@@ -112,5 +112,6 @@ export interface TimelineIndex {
   countryCode: string;
   eventWindow: string;
   generatedTs: string;
+  caseStudyId?: string;
   points: TimelinePoint[];
 }

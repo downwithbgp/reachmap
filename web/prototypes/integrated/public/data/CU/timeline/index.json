@@ -1,0 +1,72 @@
+{
+  "countryCode": "CU",
+  "eventWindow": "July 11-12, 2021 Cuba Internet interruption",
+  "generatedTs": "2026-05-28T22:00:00Z",
+  "points": [
+    {
+      "snapshotId": "2021-07-10T2000Z",
+      "timestamp": "2021-07-10 2000 UTC",
+      "role": "before",
+      "collectorCount": 4,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views4"
+      ],
+      "totalPrefixCount": 17,
+      "observedPrefixCount": 17,
+      "allCollectorVisibleCount": 17,
+      "partialVisibleCount": 0,
+      "notObservedCount": 0,
+      "pathFamilyCount": 725
+    },
+    {
+      "snapshotId": "2021-07-11T0000Z",
+      "timestamp": "2021-07-11 0000 UTC",
+      "role": "pre_event",
+      "collectorCount": 5,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views4",
+        "rrc00"
+      ],
+      "totalPrefixCount": 17,
+      "observedPrefixCount": 17,
+      "allCollectorVisibleCount": 17,
+      "partialVisibleCount": 0,
+      "notObservedCount": 0,
+      "pathFamilyCount": 1188
+    },
+    {
+      "snapshotId": "2021-07-11T2000Z",
+      "timestamp": "2021-07-11 2000 UTC",
+      "role": "event",
+      "collectorCount": 4,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views4"
+      ],
+      "totalPrefixCount": 17,
+      "observedPrefixCount": 17,
+      "allCollectorVisibleCount": 17,
+      "partialVisibleCount": 0,
+      "notObservedCount": 0,
+      "pathFamilyCount": 726,
+      "notes": [
+        "Internet Society Pulse: interruption 20:00-21:00 UTC July 11, 2021 during Havana protests.",
+        "BGP visibility shown is from sampled collector RIBs \u2014 not proven data-plane reachability.",
+        "Source: Internet Society Pulse / NetBlocks / Kentik"
+      ],
+      "externalEventContext": {
+        "title": "Reported Cuba Internet interruption",
+        "source": "Internet Society Pulse / NetBlocks",
+        "note": "Internet Society Pulse records an interruption from 20:00-21:00 UTC on July 11, 2021. BGP visibility from sampled collector RIBs remained at 4/4 \u2014 all LACNIC-allocated prefixes continued to be announced. This suggests the interruption was at the data-plane, access, or application layer, not BGP route withdrawal."
+      }
+    }
+  ]
+}

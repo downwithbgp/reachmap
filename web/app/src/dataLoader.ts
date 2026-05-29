@@ -242,9 +242,10 @@ function ipv4ToU32(ip: string): number {
 
 const TL_BASE = "/data/CU/timeline";
 
-export async function loadTimelineIndex(): Promise<TimelineIndex | null> {
+export async function loadTimelineIndex(caseId = "mar2026"): Promise<TimelineIndex | null> {
   try {
-    const res = await fetch(`${TL_BASE}/index.json`);
+    let res = await fetch(`${TL_BASE}/${caseId}/index.json`);
+    if (!res.ok) res = await fetch(`${TL_BASE}/index.json`);
     if (!res.ok) return null;
     return res.json();
   } catch { return null; }

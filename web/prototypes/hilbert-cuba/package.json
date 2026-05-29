@@ -1,0 +1,18 @@
+{
+  "name": "hilbert-cuba-prototype",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5174 --strictPort",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173 --strictPort"
+  },
+  "dependencies": {
+    "d3-hilbert": "^1.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7",
+    "vite": "^6.0"
+  }
+}

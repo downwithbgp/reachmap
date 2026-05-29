@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReachMap — Cuba Prototype v2</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header>
+    <h1>ReachMap <span class="subtitle">— How the Internet sees Cuba</span></h1>
+    <div class="header-note">
+      BGP reachability weather map. Address-space fingerprint + geographic anchor + logical AS paths.
+      Not physical cable geography.
+    </div>
+  </header>
+
+  <main>
+    <!-- View toggle -->
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="compact">Compact National Fingerprint</button>
+      <button class="view-tab" data-view="global">Global IPv4 Context</button>
+    </div>
+
+    <div class="viz-container">
+      <!-- Cuba geographic anchor -->
+      <div class="geo-anchor">
+        <svg id="cuba-map" viewBox="0 0 200 100" width="200" height="100">
+          <path id="cuba-outline" />
+        </svg>
+        <div class="geo-label">Cuba</div>
+        <div class="geo-note">Geographic anchor only. Prefix positions are logical, not physical.</div>
+      </div>
+
+      <!-- Compact National Hilbert (hero) -->
+      <div class="hilbert-container view-compact active" id="compact-view">
+        <div class="view-label">
+          National IPv4 fingerprint
+          <span class="view-sublabel">Cuban address space remapped for readability. Not global IPv4 position.</span>
+        </div>
+        <canvas id="compact-canvas"></canvas>
+        <div id="compact-tooltip" class="tooltip hidden"></div>
+        <div class="canvas-stats" id="compact-stats"></div>
+      </div>
+
+      <!-- Global IPv4 Hilbert (context) -->
+      <div class="hilbert-container view-global" id="global-view">
+        <div class="view-label">
+          Global IPv4 context
+          <span class="view-sublabel">Where Cuba's allocations sit in the full IPv4 space.</span>
+        </div>
+        <canvas id="global-canvas"></canvas>
+        <div id="global-tooltip" class="tooltip hidden"></div>
+        <div class="canvas-stats" id="global-stats"></div>
+      </div>
+
+      <!-- Side panel -->
+      <aside class="side-panel" id="side-panel">
+        <section class="panel-section" id="vantage-section">
+          <h3>Vantage Point</h3>
+          <select id="vantage-select">
+            <option value="">— Select a vantage ASN —</option>
+          </select>
+          <div id="vantage-info" class="info-block hidden"></div>
+        </section>
+
+        <section class="panel-section" id="prefix-section">
+          <h3>Prefix Detail</h3>
+          <div id="prefix-info" class="info-block muted">
+            Click a cell to see prefix details
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h3>Legend</h3>
+          <div class="legend">
+            <div class="legend-item"><span class="swatch origin-as27725"></span> ETECSA (AS27725)</div>
+            <div class="legend-item"><span class="swatch origin-as11960"></span> ETECSA IXP (AS11960)</div>
+            <div class="legend-item"><span class="swatch origin-as10569"></span> CENIAInternet (AS10569)</div>
+            <div class="legend-item"><span class="swatch other-cuba"></span> Other</div>
+            <div class="legend-item"><span class="swatch not-visible"></span> Not visible from vantage</div>
+            <div class="legend-item"><span class="swatch no-bgp"></span> Allocated, not in BGP</div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h3>How to read this</h3>
+          <p class="about-text">
+            <strong>Compact view (left):</strong> Cuba's IPv4 prefixes packed into a dense Hilbert
+            fingerprint. Each cell ≈ 4 IPs. This is a remapped view for readability — IP blocks
+            that are numerically close appear near each other. Brighter = visible from selected vantage.
+          </p>
+          <p class="about-text">
+            <strong>Global view (right):</strong> Full IPv4 Hilbert at /20 granularity. Shows where
+            Cuba's allocations actually sit among all 4 billion IPv4 addresses. Useful for seeing
+            how scattered or concentrated a country's space is globally.
+          </p>
+          <p class="about-text">
+            <strong>Important:</strong> These are IP address space maps, not physical maps. AS paths
+            shown are logical BGP paths, not fiber routes.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

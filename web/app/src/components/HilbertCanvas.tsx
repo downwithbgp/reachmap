@@ -179,14 +179,14 @@ export function HilbertCanvas({
       }}>
         National IPv4 fingerprint
         <span style={{ display: "block", fontWeight: 400, fontSize: 9, textTransform: "none", letterSpacing: 0, color: "#666", marginTop: 1 }}>
-          {modeLabel} · {totalCollectors} collector RIB{totalCollectors !== 1 ? "s" : ""} · BGP visibility only · Cuban address space remapped for readability
+          {modeLabel} · {totalCollectors} collector RIB{totalCollectors !== 1 ? "s" : ""} · BGP visibility only · Address space remapped for readability
         </span>
       </div>
       <canvas
         ref={canvasRef}
         width={COMPACT_SIZE}
         height={COMPACT_SIZE}
-        style={{ display: "block", width: 512, maxWidth: "calc(100vw - 540px)", height: "auto", aspectRatio: "1", cursor: "crosshair", imageRendering: "pixelated" }}
+        style={{ display: "block", width: 420, maxWidth: "calc(100vw - 640px)", height: "auto", aspectRatio: "1", cursor: "crosshair", imageRendering: "pixelated" }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}

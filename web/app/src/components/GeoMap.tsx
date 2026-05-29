@@ -3,32 +3,31 @@ import DeckGL from "@deck.gl/react";
 import { GeoJsonLayer, ScatterplotLayer, ArcLayer, TextLayer } from "@deck.gl/layers";
 import { MapView } from "@deck.gl/core";
 import type { PickingInfo, MapViewState } from "@deck.gl/core";
-import { cubaGeoJson, landmasses, CUBA_CENTER } from "../geo";
+import { targetCountryGeoJson, landmasses, COUNTRY_CENTER, type CountryMapConfig } from "../geo";
 import type { Viewpoint, SelectionMode } from "../types";
 import type { RGB } from "../colors";
 
 // ── Colors ───────────────────────────────────────────────────
-const CUBA_FILL: RGB = [25, 35, 70];
-const CUBA_LINE: RGB = [60, 90, 160];
-const LANDMASS_FILL: RGB = [22, 22, 40];
-const LANDMASS_LINE: RGB = [35, 35, 55];
-const VP_COLOR: RGB = [200, 180, 80];
-const VP_HIGHLIGHT: RGB = [255, 240, 120];
-const COLLECTOR_COLOR: RGB = [100, 180, 200];
-const INITIAL_VIEW: MapViewState = {
-  longitude: -70, latitude: 25, zoom: 3.2, pitch: 15, bearing: 0,
-};
+const TARGET_FILL: RGB = [35, 50, 90];
+const TARGET_LINE: RGB = [80, 120, 200];
+const LANDMASS_FILL: RGB = [28, 30, 48];
+const LANDMASS_LINE: RGB = [50, 55, 80];
+const VP_COLOR: RGB = [220, 200, 90];
+const VP_HIGHLIGHT: RGB = [255, 245, 140];
+const COLLECTOR_COLOR: RGB = [120, 200, 220];
 
 interface Props {
   viewpoints: Viewpoint[];
   selectedVp: Viewpoint | null;
   highlightedVpIds: Set<string>;
   selectionMode: SelectionMode;
+  mapConfig: CountryMapConfig;
   onSelectViewpoint: (vp: Viewpoint | null) => void;
   onHoverViewpoint: (vp: Viewpoint | null) => void;
 }
 
-export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode, onSelectViewpoint, onHoverViewpoint }: Props) {
+export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode, mapConfig, onSelectViewpoint, onHoverViewpoint }: Props) {
+  const initialView: MapViewState = { ...mapConfig.view };
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
 
   const onHover = useCallback((info: PickingInfo) => {
@@ -48,9 +47,9 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
           `Click to select`,
         ].filter(Boolean).join("\n"),
       });
-    } else if (info.object && info.layer?.id === "cuba") {
+    } else if (info.object && info.layer?.id === "target-country") {
       setTooltip({ x: info.x, y: info.y,
-        text: "Cuba\n~256K IPv4 addresses\n~50 prefixes · 3 origin ASNs\nClick to show all viewpoints" });
+        text: `${mapConfig.label}\nClick to show all viewpoints` });
     } else {
       onHoverViewpoint(null);
       setTooltip(null);
@@ -62,8 +61,8 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
       const vp = info.object as Viewpoint;
       onSelectViewpoint(vp);
     }
-    if (info.object && info.layer?.id === "cuba") {
-      onSelectViewpoint(null); // deselect, show all
+    if (info.object && info.layer?.id === "target-country") {
+      onSelectViewpoint(null);
     }
   }, [onSelectViewpoint]);
 
@@ -76,13 +75,13 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
     if (selectedVp) {
       const slat = selectedVp.geo.latitude, slon = selectedVp.geo.longitude;
       if (slat != null && slon != null) {
-        arcs.push({ from: [slon, slat], to: CUBA_CENTER, vpId: selectedVp.id, isSelected: true });
+        arcs.push({ from: [slon, slat], to: COUNTRY_CENTER, vpId: selectedVp.id, isSelected: true });
       }
     } else if (selectionMode === "all") {
       for (const vp of viewpoints) {
         const lat = vp.geo.latitude, lon = vp.geo.longitude;
         if (lat != null && lon != null) {
-          arcs.push({ from: [lon, lat], to: CUBA_CENTER, vpId: vp.id, isSelected: highlightSet.has(vp.id) });
+          arcs.push({ from: [lon, lat], to: COUNTRY_CENTER, vpId: vp.id, isSelected: highlightSet.has(vp.id) });
         }
       }
     }
@@ -98,13 +97,13 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
         getLineWidth: 0.5,
         pickable: false,
       }),
-      // Cuba
+      // Target country
       new GeoJsonLayer({
-        id: "cuba",
-        data: cubaGeoJson,
+        id: "target-country",
+        data: targetCountryGeoJson,
         filled: true, stroked: true,
-        getFillColor: selectedVp ? [35, 45, 80] as RGB : CUBA_FILL,
-        getLineColor: CUBA_LINE,
+        getFillColor: selectedVp ? [35, 45, 80] as RGB : TARGET_FILL,
+        getLineColor: TARGET_LINE,
         getLineWidth: 1.5,
         lineWidthMinPixels: 1.5,
         pickable: true,
@@ -125,7 +124,7 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
           if (highlightSet.has(d.id)) return VP_HIGHLIGHT;
           return d.peerAsn === 0 ? COLLECTOR_COLOR : VP_COLOR;
         },
-        radiusMinPixels: 3, radiusMaxPixels: 16,
+        radiusMinPixels: 6, radiusMaxPixels: 24,
         pickable: true,
         updateTriggers: { getRadius: [selectedVp, highlightedVpIds], getFillColor: [selectedVp, highlightedVpIds] },
       }),
@@ -134,7 +133,7 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
         id: "arcs",
         data: arcs,
         getSourcePosition: (d: typeof arcs[0]) => d.from,
-        getTargetPosition: () => CUBA_CENTER,
+        getTargetPosition: () => COUNTRY_CENTER,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getSourceColor: (d: typeof arcs[0]) => (d.isSelected ? [255, 190, 60] : [100, 100, 140]) as any,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -150,7 +149,7 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 400 }}>
       <DeckGL
-        initialViewState={INITIAL_VIEW}
+        initialViewState={initialView}
         controller={{ dragRotate: false, touchRotate: false, keyboard: false }}
         views={new MapView({ id: "geo", repeat: false })}
         layers={layers}
@@ -159,7 +158,7 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
         getCursor={(info: { isDragging: boolean; isHovering: boolean }) =>
           info.isDragging ? "grabbing" : info.isHovering ? "pointer" : "default"
         }
-        style={{ background: "radial-gradient(ellipse at 30% 60%, #0d0d24 0%, #060610 100%)" }}
+        style={{ background: "radial-gradient(ellipse at 30% 60%, #111130 0%, #080818 100%)" }}
       />
       {tooltip && (
         <div style={{

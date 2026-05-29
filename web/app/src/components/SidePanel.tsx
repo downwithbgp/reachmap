@@ -244,7 +244,7 @@ export function SidePanel({
         <div style={{ fontSize: 10, color: "#777", lineHeight: 1.6 }}>
           <p style={{ marginBottom: 6 }}>
             <strong>What am I looking at?</strong> Each cell in the fingerprint is a
-            block of Cuban IPv4 address space, arranged by numeric order on a Hilbert
+            block of IPv4 address space, arranged by numeric order on a Hilbert
             curve. Green = BGP-visible from all sampled collector RIBs.
           </p>
           <p style={{ marginBottom: 6 }}>

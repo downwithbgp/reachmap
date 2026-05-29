@@ -1,0 +1,70 @@
+{
+  "caseStudyId": "mar2026",
+  "caseStudyTitle": "Grid collapse \u2014 March 2026",
+  "caseStudyLabel": "March 2026 \u00b7 Grid collapse",
+  "countryCode": "CU",
+  "eventWindow": "March 16-17, 2026 Cuba national power-grid collapse",
+  "generatedTs": "2026-05-28T23:00:00Z",
+  "summary": "Cuba's National Electric System collapsed on March 16, 2026. BGP collector RIB visibility remained at 4/4 across all sampled collectors \u2014 the routing control plane did not see the disruption. This demonstrates that BGP visibility is one layer of the Internet, not the whole Internet. Power, access, CPE, and data-plane failures can cause massive user disruption while BGP routes remain stable.",
+  "points": [
+    {
+      "snapshotId": "2026-03-16T0000Z",
+      "timestamp": "2026-03-16 0000 UTC",
+      "role": "before",
+      "collectorCount": 4,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views4"
+      ],
+      "totalPrefixCount": 17,
+      "observedPrefixCount": 17,
+      "allCollectorVisibleCount": 17,
+      "partialVisibleCount": 0,
+      "notObservedCount": 0,
+      "pathFamilyCount": 0
+    },
+    {
+      "snapshotId": "2026-03-16T2000Z",
+      "timestamp": "2026-03-16 2000 UTC",
+      "role": "event",
+      "collectorCount": 4,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views4"
+      ],
+      "totalPrefixCount": 17,
+      "observedPrefixCount": 17,
+      "allCollectorVisibleCount": 17,
+      "partialVisibleCount": 0,
+      "notObservedCount": 0,
+      "pathFamilyCount": 0,
+      "externalEventContext": {
+        "title": "Cuba national power-grid collapse \u2014 March 16, 2026",
+        "source": "Cloudflare Radar / AP / Internet Society Pulse",
+        "note": "Cuba's National Electric System collapsed on March 16, 2026, causing a total disconnection (~65% traffic drop per Cloudflare Radar, 30+ hours). ReachMap shows BGP collector RIB visibility during the collapse \u2014 did Cuban prefixes disappear from the global routing table? Result: BGP visibility remained at 4/4. The routing control plane did not see the disruption because the failure was at the physical power, access, and data-plane layers."
+      }
+    },
+    {
+      "snapshotId": "2026-03-17T0000Z",
+      "timestamp": "2026-03-17 0000 UTC",
+      "role": "after",
+      "collectorCount": 4,
+      "collectorIds": [
+        "route-views.eqix",
+        "route-views.linx",
+        "route-views2",
+        "route-views4"
+      ],
+      "totalPrefixCount": 17,
+      "observedPrefixCount": 17,
+      "allCollectorVisibleCount": 17,
+      "partialVisibleCount": 0,
+      "notObservedCount": 0,
+      "pathFamilyCount": 0
+    }
+  ]
+}

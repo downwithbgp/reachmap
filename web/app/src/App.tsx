@@ -7,6 +7,7 @@ import {
   cubaPrefixes as mockPrefixes, pathFamilies as mockPathFams,
   getViewpoint, getAsView,
 } from "./data";
+import { DEFAULT_MAP_CONFIG } from "./geo";
 import { loadAllRealData, loadConsensusData, buildRealVisibilitySet, loadTimelineIndex, loadTimelineConsensus, loadTimelinePrefixes } from "./dataLoader";
 import type { Viewpoint, AsView, PrefixRecord, SelectionMode, PathFamilyRecord, ColorMode, PrefixVisibilityScore, ConsensusVisibility, TimelineIndex, TimelinePoint } from "./types";
 
@@ -105,16 +106,31 @@ export function App() {
   const loadTimeline = useCallback(async () => {
     setLoading(true);
     try {
-      const idx = await loadTimelineIndex();
+      // Load March 2026 timeline (primary case)
+      const idx = await loadTimelineIndex("mar2026");
       if (!idx || idx.points.length === 0) { alert("No timeline data found."); setLoading(false); return; }
       setTimelineIndex(idx);
       setDataMode("timeline");
-      // Load the first (event) snapshot
+      // Load the event snapshot by default
       const eventPoint = idx.points.find(p => p.role === "event") ?? idx.points[0];
       await selectTimelineSnapshot(eventPoint.snapshotId, idx);
     } catch (e) {
       console.error("Failed to load timeline:", e);
       alert("Failed to load timeline data.");
+    } finally { setLoading(false); }
+  }, []);
+
+  const loadJuly2021 = useCallback(async () => {
+    setLoading(true);
+    try {
+      const idx = await loadTimelineIndex("jul2021");
+      if (!idx || idx.points.length === 0) { alert("No July 2021 data."); setLoading(false); return; }
+      setTimelineIndex(idx);
+      setDataMode("timeline");
+      const eventPoint = idx.points.find(p => p.role === "event") ?? idx.points[0];
+      await selectTimelineSnapshot(eventPoint.snapshotId, idx);
+    } catch (e) {
+      console.error("Failed to load July 2021:", e);
     } finally { setLoading(false); }
   }, []);
 
@@ -244,78 +260,69 @@ export function App() {
           <span style={{ fontSize: 10, color: "#2ecc71", fontWeight: 500 }}>
             {loading ? "Loading data..." : dataMode === "timeline" ? "Timeline view" : "Live data"}
           </span>
-          {timelineIndex && dataMode !== "timeline" && (
-            <button
-              onClick={loadTimeline}
+          {/* Case selector */}
+          {dataMode !== "mock" && (
+            <select
+              value={dataMode === "real" ? "may2026" : "mar2026"}
+              onChange={(e) => {
+                if (e.target.value === "mar2026") loadTimeline();
+                else if (e.target.value === "jul2021") loadJuly2021();
+                else if (e.target.value === "may2026") loadReal();
+              }}
               style={{
-                padding: "4px 10px", fontSize: 10, fontWeight: 500,
-                background: "rgba(232,160,64,0.08)", color: "#c88040",
-                border: "1px solid rgba(232,160,64,0.15)", borderRadius: 4, cursor: "pointer",
+                padding: "3px 8px", fontSize: 10, background: "#0d0d20", color: "#999",
+                border: "1px solid #333", borderRadius: 3, cursor: "pointer",
               }}
             >
-              July 2021
-            </button>
+              <option value="mar2026">March 2026 · Grid collapse</option>
+              <option value="may2026">May 2026 · Baseline</option>
+              <option value="jul2021">July 2021 · Archival</option>
+            </select>
           )}
           <span style={{ fontSize: 9, color: "#555", fontStyle: "italic" }}>
-            BGP visibility · Not physical cables
+            BGP collector RIB visibility · Not physical cables
           </span>
         </div>
       </header>
 
-      {/* Event annotation bar */}
-      {activeTimelinePoint?.externalEventContext && (
+      {/* Hero summary — prominent BGP vs traffic contrast */}
+      {dataMode === "timeline" && activeTimelinePoint?.role === "event" && (
         <div style={{
-          padding: "6px 20px", fontSize: 11, lineHeight: 1.5,
-          background: "rgba(232,160,64,0.08)", borderBottom: "1px solid rgba(232,160,64,0.15)",
-          color: "#ccb860", flexShrink: 0,
+          padding: "12px 20px", background: "rgba(0,0,0,0.4)", borderBottom: "1px solid #2a2a48",
+          display: "flex", gap: 32, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
         }}>
-          <strong>{activeTimelinePoint.externalEventContext.title}</strong>
-          {" — "}{activeTimelinePoint.externalEventContext.note}
-          {activeTimelinePoint.externalEventContext.source && (
-            <span style={{ color: "#888", marginLeft: 8 }}>Source: {activeTimelinePoint.externalEventContext.source}</span>
-          )}
-        </div>
-      )}
-
-      {/* External signal bar — shown for cases with bgp/user-disruption mismatch */}
-      {activeTimelinePoint && (() => {
-        const cs = timelineIndex?.points?.[0] ? null : null; // not needed here
-        return null;
-      })()}
-
-      {/* BGP vs traffic signal bar for Cuba March 2026 */}
-      {dataMode === "timeline" && timelineIndex && activeTimelinePoint?.role === "event" && (
-        <div style={{
-          padding: "8px 20px", fontSize: 11, lineHeight: 1.5,
-          background: "rgba(0,0,0,0.3)", borderBottom: "1px solid #2a2a48",
-          display: "flex", gap: 24, alignItems: "center", flexShrink: 0, flexWrap: "wrap",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#888", fontSize: 10, textTransform: "uppercase" }}>BGP visibility</span>
-            <span style={{
-              display: "inline-block", width: 16, height: 8, borderRadius: 4,
-              background: "linear-gradient(90deg, #28b85e 100%, #28b85e 100%)",
-            }} />
-            <span style={{ color: "#28b85e", fontWeight: 600, fontSize: 10 }}>STABLE · 4/4 collectors</span>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#e0e0f0", marginBottom: 2 }}>
+              Cuba · March 2026 grid collapse
+            </div>
+            <div style={{ fontSize: 11, color: "#999" }}>
+              Power failed. Traffic dropped. BGP stayed green.
+            </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ color: "#888", fontSize: 10, textTransform: "uppercase" }}>Traffic volume</span>
-            <span style={{
-              display: "inline-block", width: 16, height: 8, borderRadius: 4,
-              background: "linear-gradient(90deg, #e8a040 35%, #333 65%)",
-            }} />
-            <span style={{ color: "#e8a040", fontWeight: 600, fontSize: 10 }}>DEGRADED · ~35% of baseline</span>
-            <span style={{ color: "#666", fontSize: 9 }}>Cloudflare Radar</span>
+          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>BGP RIBs</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "#28b85e" }}>4/4</div>
+              <div style={{ fontSize: 9, color: "#666" }}>collectors</div>
+            </div>
+            <div style={{ color: "#555", fontSize: 16 }}>vs</div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>Traffic</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "#e8a040" }}>35%</div>
+              <div style={{ fontSize: 9, color: "#666" }}>of baseline</div>
+            </div>
           </div>
-          <div style={{ color: "#999", fontSize: 10, fontStyle: "italic", flex: 1, textAlign: "right" }}>
-            BGP green, user traffic disrupted — the failure was below the routing control plane
+          <div style={{ flex: 1, fontSize: 11, color: "#aaa", lineHeight: 1.5, minWidth: 200 }}>
+            The routing table saw green. Users saw a blackout.
+            ReachMap shows what the BGP layer saw — and what it missed.
           </div>
+          <div style={{ fontSize: 9, color: "#555" }}>Cloudflare Radar</div>
         </div>
       )}
 
       {/* Main content */}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <div style={{ flex: "0 0 auto", padding: "12px 0 12px 12px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ flex: "0 0 auto", padding: "8px", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <HilbertCanvas
             prefixes={prefixes}
             colorMode={effectiveColorMode}
@@ -334,12 +341,13 @@ export function App() {
             selectedVp={selectedVp}
             highlightedVpIds={highlightedVpIds}
             selectionMode={selectionMode}
+            mapConfig={DEFAULT_MAP_CONFIG}
             onSelectViewpoint={handleSelectViewpoint}
             onHoverViewpoint={handleHoverViewpoint}
           />
         </div>
 
-        <div style={{ flex: "0 0 auto", padding: "12px 12px 12px 0" }}>
+        <div style={{ flex: "0 0 auto", padding: "8px 8px 8px 0" }}>
           <SidePanel
             selectionMode={selectionMode}
             colorMode={effectiveColorMode}

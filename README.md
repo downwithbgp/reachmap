@@ -97,12 +97,75 @@ cd web/app && npm run build
 rsync -avz dist/ user@server:/var/www/reachmap/
 ```
 
-## Data sources
+## Data sources and provenance
 
-- **BGP RIBs:** RouteViews (archive.routeviews.org), RIPE RIS (data.ris.ripe.net)
-- **Prefix data:** LACNIC, APNIC, RIPE NCC delegated statistics
-- **External signals:** Cloudflare Radar, IODA, RIPE Atlas (case-study annotations)
-- **Collector locations:** RouteViews documentation, RIPE RIS documentation, manual overrides
+ReachMap v0 is built from archived BGP RIB snapshots and static case-study data.
+The public app does not query RouteViews, RIPE RIS, Cloudflare, or other measurement
+sources at runtime; it loads pre-generated JSON artifacts committed under
+`web/app/public/data/`.
+
+### BGP collector RIB data
+
+The BGP layer uses archived MRT/RIB snapshots from
+[RouteViews](https://www.routeviews.org/) and
+[RIPE RIS](https://www.ripe.net/analyse/internet-measurements/routing-information-service-ris/)
+collectors. The Rust pipeline parses locally cached MRT files with
+[bgpkit-parser](https://bgpkit.com/tools/parser/), filters for country-relevant
+prefixes, normalizes AS paths, and produces static artifacts for the web app.
+
+In the UI, **"BGP-visible" means a prefix was observed in sampled collector RIBs.**
+It does not prove packet forwarding, application availability, or end-user reachability.
+
+The Cuba v0 demo uses collector RIBs from documented locations:
+
+| Collector | Location | Source |
+|-----------|----------|--------|
+| route-views2 | Eugene, OR, US | RouteViews |
+| route-views4 | San Jose, CA, US | RouteViews |
+| route-views.eqix | Ashburn, VA, US | RouteViews |
+| route-views.linx | London, UK | RouteViews |
+| rrc00 | Amsterdam, NL | RIPE RIS |
+
+Collector availability differs by snapshot timestamp and case study. Not all
+collectors are available at every timestamp.
+
+### Prefix and country data
+
+Country prefix sets are seeded from **RIR delegated statistics.** For Cuba,
+ReachMap uses [LACNIC delegated IPv4 allocation records](https://ftp.lacnic.net/pub/stats/lacnic/),
+then cross-references them with BGP-observed prefixes in the sampled RIB snapshots.
+
+RIR delegated country data is registry/allocation data. It is not a guarantee
+that addresses are physically used in that country, nor that users behind those
+addresses are reachable.
+
+### Geolocation and collector locations
+
+Collector geography is based on **documented collector locations** and explicit
+**manual overrides** in `config/collectors.json` and
+`config/geolocation-overrides.json`. ReachMap treats this as collector RIB
+geography, not proof that every peer or path is physically located there.
+
+**A collector's location is not the same as a peer's physical location.**
+Multihop BGP sessions and remote peering can decouple peer geography from
+collector geography. Unknown or low-confidence geography is kept explicit
+rather than guessed.
+
+GeoIP enrichment is supported via [MaxMind GeoLite2 City](https://www.maxmind.com/en/geolite2/signup)
+when configured (`--geoip` flag in the pipeline), but peer IP geolocation
+carries inherent limitations — it may reflect an ISP's registered address, not
+the BGP router's location.
+
+### External disruption signals
+
+For the March 2026 Cuba grid-collapse case, the traffic-volume signal is an
+external case-study annotation based on
+[Cloudflare Radar](https://radar.cloudflare.com/) / Cloudflare disruption reporting.
+It is shown separately from the BGP layer.
+
+This distinction is central to ReachMap: **BGP collector visibility can remain
+green while users experience disruption** at the power, access-network, mobile,
+customer-equipment, application, or data-plane layers.
 
 ## Limitations
 
@@ -111,6 +174,8 @@ rsync -avz dist/ user@server:/var/www/reachmap/
 - RIB snapshots are samples from specific times and points, not continuous
 - Prefix-to-country mapping relies on RIR delegated stats
 - External traffic signals are case-study annotations, not live data
+- Peer IP geolocation may reflect ISP registration, not router location
+- Manual collector location overrides require maintenance
 
 ## Project structure
 

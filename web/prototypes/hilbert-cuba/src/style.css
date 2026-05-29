@@ -1,0 +1,554 @@
+/* ── ReachMap — Cuba Prototype v2 ─────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0a0a14;
+  --surface: #12122a;
+  --surface-hover: #1a1a38;
+  --text: #c8c8d8;
+  --text-muted: #7777a0;
+  --text-bright: #e8e8f8;
+  --accent-green: #2ecc71;
+  --accent-red: #e74c3c;
+  --accent-blue: #5b9bd5;
+  --border: #2a2a48;
+  --tab-active: #1e1e3a;
+}
+
+html { font-size: 14px; background: var(--bg); color: var(--text); }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; min-height: 100vh; background: var(--bg); }
+
+/* ── Header ────────────────────────────────────────────────── */
+
+header {
+  padding: 16px 24px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+header h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: -0.02em;
+}
+
+header .subtitle {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.header-note {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  max-width: 720px;
+}
+
+/* ── View Tabs ─────────────────────────────────────────────── */
+
+.view-tabs {
+  display: flex;
+  gap: 0;
+  padding: 12px 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.view-tab {
+  padding: 8px 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.15s ease;
+}
+
+.view-tab:hover { color: var(--text); background: var(--surface-hover); }
+
+.view-tab.active {
+  color: var(--text-bright);
+  background: var(--tab-active);
+  border-color: var(--border);
+}
+
+/* ── Main layout ───────────────────────────────────────────── */
+
+main {
+  padding: 16px 24px 24px;
+}
+
+.viz-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Cuba anchor ───────────────────────────────────────────── */
+
+.geo-anchor {
+  flex-shrink: 0;
+  width: 200px;
+  text-align: center;
+  padding-top: 8px;
+}
+
+.geo-anchor svg {
+  display: block;
+  margin: 0 auto;
+  opacity: 0.8;
+}
+
+.geo-label {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  letter-spacing: 0.02em;
+}
+
+.geo-note {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Hilbert containers ────────────────────────────────────── */
+
+.hilbert-container {
+  position: relative;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #080810;
+  display: none;
+}
+
+.hilbert-container.active { display: block; }
+
+.view-label {
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--border);
+}
+
+.view-label .view-sublabel {
+  display: block;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+#compact-canvas {
+  display: block;
+  width: 512px;
+  max-width: min(512px, calc(100vw - 520px));
+  height: auto;
+  aspect-ratio: 1;
+  cursor: crosshair;
+  image-rendering: pixelated;
+}
+
+#global-canvas {
+  display: block;
+  width: 512px;
+  max-width: min(512px, calc(100vw - 520px));
+  height: auto;
+  aspect-ratio: 1;
+  cursor: crosshair;
+  image-rendering: pixelated;
+}
+
+.canvas-stats {
+  padding: 4px 10px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: "SF Mono", "Fira Code", monospace;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Tooltip ───────────────────────────────────────────────── */
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(10, 10, 30, 0.95);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  min-width: 240px;
+  max-width: 280px;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.tooltip.hidden { display: none; }
+
+.tooltip-prefix {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  font-family: "SF Mono", "Fira Code", monospace;
+  margin-bottom: 4px;
+}
+
+.tooltip-status {
+  font-size: 0.72rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.status-visible  { background: rgba(46, 204, 113, 0.2); color: var(--accent-green); }
+.status-hidden   { background: rgba(231, 76, 60, 0.2); color: var(--accent-red); }
+.status-muted    { background: rgba(120, 120, 160, 0.2); color: var(--text-muted); }
+.status-default  { color: #aaa; }
+
+.tooltip-row {
+  font-size: 0.73rem;
+  color: #aaa;
+  margin-top: 2px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.tooltip-row span { color: var(--text-muted); }
+
+.tooltip-asn {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.tooltip-note {
+  font-size: 0.68rem;
+  color: var(--accent-blue);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.tooltip-hint {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ── Side panel ────────────────────────────────────────────── */
+
+.side-panel {
+  flex-shrink: 0;
+  width: 280px;
+  max-height: 800px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-section h3 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+#vantage-select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 0.82rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#vantage-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+/* ── Info blocks ───────────────────────────────────────────── */
+
+.info-block { font-size: 0.82rem; line-height: 1.6; }
+.info-block.muted { color: var(--text-muted); font-style: italic; }
+.info-block.hidden { display: none; }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 3px 0;
+  font-size: 0.8rem;
+}
+
+.stat-label { color: var(--text-muted); font-size: 0.72rem; }
+.stat-value { font-weight: 500; text-align: right; }
+
+.accent-green { color: var(--accent-green); }
+.accent-red { color: var(--accent-red); }
+
+/* ── Missing prefix details ────────────────────────────────── */
+
+.missing-detail { margin-top: 8px; font-size: 0.78rem; }
+.missing-detail summary { cursor: pointer; color: var(--text-muted); }
+.missing-list {
+  margin-top: 4px;
+  padding-left: 16px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.7rem;
+  color: var(--accent-red);
+  line-height: 1.8;
+}
+
+/* ── Prefix detail ─────────────────────────────────────────── */
+
+.detail-header {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  font-family: "SF Mono", "Fira Code", monospace;
+  margin-bottom: 8px;
+}
+
+.path-section {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.path-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; }
+
+.path-list { display: flex; flex-direction: column; gap: 4px; }
+
+.path-item { font-size: 0.75rem; display: flex; gap: 8px; align-items: baseline; }
+
+.path-id { color: var(--text-muted); font-size: 0.7rem; flex-shrink: 0; }
+
+.path-hops { font-family: "SF Mono", "Fira Code", monospace; }
+
+.path-hops code {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 0.7rem;
+}
+
+.mock-note {
+  margin-top: 10px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-style: italic;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+/* ── Path families in side panel ──────────────────────────── */
+
+.path-families-section {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.path-families-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.path-families-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.path-family-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 0.7rem;
+  line-height: 1.6;
+}
+
+.pf-id {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  font-family: "SF Mono", "Fira Code", monospace;
+  margin-right: 6px;
+}
+
+.pf-path {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.68rem;
+  display: block;
+  margin-top: 2px;
+}
+
+.pf-path code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-size: 0.65rem;
+}
+
+.pf-path strong {
+  color: #e0c060;
+}
+
+.pf-prefixes {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 2px;
+}
+
+/* ── Path families in prefix detail ───────────────────────── */
+
+.pf-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.pf-detail-id {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.pf-detail-path {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 0.68rem;
+}
+
+.pf-detail-path code {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 3px;
+  border-radius: 2px;
+  font-size: 0.63rem;
+}
+
+.pf-detail-path strong {
+  color: #e0c060;
+}
+
+.pf-detail-meta {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.detail-asn {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.muted-text {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.78rem;
+}
+
+/* ── Legend ────────────────────────────────────────────────── */
+
+.legend { display: flex; flex-direction: column; gap: 5px; }
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #bbb;
+}
+
+.swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.origin-as27725 { background: hsl(215, 0.72, 0.58); }
+.origin-as11960 { background: hsl(175, 0.72, 0.58); }
+.origin-as10569 { background: hsl(40, 0.72, 0.58); }
+.other-cuba    { background: hsl(270, 0.72, 0.58); }
+.not-visible   { background: hsl(215, 0.12, 0.20); border: 1px solid #333; }
+.no-bgp        { background: #12121e; border: 1px solid #2a2a38; }
+
+/* ── About text ────────────────────────────────────────────── */
+
+.about-text {
+  font-size: 0.7rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.about-text strong { color: #aaa; }
+
+/* ── Responsive ────────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  #compact-canvas, #global-canvas {
+    max-width: min(512px, calc(100vw - 500px));
+  }
+}
+
+@media (max-width: 800px) {
+  .viz-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .geo-anchor { order: 0; width: 120px; }
+  .hilbert-container { order: 1; }
+  #compact-canvas, #global-canvas { max-width: calc(100vw - 48px); }
+  .side-panel { order: 2; width: 100%; max-width: 600px; }
+}

@@ -129,5 +129,24 @@ export const landmasses: Feature<Polygon>[] = [
   usSoutheast, mexico, centralAmerica, southAmerica, caribbeanIslands, westernEurope,
 ];
 
-/** Cuba center for arc targets */
-export const CUBA_CENTER: [number, number] = [-79.0, 21.8];
+/** Target country polygon (Cuba default) */
+export const targetCountryGeoJson = cubaGeoJson;
+
+/** Target country center for arc targets */
+export const COUNTRY_CENTER: [number, number] = [-79.0, 21.8];
+
+/** Country map configuration */
+export interface CountryMapConfig {
+  countryCode: string;
+  label: string;
+  center: { longitude: number; latitude: number };
+  view: { longitude: number; latitude: number; zoom: number; pitch: number; bearing: number };
+}
+
+/** Default map config (Cuba) */
+export const DEFAULT_MAP_CONFIG: CountryMapConfig = {
+  countryCode: "CU",
+  label: "Cuba",
+  center: { longitude: -79.5, latitude: 21.5 },
+  view: { longitude: -75, latitude: 28, zoom: 3.0, pitch: 10, bearing: 0 },
+};
