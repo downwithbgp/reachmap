@@ -17,10 +17,15 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
   const selectedIdx = points.findIndex(p => p.snapshotId === selectedSnapshotId);
   const current = selectedIdx >= 0 ? points[selectedIdx] : null;
 
-  // Count states
+  // Count states — fall back to available field if comparability not set
   const complete = points.filter(p => p.comparability === "complete").length;
   const partial = points.filter(p => p.comparability === "partial").length;
-  const unavailable = points.filter(p => p.comparability === "unavailable" || p.available === false).length;
+  const unavailable = points.filter(p => p.comparability === "unavailable" || (p.available === false && p.comparability !== "complete" && p.comparability !== "partial")).length;
+  const total = complete + partial + unavailable;
+  // If all zero but points exist, log error
+  if (points.length > 0 && total === 0 && typeof window !== "undefined") {
+    console.error("TimeScrubber: all quality counts zero despite", points.length, "points — check comparability field in timeline index");
+  }
 
   // Find prev/next available
   function nextAvail(from: number) {
@@ -150,7 +155,12 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
                 color: current.comparability === "complete" ? "#2ecc71" :
                   current.comparability === "partial" ? "#e8a040" : "#8899bb",
               }}>
-                {current.comparability === "complete" ? "COMPLETE" : current.comparability === "partial" ? "PARTIAL" : "AVAILABLE"}
+                {current.comparability === "complete" ? `${current.collectorCount}/${current.targetCollectors ?? current.collectorCount}` :
+                 current.comparability === "partial" ? `${current.collectorCount}/${current.targetCollectors ?? current.collectorCount}` :
+                 "—"}
+              </span>
+              <span style={{ fontSize: 8, color: current.comparability === "complete" ? "#2ecc71" : current.comparability === "partial" ? "#e8a040" : "#8899bb" }}>
+                {current.comparability === "complete" ? "complete" : current.comparability === "partial" ? "partial" : "unavailable"}
               </span>
               <span>{current.parsedCollectors ?? current.collectorCount}/{current.targetCollectors ?? current.collectorCount} collectors</span>
               <span>{current.observedPrefixCount} prefixes</span>

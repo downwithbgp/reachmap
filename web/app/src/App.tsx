@@ -486,9 +486,7 @@ export function App() {
               <div style={{ fontSize: 9, color: "#7a8ea0", textTransform: "uppercase", marginBottom: 1, fontWeight: 500, letterSpacing: "0.04em" }}>Control plane</div>
               <div style={{ fontSize: 22, fontWeight: 700, color: "#2ecc71", lineHeight: 1 }}>{activeTimelinePoint.collectorCount}/{activeTimelinePoint.collectorCount}</div>
               <div style={{ fontSize: 8, color: "#6a8a70" }}>parsed RIBs observed</div>
-              {activeTimelinePoint.targetCollectors != null && (
-                <div style={{ fontSize: 7, color: "#4a6a5a", marginTop: 1 }}>{activeTimelinePoint.parsedCollectors ?? activeTimelinePoint.collectorCount}/{activeTimelinePoint.targetCollectors} target collectors</div>
-              )}
+              <div style={{ fontSize: 7, color: "#4a6a5a", marginTop: 1 }}>{activeTimelinePoint.collectorCount}/{activeTimelinePoint.targetCollectors ?? activeTimelinePoint.collectorCount} target collectors parsed</div>
               {collectorRegistry.size > 0 && (
                 <div style={{ fontSize: 7, color: "#4a5a6a", marginTop: 1 }}>
                   {[...collectorRegistry.values()].filter(c => c.enabled).length} enabled in registry
@@ -545,7 +543,7 @@ export function App() {
             <div style={{ flex: "0 0 320px", display: "flex", flexDirection: "column", gap: 8, overflow: "hidden" }}>
               <CubaWeatherCard
                 countryName={countryConfig?.name ?? "Cuba"}
-                totalCollectors={totalCollectors}
+                totalCollectors={activeTimelinePoint?.collectorCount ?? totalCollectors}
               />
               {/* Collector status summary */}
               <div style={{
@@ -556,9 +554,9 @@ export function App() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                   <div><span style={{ color: "#c8d8f0" }}>{collectorRegistry.size}</span> registered</div>
                   <div><span style={{ color: "#c8d8f0" }}>{[...collectorRegistry.values()].filter(c => c.enabled).length}</span> enabled</div>
-                  <div><span style={{ color: "#2ecc71" }}>{totalCollectors}</span> parsed for this snapshot</div>
-                  <div><span style={{ color: "#2ecc71" }}>{totalCollectors}</span> observed Cuban prefixes</div>
-                  <div style={{ color: "#556678" }}>{[...collectorRegistry.values()].filter(c => c.enabled).length - totalCollectors} enabled · not cached</div>
+                  <div><span style={{ color: "#2ecc71" }}>{activeTimelinePoint?.collectorCount ?? totalCollectors}</span> parsed for this snapshot</div>
+                  <div><span style={{ color: "#2ecc71" }}>{activeTimelinePoint?.observedPrefixCount ?? totalCollectors}</span> observed prefixes</div>
+                  <div style={{ color: "#556678" }}>{[...collectorRegistry.values()].filter(c => c.enabled).length - (activeTimelinePoint?.collectorCount ?? totalCollectors)} enabled · not cached</div>
                   <div style={{ color: "#4a5a6a" }}>{[...collectorRegistry.values()].filter(c => !c.enabled).length} disabled / future support</div>
                 </div>
                 <div style={{ fontSize: 8, color: "#556678", marginTop: 6, borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: 6 }}>
