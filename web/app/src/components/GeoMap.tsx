@@ -8,13 +8,14 @@ import type { Viewpoint, SelectionMode } from "../types";
 import type { RGB } from "../colors";
 
 // ── Colors ───────────────────────────────────────────────────
-const TARGET_FILL: RGB = [35, 50, 90];
-const TARGET_LINE: RGB = [80, 120, 200];
-const LANDMASS_FILL: RGB = [28, 30, 48];
-const LANDMASS_LINE: RGB = [50, 55, 80];
-const VP_COLOR: RGB = [220, 200, 90];
-const VP_HIGHLIGHT: RGB = [255, 245, 140];
-const COLLECTOR_COLOR: RGB = [120, 200, 220];
+const TARGET_FILL: RGB = [40, 55, 100];
+const TARGET_LINE: RGB = [100, 140, 220];
+const LANDMASS_FILL: RGB = [32, 34, 52];
+const LANDMASS_LINE: RGB = [60, 65, 95];
+const VP_COLOR: RGB = [235, 210, 100];
+const VP_HIGHLIGHT: RGB = [255, 250, 160];
+const VP_OUTLINE: RGB = [180, 150, 60];
+const COLLECTOR_COLOR: RGB = [130, 210, 230];
 
 interface Props {
   viewpoints: Viewpoint[];
@@ -109,38 +110,69 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
         pickable: true,
         updateTriggers: { getFillColor: selectedVp },
       }),
-      // Viewpoints
+      // Viewpoints — large, outlined, visible
       new ScatterplotLayer({
         id: "viewpoints",
         data: viewpoints,
         getPosition: (d: Viewpoint) => [d.geo.longitude ?? 0, d.geo.latitude ?? 0] as [number, number],
         getRadius: (d: Viewpoint) => {
-          if (d.id === selectedVp?.id) return 120000;
-          if (highlightSet.has(d.id)) return 90000;
-          return d.peerAsn === 0 ? 40000 : 70000;
+          if (d.id === selectedVp?.id) return 150000;
+          if (highlightSet.has(d.id)) return 110000;
+          return 80000;
         },
         getFillColor: (d: Viewpoint) => {
           if (d.id === selectedVp?.id) return VP_HIGHLIGHT;
           if (highlightSet.has(d.id)) return VP_HIGHLIGHT;
-          return d.peerAsn === 0 ? COLLECTOR_COLOR : VP_COLOR;
+          return VP_COLOR;
         },
-        radiusMinPixels: 6, radiusMaxPixels: 24,
+        getLineColor: VP_OUTLINE,
+        getLineWidth: 2,
+        lineWidthMinPixels: 1,
+        radiusMinPixels: 8, radiusMaxPixels: 32,
+        stroked: true,
         pickable: true,
         updateTriggers: { getRadius: [selectedVp, highlightedVpIds], getFillColor: [selectedVp, highlightedVpIds] },
       }),
-      // Arcs
+      // City labels — always visible
+      new TextLayer({
+        id: "collector-labels",
+        data: viewpoints,
+        getPosition: (d: Viewpoint) => [(d.geo.longitude ?? 0) + 2.5, (d.geo.latitude ?? 0) - 0.5] as [number, number],
+        getText: (d: Viewpoint) => d.geo.city ?? d.displayName,
+        getSize: 12,
+        getColor: [180, 190, 210, 220],
+        getAngle: 0,
+        sizeScale: 1,
+        sizeMinPixels: 10,
+        sizeMaxPixels: 14,
+        getAlignmentBaseline: "top" as const,
+        getAnchor: "start" as const,
+        pickable: false,
+      }),
+      // Default faint arcs from all collectors to target country
+      new ArcLayer({
+        id: "default-arcs",
+        data: viewpoints.filter(v => v.geo.latitude != null && v.geo.longitude != null && !selectedVp),
+        getSourcePosition: (d: Viewpoint) => [d.geo.longitude!, d.geo.latitude!] as [number, number],
+        getTargetPosition: () => COUNTRY_CENTER,
+        getSourceColor: [100, 130, 180, 60] as any,
+        getTargetColor: [80, 110, 160, 40] as any,
+        getWidth: 0.3,
+        widthMinPixels: 0.3, widthMaxPixels: 1,
+        getHeight: 0.08,
+        pickable: false,
+      }),
+      // Selected arcs — bright, highlighted
       new ArcLayer({
         id: "arcs",
         data: arcs,
         getSourcePosition: (d: typeof arcs[0]) => d.from,
         getTargetPosition: () => COUNTRY_CENTER,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getSourceColor: (d: typeof arcs[0]) => (d.isSelected ? [255, 190, 60] : [100, 100, 140]) as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getTargetColor: (d: typeof arcs[0]) => (d.isSelected ? [255, 220, 100, 200] : [100, 100, 140, 100]) as any,
-        getWidth: (d: typeof arcs[0]) => d.isSelected ? 1.5 : 0.5,
-        widthMinPixels: 0.5, widthMaxPixels: 4,
-        getHeight: 0.12,
+        getSourceColor: (d: typeof arcs[0]) => (d.isSelected ? [255, 200, 70] : [120, 130, 160]) as any,
+        getTargetColor: (d: typeof arcs[0]) => (d.isSelected ? [255, 225, 110, 200] : [110, 120, 150, 80]) as any,
+        getWidth: (d: typeof arcs[0]) => d.isSelected ? 2 : 0.5,
+        widthMinPixels: 0.5, widthMaxPixels: 5,
+        getHeight: 0.15,
         pickable: false,
       }),
     ];
@@ -158,7 +190,7 @@ export function GeoMap({ viewpoints, selectedVp, highlightedVpIds, selectionMode
         getCursor={(info: { isDragging: boolean; isHovering: boolean }) =>
           info.isDragging ? "grabbing" : info.isHovering ? "pointer" : "default"
         }
-        style={{ background: "radial-gradient(ellipse at 30% 60%, #111130 0%, #080818 100%)" }}
+        style={{ background: "radial-gradient(ellipse at 30% 60%, #151540 0%, #0a0a1e 100%)" }}
       />
       {tooltip && (
         <div style={{
