@@ -156,6 +156,7 @@ export interface TimelinePoint {
   requestedTimestamp?: string;
   actualRibTimestamp?: string;
   ribTimestampsMatch?: boolean;
+  available?: boolean;
   role: "before" | "pre_event" | "event" | "after" | "recovered";
   collectorCount: number;
   collectorIds: string[];

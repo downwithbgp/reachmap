@@ -15,15 +15,32 @@ interface Props {
 export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const availablePoints = points.filter(p => p.available !== false);
   const selectedIdx = points.findIndex(p => p.snapshotId === selectedSnapshotId);
   const current = selectedIdx >= 0 ? points[selectedIdx] : null;
 
-  // Keyboard support
+  // Find next/prev AVAILABLE snapshot (skip unavailable)
+  function nextAvailable(fromIdx: number): number {
+    for (let i = fromIdx + 1; i < points.length; i++) {
+      if (points[i].available !== false) return i;
+    }
+    return -1;
+  }
+  function prevAvailable(fromIdx: number): number {
+    for (let i = fromIdx - 1; i >= 0; i--) {
+      if (points[i].available !== false) return i;
+    }
+    return -1;
+  }
+
+  // Keyboard support — skip unavailable
   const handleKey = useCallback((e: KeyboardEvent) => {
-    if (e.key === "ArrowLeft" && selectedIdx > 0) {
-      onSelectSnapshot(points[selectedIdx - 1].snapshotId);
-    } else if (e.key === "ArrowRight" && selectedIdx < points.length - 1) {
-      onSelectSnapshot(points[selectedIdx + 1].snapshotId);
+    if (e.key === "ArrowLeft") {
+      const prev = prevAvailable(selectedIdx);
+      if (prev >= 0) onSelectSnapshot(points[prev].snapshotId);
+    } else if (e.key === "ArrowRight") {
+      const next = nextAvailable(selectedIdx);
+      if (next >= 0) onSelectSnapshot(points[next].snapshotId);
     }
   }, [selectedIdx, points, onSelectSnapshot]);
 
@@ -52,11 +69,11 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
 
         {/* Left arrow */}
         <button
-          onClick={() => selectedIdx > 0 && onSelectSnapshot(points[selectedIdx - 1].snapshotId)}
-          disabled={selectedIdx <= 0}
+          onClick={() => { const p = prevAvailable(selectedIdx); if (p >= 0) onSelectSnapshot(points[p].snapshotId); }}
+          disabled={prevAvailable(selectedIdx) < 0}
           style={{
             background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3,
-            color: selectedIdx > 0 ? "#8899bb" : "#3a4a5a", cursor: selectedIdx > 0 ? "pointer" : "default",
+            color: prevAvailable(selectedIdx) >= 0 ? "#8899bb" : "#3a4a5a", cursor: prevAvailable(selectedIdx) >= 0 ? "pointer" : "default",
             fontSize: 12, padding: "2px 6px", lineHeight: 1,
           }}
         >◀</button>
@@ -86,24 +103,35 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
 
           {/* Ticks */}
           {points.map((p, i) => {
+            const isAvailable = p.available !== false;
             const isSelected = p.snapshotId === selectedSnapshotId;
             const isEvent = p.role === "event";
             const xPct = points.length > 1 ? (i / (points.length - 1)) * 100 : 50;
             return (
               <div
                 key={p.snapshotId}
-                onClick={() => onSelectSnapshot(p.snapshotId)}
-                title={`${p.timestamp}\nBGP: ${p.observedPrefixCount}/${p.totalPrefixCount} prefixes, ${p.collectorCount}/${p.collectorCount} RIBs` + (p.trafficBaselinePercent != null ? `\nTraffic: ${p.trafficBaselinePercent}% of baseline` : "") + (!p.ribTimestampsMatch ? `\nRIB: ${p.actualRibTimestamp} (requested: ${p.requestedTimestamp})` : "")}
+                onClick={() => isAvailable && onSelectSnapshot(p.snapshotId)}
+                title={isAvailable
+                  ? `${p.timestamp}\nBGP: ${p.collectorCount > 0 ? p.observedPrefixCount + '/' + p.totalPrefixCount + ' prefixes, ' + p.collectorCount + ' RIBs' : 'No BGP data'}` + (p.trafficBaselinePercent != null ? `\nTraffic: ${p.trafficBaselinePercent}% of baseline` : "") + (p.actualRibTimestamp ? `\nRIB: ${p.actualRibTimestamp}` : "")
+                  : `${p.timestamp}\nUnavailable — no BGP RIB data` + (p.trafficBaselinePercent != null ? `\nTraffic: ${p.trafficBaselinePercent}% of baseline` : "")
+                }
                 style={{
                   position: "absolute", left: `${xPct}%`, top: "50%",
                   transform: "translate(-50%, -50%)",
                   width: isSelected ? 16 : isEvent ? 12 : 8,
                   height: isSelected ? 16 : isEvent ? 12 : 8,
                   borderRadius: "50%",
-                  background: isSelected ? "#fff" : isEvent ? "#e8a040" : "#556678",
-                  border: isSelected ? "2px solid #fff" : "1px solid rgba(255,255,255,0.2)",
-                  cursor: "pointer", zIndex: isSelected ? 2 : 1,
+                  background: !isAvailable ? "transparent"
+                    : isSelected ? "#fff"
+                    : isEvent ? "#e8a040"
+                    : "#556678",
+                  border: !isAvailable ? "1px dashed rgba(255,255,255,0.15)"
+                    : isSelected ? "2px solid #fff"
+                    : "1px solid rgba(255,255,255,0.2)",
+                  cursor: isAvailable ? "pointer" : "default",
+                  zIndex: isSelected ? 2 : 1,
                   transition: "all 0.15s",
+                  opacity: isAvailable ? 1 : 0.4,
                 }}
               />
             );
@@ -112,11 +140,11 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
 
         {/* Right arrow */}
         <button
-          onClick={() => selectedIdx < points.length - 1 && onSelectSnapshot(points[selectedIdx + 1].snapshotId)}
-          disabled={selectedIdx >= points.length - 1}
+          onClick={() => { const n = nextAvailable(selectedIdx); if (n >= 0) onSelectSnapshot(points[n].snapshotId); }}
+          disabled={nextAvailable(selectedIdx) < 0}
           style={{
             background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 3,
-            color: selectedIdx < points.length - 1 ? "#8899bb" : "#3a4a5a", cursor: selectedIdx < points.length - 1 ? "pointer" : "default",
+            color: nextAvailable(selectedIdx) >= 0 ? "#8899bb" : "#3a4a5a", cursor: nextAvailable(selectedIdx) >= 0 ? "pointer" : "default",
             fontSize: 12, padding: "2px 6px", lineHeight: 1,
           }}
         >▶</button>
