@@ -1,12 +1,13 @@
 /**
  * Country-shaped IP-space weather view.
- * Renders the compact national Hilbert inside a country polygon clip path.
+ * Uses the actual country polygon from geo.ts with proper projection.
  * Editorial visual — HilbertCanvas is the precise technical view.
  */
 
 import React, { useRef, useEffect, useMemo } from "react";
 import type { PrefixRecord, PrefixVisibilityScore } from "../types";
 import { COMPACT_SIZE, COMPACT_TOTAL, buildCompactMap } from "../compact";
+import { targetCountryGeoJson } from "../geo";
 
 interface Props {
   prefixes: PrefixRecord[];
@@ -15,26 +16,50 @@ interface Props {
   mapConfig: { name: string };
 }
 
-// Simplified Cuba outline for prototype clip path
-function countryPath(w: number, h: number): string {
-  return `M ${w*0.15} ${h*0.25} Q ${w*0.20} ${h*0.10} ${w*0.40} ${h*0.15} Q ${w*0.80} ${h*0.18} ${w*0.82} ${h*0.30} L ${w*0.85} ${h*0.55} Q ${w*0.80} ${h*0.65} ${w*0.70} ${h*0.70} L ${w*0.50} ${h*0.80} Q ${w*0.30} ${h*0.90} ${w*0.20} ${h*0.85} Q ${w*0.05} ${h*0.70} ${w*0.10} ${h*0.45} Z`;
+/** Project GeoJSON polygon to canvas coords with preserved aspect ratio */
+function projectPolygon(coords: number[][], w: number, h: number, pad = 16): { points: [number, number][]; scale: number } {
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const [lon, lat] of coords) {
+    if (lon < minX) minX = lon;
+    if (lon > maxX) maxX = lon;
+    if (lat < minY) minY = lat;
+    if (lat > maxY) maxY = lat;
+  }
+  const geoW = maxX - minX, geoH = maxY - minY;
+  const availW = w - pad * 2, availH = h - pad * 2;
+  const scale = Math.min(availW / geoW, availH / geoH);
+  const offX = pad + (availW - geoW * scale) / 2;
+  const offY = pad + (availH - geoH * scale) / 2;
+
+  const points: [number, number][] = coords.map(([lon, lat]) => [
+    offX + (lon - minX) * scale,
+    offY + (maxY - lat) * scale, // flip Y (lat increases up, canvas down)
+  ]);
+  return { points, scale };
 }
 
-const W = 420, H = 320;
+function pointsToPath(points: [number, number][]): string {
+  return points.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`).join(" ") + " Z";
+}
 
 export function CountryWeather({ prefixes, visibilityScores, totalCollectors, mapConfig }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const W = 480, H = 280;
+
+  const { svgPath, projectedPoints } = useMemo(() => {
+    const coords = targetCountryGeoJson.geometry.coordinates[0] as number[][];
+    const { points } = projectPolygon(coords, W, H);
+    return { svgPath: pointsToPath(points), projectedPoints: points };
+  }, []);
 
   const cellColors = useMemo(() => {
     const { cellMap } = buildCompactMap(prefixes);
-    const colors: ([number,number,number] | null)[] = new Array(COMPACT_TOTAL).fill(null);
-
+    const colors: ([number, number, number] | null)[] = new Array(COMPACT_TOTAL).fill(null);
     for (let c = 0; c < COMPACT_TOTAL; c++) {
-      const idx = (cellMap as unknown as Uint16Array)[c];
-      if (idx <= 0) continue; // no prefix in this cell
+      const idx = (cellMap as unknown as ArrayLike<number>)[c];
+      if (idx <= 0) continue;
       const prefix = prefixes[idx - 1];
       if (!prefix) continue;
-
       if (visibilityScores && totalCollectors > 1) {
         const score = visibilityScores.get(prefix.prefix);
         if (score) {
@@ -45,14 +70,7 @@ export function CountryWeather({ prefixes, visibilityScores, totalCollectors, ma
           continue;
         }
       }
-
-      const asns = prefix.originAsns ?? [];
-      const asn = asns[0] ?? 0;
-      if (prefix.observedInBgp) {
-        colors[c] = originColor(asn);
-      } else {
-        colors[c] = [18, 18, 30];
-      }
+      colors[c] = prefix.observedInBgp ? [40, 185, 94] : [18, 18, 30];
     }
     return colors;
   }, [prefixes, visibilityScores, totalCollectors]);
@@ -67,10 +85,13 @@ export function CountryWeather({ prefixes, visibilityScores, totalCollectors, ma
     ctx.fillStyle = "#0a0a1e";
     ctx.fillRect(0, 0, W, H);
 
+    // Clip to actual country polygon
     ctx.save();
-    ctx.clip(new Path2D(countryPath(W, H)));
-    ctx.imageSmoothingEnabled = false;
+    const path = new Path2D(svgPath);
+    ctx.clip(path);
 
+    // Draw Hilbert cells
+    ctx.imageSmoothingEnabled = false;
     const cw = W / COMPACT_SIZE, ch = H / COMPACT_SIZE;
     for (let c = 0; c < COMPACT_TOTAL; c++) {
       const color = cellColors[c];
@@ -79,14 +100,13 @@ export function CountryWeather({ prefixes, visibilityScores, totalCollectors, ma
       ctx.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
       ctx.fillRect(x * cw, y * ch, Math.ceil(cw) + 0.5, Math.ceil(ch) + 0.5);
     }
-
-    ctx.strokeStyle = "rgba(100,150,220,0.5)";
-    ctx.lineWidth = 2;
-    ctx.stroke(new Path2D(countryPath(W, H)));
     ctx.restore();
-  }, [cellColors]);
 
-  const activeCount = cellColors.filter(Boolean).length;
+    // Draw country outline on top
+    ctx.strokeStyle = "rgba(80, 140, 220, 0.7)";
+    ctx.lineWidth = 2;
+    ctx.stroke(new Path2D(svgPath));
+  }, [cellColors, svgPath]);
 
   return (
     <div style={{ position: "relative", background: "#0c0c1c", borderRadius: 4, border: "1px solid #2a2a48", overflow: "hidden" }}>
@@ -104,17 +124,8 @@ export function CountryWeather({ prefixes, visibilityScores, totalCollectors, ma
         fontSize: 8, color: "#445",
       }}>
         <span>IP-space packed into country outline for readability</span>
-        <span>{activeCount} cells · Logical, not physical</span>
+        <span>Logical, not physical locations</span>
       </div>
     </div>
   );
-}
-
-function originColor(asn: number): [number, number, number] {
-  const hue = ((asn * 137.508) % 360 + 360) % 360;
-  // Simple HSL→RGB for s=65%, l=42%
-  const s = 0.65, l = 0.42;
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number) => { const k = (n + hue / 30) % 12; return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1); };
-  return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
 }
