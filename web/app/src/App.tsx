@@ -355,6 +355,31 @@ export function App() {
   const activeTimelinePoint = dataMode === "timeline" && timelineIndex
     ? timelineIndex.points.find(p => p.snapshotId === timelineSnapshotId) ?? null : null;
 
+  // Find previous complete snapshot for deltas
+  const prevComplete = useMemo(() => {
+    if (!activeTimelinePoint || !timelineIndex) return null;
+    const pts = timelineIndex.points;
+    const curIdx = pts.findIndex(p => p.snapshotId === activeTimelinePoint.snapshotId);
+    for (let i = curIdx - 1; i >= 0; i--) {
+      if (pts[i].comparability === "complete") return pts[i];
+    }
+    return null;
+  }, [activeTimelinePoint, timelineIndex]);
+
+  // Delta vs previous complete
+  const delta = useMemo(() => {
+    if (!activeTimelinePoint || !prevComplete) return null;
+    const cur = activeTimelinePoint;
+    const prev = prevComplete;
+    if (cur.comparability !== "complete") return null;
+    return {
+      pathsDelta: (cur.pathFamilyCount || 0) - (prev.pathFamilyCount || 0),
+      prefixesDelta: (cur.observedPrefixCount || 0) - (prev.observedPrefixCount || 0),
+      trafficDelta: (cur.trafficBaselinePercent || 0) - (prev.trafficBaselinePercent || 0),
+      prevTimestamp: prev.timestamp,
+    };
+  }, [activeTimelinePoint, prevComplete]);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "#0a1020", color: "#c8c8d8", fontFamily: "system-ui, -apple-system, sans-serif", overflow: "hidden" }}>
       {/* Header */}
@@ -507,6 +532,8 @@ export function App() {
                 timestamp={activeTimelinePoint?.timestamp}
                 registrySize={collectorRegistry.size}
                 registryEnabled={[...collectorRegistry.values()].filter(c => c.enabled).length}
+                delta={delta ? { pathsDelta: delta.pathsDelta, prefixesDelta: delta.prefixesDelta, trafficDelta: delta.trafficDelta, prevTimestamp: delta.prevTimestamp } : undefined}
+                comparability={activeTimelinePoint?.comparability}
                 onSelectCollector={(cid: string | null) => {
                   if (!cid) { handleClearSelection(); return; }
                   const vp = viewpoints.find(v => v.collector === cid || v.id === cid);
@@ -535,7 +562,8 @@ export function App() {
                   <div style={{ color: "#4a5a6a" }}>{[...collectorRegistry.values()].filter(c => !c.enabled).length} disabled / future support</div>
                 </div>
                 <div style={{ fontSize: 8, color: "#556678", marginTop: 6, borderTop: "1px solid rgba(255,255,255,0.04)", paddingTop: 6 }}>
-                  AS-path graph uses parsed RIBs only. Gray map dots are registered but not cached.
+                  Target set: route-views2,3,4,.eqix,.linx<br />
+                  Complete snapshots use all 5. Partial snapshots marked.
                 </div>
               </div>
             </div>

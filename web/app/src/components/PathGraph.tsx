@@ -54,6 +54,8 @@ interface Props {
   timestamp?: string;
   registrySize?: number;
   registryEnabled?: number;
+  delta?: { pathsDelta: number; prefixesDelta: number; trafficDelta: number; prevTimestamp: string };
+  comparability?: string;
   onSelectCollector: (id: string | null) => void;
 }
 
@@ -65,7 +67,7 @@ function asnRole(asn: number, map: Map<number, AsnMetadata>): string {
   return map.get(asn)?.role ?? "unknown";
 }
 
-export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, selectedCollectorId, timestamp, registrySize, registryEnabled, onSelectCollector }: Props) {
+export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, selectedCollectorId, timestamp, registrySize, registryEnabled, delta, comparability, onSelectCollector }: Props) {
   const [hoveredNode, setHoveredNode] = useState<NodeInfo | null>(null);
   const [hoveredEdge, setHoveredEdge] = useState<EdgeInfo | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<EdgeInfo | null>(null);
@@ -299,6 +301,17 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
               <span style={{ fontSize: 7, color: "#4a5a6a" }}>
                 Registry: <span style={{ color: "#667788" }}>{registrySize}</span> collectors · {registryEnabled} enabled
               </span>
+            )}
+            {delta && comparability === "complete" && (
+              <span style={{ fontSize: 7, color: "#556678" }}>
+                Δ vs {delta.prevTimestamp?.replace("2026-03-16 ", "").replace(" UTC", "") ?? "prev"}:
+                {delta.pathsDelta !== 0 ? ` paths ${delta.pathsDelta >= 0 ? "+" : ""}${delta.pathsDelta}` : " paths unchanged"}
+                {delta.prefixesDelta !== 0 ? ` · prefixes ${delta.prefixesDelta >= 0 ? "+" : ""}${delta.prefixesDelta}` : " · prefixes unchanged"}
+                {delta.trafficDelta !== 0 ? ` · traffic ${delta.trafficDelta >= 0 ? "+" : ""}${delta.trafficDelta} pts` : ""}
+              </span>
+            )}
+            {comparability === "partial" && (
+              <span style={{ fontSize: 7, color: "#8a7a60" }}>Partial collector set — not directly comparable</span>
             )}
           </div>
         </div>
