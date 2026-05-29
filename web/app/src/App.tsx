@@ -369,30 +369,29 @@ export function App() {
         }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: "#e0e0f0", marginBottom: 2 }}>
-              Cuba · March 2026 grid collapse
+              Cuba · March 2026
             </div>
             <div style={{ fontSize: 11, color: "#999" }}>
-              Power failed. Traffic dropped. BGP stayed green.
+              BGP collector visibility compared with reported traffic-volume decline.
             </div>
           </div>
           <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>BGP RIBs</div>
+              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>BGP collector RIBs</div>
               <div style={{ fontSize: 20, fontWeight: 700, color: "#28b85e" }}>4/4</div>
-              <div style={{ fontSize: 9, color: "#666" }}>collectors</div>
+              <div style={{ fontSize: 9, color: "#666" }}>observed</div>
             </div>
             <div style={{ color: "#555", fontSize: 16 }}>vs</div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>Traffic</div>
-              <div style={{ fontSize: 20, fontWeight: 700, color: "#e8a040" }}>35%</div>
+              <div style={{ fontSize: 9, color: "#888", textTransform: "uppercase", marginBottom: 2 }}>Traffic signal</div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "#e8a040" }}>~35%</div>
               <div style={{ fontSize: 9, color: "#666" }}>of baseline</div>
             </div>
           </div>
           <div style={{ flex: 1, fontSize: 11, color: "#aaa", lineHeight: 1.5, minWidth: 200 }}>
-            The routing table saw green. Users saw a blackout.
-            ReachMap shows what the BGP layer saw — and what it missed.
+            Sampled BGP collector RIBs continued to observe Cuban prefixes while the external traffic signal declined.
           </div>
-          <div style={{ fontSize: 9, color: "#555" }}>Cloudflare Radar</div>
+          <div style={{ fontSize: 9, color: "#555" }}>Traffic source: Cloudflare Radar</div>
         </div>
       )}
 
@@ -402,8 +401,8 @@ export function App() {
           {/* Main stage: integrated map + logical paths + country weather */}
           <div style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
             {(() => {
-              const requestedGL = new URLSearchParams(window.location.search).get("stage") === "gl";
-              const glAvailable = requestedGL && hasWebGL();
+              const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
+              const webglOk = hasWebGL();
               const stageProps = {
                 pathFamilies, asnMap, visibilityScores, totalCollectors,
                 countryName: countryConfig?.name ?? "Cuba",
@@ -416,19 +415,25 @@ export function App() {
                   else handleClearSelection();
                 },
               };
-              if (glAvailable) return (
-                <Suspense fallback={<div style={{ padding: 20, color: "#666" }}>Loading GL map...</div>}>
+              // GL-first: default to GL when WebGL available
+              if (!requestedSVG && webglOk) return (
+                <Suspense fallback={<div style={{ padding: 20, color: "#666" }}>Loading map...</div>}>
                   <MapStageGL {...stageProps} />
                 </Suspense>
               );
-              return (<>
-                {requestedGL && !hasWebGL() && (
-                  <div style={{ padding: "4px 12px", fontSize: 10, color: "#c88040", background: "rgba(232,160,64,0.06)", borderBottom: "1px solid rgba(232,160,64,0.1)" }}>
-                    WebGL is unavailable or disabled in this browser. Showing the static SVG stage.
-                  </div>
-                )}
-                <ReachMapStage {...stageProps} />
-              </>);
+              // SVG fallback via ?stage=svg
+              if (requestedSVG) return <ReachMapStage {...stageProps} />;
+              // WebGL unavailable
+              return (
+                <div style={{ padding: "32px 20px", textAlign: "center", color: "#999" }}>
+                  <p style={{ fontSize: 14, marginBottom: 8 }}>ReachMap's interactive map requires WebGL.</p>
+                  <p style={{ fontSize: 12, color: "#777" }}>WebGL appears to be unavailable or disabled in this browser.</p>
+                  <p style={{ fontSize: 11, color: "#666", marginTop: 12 }}>
+                    You can enable WebGL, try another browser, or{" "}
+                    <a href="?stage=svg" style={{ color: "#5588aa" }}>open the static fallback</a>.
+                  </p>
+                </div>
+              );
             })()}
           </div>
 

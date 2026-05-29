@@ -175,9 +175,9 @@ export function MapStageGL({ pathFamilies, asnMap, visibilityScores, totalCollec
   }, [pathFamilies, asnMap]);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 420, background: "#080812", borderRadius: 4, border: "1px solid #1a1a38", overflow: "hidden" }}>
-      {/* MapLibre container */}
-      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+    <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 420, background: "#080812", overflow: "hidden" }}>
+      {/* MapLibre container — fills parent */}
+      <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />
 
       {/* Transit ASN logical overlay (HTML, not geographic) */}
       <div style={{
