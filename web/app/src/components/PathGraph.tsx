@@ -269,7 +269,7 @@ export function PathGraph({ pathFamilies, viewpoints, asnMap, selectedPrefix, se
 
   return (
     <div style={{
-      position: "relative", width: "100%", height: "100%", minHeight: 440,
+      position: "relative", width: "100%", height: "100%", minHeight: 460,
       background: "#0d1530", borderRadius: 6,
       border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden",
     }}>

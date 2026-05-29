@@ -478,7 +478,10 @@ export function App() {
               Cuba · March 2026
             </div>
             <div style={{ fontSize: 12, color: "#aabbcc", marginTop: 1, fontWeight: 500 }}>
-              BGP control plane vs traffic signal over time
+              {activeTimelinePoint.role === "event" && activeTimelinePoint.comparability === "complete" ? "BGP stayed visible while traffic fell to roughly one-third of normal." :
+               activeTimelinePoint.role === "before" && activeTimelinePoint.comparability === "complete" ? "Baseline snapshot: BGP visible before the traffic collapse." :
+               activeTimelinePoint.comparability === "partial" ? "Partial BGP snapshot: collector coverage is incomplete." :
+               "BGP control plane vs traffic signal over time"}
             </div>
           </div>
           <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
@@ -504,23 +507,18 @@ export function App() {
         </div>
       )}
 
-      {/* DEBUG PANEL — temporary, shows loaded state */}
-      {!bootstrapError && dataMode === "timeline" && activeTimelinePoint && (
+      {/* DEBUG PANEL — only when ?debug=1 */}
+      {!bootstrapError && dataMode === "timeline" && activeTimelinePoint && (() => { try { return new URLSearchParams(window.location.search).get("debug") === "1"; } catch { return false; } })() && (
         <div style={{ padding: "4px 16px", background: "rgba(255,100,100,0.08)", borderBottom: "1px solid rgba(255,100,100,0.2)", fontSize: 8, color: "#cc8888", fontFamily: "monospace", display: "flex", gap: 16, flexWrap: "wrap", flexShrink: 0 }}>
           <span>DEBUG</span>
           <span>sid={activeTimelinePoint.snapshotId}</span>
           <span>comparability={activeTimelinePoint.comparability ?? "MISSING"}</span>
-          <span>available={String(activeTimelinePoint.available)}</span>
           <span>collectors={activeTimelinePoint.collectorCount}</span>
           <span>target={activeTimelinePoint.targetCollectors ?? "?"}</span>
-          <span>parsed={activeTimelinePoint.parsedCollectors ?? "?"}</span>
           <span>prefixes={activeTimelinePoint.observedPrefixCount}/{activeTimelinePoint.totalPrefixCount}</span>
           <span>paths={activeTimelinePoint.pathFamilyCount}</span>
-          <span>traffic={activeTimelinePoint.trafficBaselinePercent}%</span>
           <span>points={timelineIndex?.points?.length ?? 0}</span>
           <span>complete={timelineIndex?.points?.filter(p => p.comparability === "complete").length ?? "?"}</span>
-          <span>partial={timelineIndex?.points?.filter(p => p.comparability === "partial").length ?? "?"}</span>
-          <span>url=/data/CU/timeline/mar2026/index.json</span>
         </div>
       )}
 
@@ -592,9 +590,9 @@ export function App() {
             Graph = parsed RIB evidence. Coverage map = all registered collectors and cache status.
           </div>
 
-          {/* Bottom row: coverage map (larger) + provenance + fingerprint */}
-          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", padding: "4px 12px 8px", maxHeight: 240, overflow: "hidden" }}>
-            <div style={{ flex: "1 1 45%", height: 220, minWidth: 280 }}>
+          {/* Bottom row: coverage map + provenance (compact) */}
+          <div style={{ display: "flex", flexShrink: 0, gap: 10, alignItems: "flex-start", padding: "4px 12px 6px", maxHeight: 180, overflow: "hidden" }}>
+            <div style={{ flex: "1 1 45%", height: 160, minWidth: 260 }}>
               {(() => {
                 const requestedSVG = new URLSearchParams(window.location.search).get("stage") === "svg";
                 const webglOk = hasWebGL();

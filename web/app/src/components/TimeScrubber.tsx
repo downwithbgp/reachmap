@@ -57,8 +57,13 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
         <span style={{ fontSize: 10, color: "#8899bb", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.04em" }}>
           BGP snapshots
         </span>
-        <span style={{ fontSize: 8, color: "#556678" }}>
+        <span style={{ fontSize: 9, color: "#8899bb", fontWeight: 500 }}>
           {complete} complete · {partial} partial · {unavailable} unavailable
+        </span>
+        <span style={{ fontSize: 7, color: "#556678", marginLeft: 8 }}>
+          <span style={{ color: "#2ecc71" }}>●</span> complete &nbsp;
+          <span style={{ color: "#e8a040" }}>◐</span> partial &nbsp;
+          <span style={{ color: "#4a5a6a" }}>○</span> no BGP
         </span>
         <div style={{ marginLeft: "auto", display: "flex", gap: 4 }}>
           <button onClick={() => { const p = prevAvail(selectedIdx); if (p >= 0) onSelectSnapshot(points[p].snapshotId); }}
@@ -105,9 +110,9 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
                 isEvent ? "⚡ Event" : "",
               ].filter(Boolean).join("\n")}
               style={{
-                flex: 1, maxWidth: 80, padding: "4px 4px 6px", borderRadius: 4,
-                background: isSelected ? "rgba(255,255,255,0.06)" : "transparent",
-                border: isSelected ? "1px solid rgba(255,255,255,0.15)" : "1px solid transparent",
+                flex: 1, maxWidth: 90, padding: "6px 4px 8px", borderRadius: 5,
+                background: isSelected ? "rgba(255,255,255,0.08)" : "transparent",
+                border: isSelected ? "1px solid rgba(255,255,255,0.2)" : "1px solid transparent",
                 cursor: isAvail ? "pointer" : "default",
                 textAlign: "center", opacity: isAvail ? 1 : 0.4,
                 transition: "all 0.15s",
@@ -120,12 +125,15 @@ export function TimeScrubber({ points, selectedSnapshotId, onSelectSnapshot }: P
                 boxShadow: isSelected ? "0 0 8px rgba(255,255,255,0.2)" : "none",
               }} />
               {/* Label */}
-              <div style={{ fontSize: 8, color: isSelected ? "#e8e8f8" : isAvail ? "#8899bb" : "#4a5a6a", fontWeight: isSelected ? 600 : 400 }}>
+              <div style={{ fontSize: 9, color: isSelected ? "#e8e8f8" : isAvail ? "#8899bb" : "#4a5a6a", fontWeight: isSelected ? 600 : 400 }}>
                 {label}
               </div>
               {/* Status text */}
+              <div style={{ fontSize: 7, color: isComplete ? "#2ecc71" : isPartial ? "#e8a040" : "#4a5a6a", marginTop: 2, fontWeight: 500 }}>
+                {!isAvail ? "no BGP" : isComplete ? `${p.collectorCount}/${p.targetCollectors ?? p.collectorCount}` : isPartial ? `${p.collectorCount}/${p.targetCollectors ?? p.collectorCount}` : "?"}
+              </div>
               <div style={{ fontSize: 6, color: isComplete ? "#2ecc71" : isPartial ? "#e8a040" : "#4a5a6a", marginTop: 1 }}>
-                {!isAvail ? "—" : isComplete ? "complete" : isPartial ? "partial" : "?"}
+                {!isAvail ? "" : isComplete ? "complete" : isPartial ? "partial" : ""}
               </div>
               {/* Event marker */}
               {isEvent && isAvail && (
